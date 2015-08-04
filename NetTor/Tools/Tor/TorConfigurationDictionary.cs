@@ -8,11 +8,18 @@ namespace Knapcode.NetTor.Tools.Tor
     {
         public IDictionary<string, string> GetDictionary(NetTorSettings settings)
         {
-            return new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            var dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
                 { "SocksPort", settings.TorSocksPort.ToString(CultureInfo.InvariantCulture) },
                 { "ControlPort", settings.TorControlPort.ToString(CultureInfo.InvariantCulture) }
             };
+
+            if (settings.HashedTorControlPassword != null)
+            {
+                dictionary["HashedControlPassword"] = settings.HashedTorControlPassword;
+            }
+
+            return dictionary;
         }
     }
 }

@@ -8,5 +8,7 @@ namespace Knapcode.NetTor
         public int TorSocksPort { get; set; }
         public int TorControlPort { get; set; }
         public int PrivoxyPort { get; set; }
+        public string TorControlPassword { get; set; }
+        public string HashedTorControlPassword { get; set; }
     }
 }

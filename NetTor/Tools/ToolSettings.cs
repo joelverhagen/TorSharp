@@ -12,6 +12,5 @@ namespace Knapcode.NetTor.Tools
         public string WorkingDirectory { get; set; }
         public string ConfigurationPath { get; set; }
         public Func<Tool, IEnumerable<string>> GetArguments { get; set; }
-        
     }
 }

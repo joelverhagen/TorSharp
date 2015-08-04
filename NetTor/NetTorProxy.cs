@@ -36,6 +36,8 @@ namespace Knapcode.NetTor
         private bool _initialized;
         private readonly NetTorSettings _settings;
         private readonly VirtualDesktopRunner _virtualDesktopRunner;
+        private Tool _tor;
+        private Tool _privoxy;
 
         public NetTorProxy(NetTorSettings settings)
         {
@@ -43,7 +45,7 @@ namespace Knapcode.NetTor
             _virtualDesktopRunner = new VirtualDesktopRunner();
         }
 
-        public async Task StartAsync()
+        public async Task ConfigureAndStartAsync()
         {
             if (!_initialized)
             {
@@ -65,7 +67,7 @@ namespace Knapcode.NetTor
         {
             var client = new TorControlClient();
             await client.ConnectAsync("localhost", _settings.TorControlPort);
-            await client.AuthenticateAsync(null);
+            await client.AuthenticateAsync(_settings.TorControlPassword);
             await client.CleanCircuitsAsync();
             client.Close();
         }
@@ -75,17 +77,32 @@ namespace Knapcode.NetTor
             _settings.ZippedToolsDirectory = GetAbsoluteCreate(_settings.ZippedToolsDirectory);
             _settings.ExtractedToolsDirectory = GetAbsoluteCreate(_settings.ExtractedToolsDirectory);
 
-            await ExtractAndStartAsync(TorToolSettings, new TorConfigurationDictionary());
-            await ExtractAndStartAsync(PrivoxyToolSettings, new PrivoxyConfigurationDictionary());
+            _tor = Extract(TorToolSettings);
+            _privoxy = Extract(PrivoxyToolSettings);
+
+            if (_settings.TorControlPassword != null && _settings.HashedTorControlPassword == null)
+            {
+                _settings.HashedTorControlPassword = new TorPasswordHasher().HashPassword(_tor, _settings.TorControlPassword);
+            }
+
+            await ConfigureAndStartAsync(_tor, new TorConfigurationDictionary());
+            await ConfigureAndStartAsync(_privoxy, new PrivoxyConfigurationDictionary());
         }
 
-        private async Task ExtractAndStartAsync(ToolSettings toolSettings, IConfigurationDictionary configurationDictionary)
+        private Tool Extract(ToolSettings toolSettings)
         {
             Tool tool = GetLatestTool(toolSettings);
             ExtractTool(tool, _settings.ReloadTools);
+            return tool;
+        }
+
+        private async Task<Tool> ConfigureAndStartAsync(Tool tool, IConfigurationDictionary configurationDictionary)
+        {
             var configurer = new LineByLineConfigurer(configurationDictionary, new ConfigurationFormat());
             await configurer.ApplySettings(tool.ConfigurationPath, _settings);
             await _virtualDesktopRunner.StartAsync(tool);
+            await _virtualDesktopRunner.StartAsync(tool);
+            return tool;
         }
 
         private string GetAbsoluteCreate(string directory)

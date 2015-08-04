@@ -16,14 +16,25 @@ namespace Knapcode.NetTor.Sandbox
                 ExtractedToolsDirectory = Path.Combine(Path.GetTempPath(), "NetTor"),
                 PrivoxyPort = 1337,
                 TorSocksPort = 1338,
-                TorControlPort = 1339
+                TorControlPort = 1339,
+                TorControlPassword = "foobar"
             });
 
-            netTorProxy.StartAsync().Wait();
+            netTorProxy.ConfigureAndStartAsync().Wait();
 
-            var handler = new HttpClientHandler {Proxy = new WebProxy(new Uri("http://localhost:1337"))};
-            var client = new HttpClient(handler);
-            Console.WriteLine(client.GetStringAsync("http://v4.ipv6-test.com/api/myip.php").Result);
+            {
+                var handler = new HttpClientHandler { Proxy = new WebProxy(new Uri("http://localhost:1337")) };
+                var client = new HttpClient(handler);
+                Console.WriteLine(client.GetStringAsync("http://v4.ipv6-test.com/api/myip.php").Result);
+            }
+
+            netTorProxy.GetNewIdentityAsync().Wait();
+
+            {
+                var handler = new HttpClientHandler { Proxy = new WebProxy(new Uri("http://localhost:1337")) };
+                var client = new HttpClient(handler);
+                Console.WriteLine(client.GetStringAsync("http://v4.ipv6-test.com/api/myip.php").Result);
+            }
 
             netTorProxy.Stop();
         }

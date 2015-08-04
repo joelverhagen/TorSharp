@@ -62,6 +62,7 @@
     <Compile Include="Tools\Tor\TorConfigurationDictionary.cs" />
     <Compile Include="Tools\Tor\TorControlClient.cs" />
     <Compile Include="Tools\Tor\TorControlException.cs" />
+    <Compile Include="Tools\Tor\TorPasswordHasher.cs" />
     <Compile Include="Tools\Tor\TorSettings.cs" />
     <Compile Include="Tools\ConfigurationFormat.cs" />
     <Compile Include="PInvoke\Desktop.cs" />
