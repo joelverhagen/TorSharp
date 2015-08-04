@@ -4,13 +4,13 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Knapcode.NetTor.PInvoke;
+using Knapcode.TorSharp.PInvoke;
 
-namespace Knapcode.NetTor.Tools
+namespace Knapcode.TorSharp.Tools
 {
     public class VirtualDesktopRunner : IToolRunner
     {
-        private const string DesktopName = "NetTorDesktop";
+        private const string DesktopName = "TorSharpDesktop";
         private readonly object _jobHandleLock = new object();
         private IntPtr _jobHandle;
         private readonly object _processIdsLock = new object();
@@ -59,7 +59,7 @@ namespace Knapcode.NetTor.Tools
 
                         if (!WindowsApi.SetInformationJobObject(_jobHandle, WindowsApi.JOBOBJECTINFOCLASS.ExtendedLimitInformation, extendedPointer, (uint) length))
                         {
-                            throw new NetTorException($"Unable to set information on the job object. Error: {WindowsUtility.GetLastErrorMessage()}.");
+                            throw new TorSharpException($"Unable to set information on the job object. Error: {WindowsUtility.GetLastErrorMessage()}.");
                         }
                     }
                 }
@@ -72,7 +72,7 @@ namespace Knapcode.NetTor.Tools
 
             if (!WindowsApi.AssignProcessToJobObject(_jobHandle, processInformation.hProcess) && throwOnError)
             {
-                throw new NetTorException($"Unable to assign the process to the job object. Error: {WindowsUtility.GetLastErrorMessage()}.");
+                throw new TorSharpException($"Unable to assign the process to the job object. Error: {WindowsUtility.GetLastErrorMessage()}.");
             }
         }
 
@@ -87,7 +87,7 @@ namespace Knapcode.NetTor.Tools
                         // terminate the job
                         if (!WindowsApi.TerminateJobObject(_jobHandle, 0))
                         {
-                            throw new NetTorException($"Unable to terminate the job object. Error: {WindowsUtility.GetLastErrorMessage()}.");
+                            throw new TorSharpException($"Unable to terminate the job object. Error: {WindowsUtility.GetLastErrorMessage()}.");
                         }
 
                         // wait for all jobs to complete

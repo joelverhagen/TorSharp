@@ -3,7 +3,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Knapcode.NetTor.Tools.Tor
+namespace Knapcode.TorSharp.Tools.Tor
 {
     public class TorControlClient
     {

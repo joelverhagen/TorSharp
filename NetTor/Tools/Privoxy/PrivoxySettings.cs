@@ -1,4 +1,4 @@
-namespace Knapcode.NetTor.Tools.Privoxy
+namespace Knapcode.TorSharp.Tools.Privoxy
 {
     public class PrivoxySettings
     {

@@ -1,6 +1,6 @@
-namespace Knapcode.NetTor
+namespace Knapcode.TorSharp
 {
-    public class NetTorSettings
+    public class TorSharpSettings
     {
         public bool ReloadTools { get; set; }
         public string ZippedToolsDirectory { get; set; }

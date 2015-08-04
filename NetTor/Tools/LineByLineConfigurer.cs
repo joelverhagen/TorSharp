@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Knapcode.NetTor.Tools
+namespace Knapcode.TorSharp.Tools
 {
     public class LineByLineConfigurer
     {
@@ -15,7 +15,7 @@ namespace Knapcode.NetTor.Tools
             _format = format;
         }
 
-        public async Task ApplySettings(string path, NetTorSettings settings)
+        public async Task ApplySettings(string path, TorSharpSettings settings)
         {
             // convert the settings to a dictionary
             var dictionary = _configurationDictionary.GetDictionary(settings);

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Knapcode.NetTor.Tools.Tor
+namespace Knapcode.TorSharp.Tools.Tor
 {
     [Serializable]
-    public class TorControlException : NetTorException
+    public class TorControlException : TorSharpException
     {
         public TorControlException(string message) : base(message)
         {

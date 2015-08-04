@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 
-namespace Knapcode.NetTor.Tools.Tor
+namespace Knapcode.TorSharp.Tools.Tor
 {
     public class TorPasswordHasher
     {

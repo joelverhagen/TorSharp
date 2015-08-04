@@ -1,4 +1,4 @@
-﻿namespace Knapcode.NetTor.Tools.Tor
+﻿namespace Knapcode.TorSharp.Tools.Tor
 {
     public class TorSettings
     {

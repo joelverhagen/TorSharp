@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Knapcode.NetTor.Tools.Privoxy
+namespace Knapcode.TorSharp.Tools.Privoxy
 {
     public class PrivoxyConfigurationDictionary : IConfigurationDictionary
     {
-        public IDictionary<string, string> GetDictionary(NetTorSettings settings)
+        public IDictionary<string, string> GetDictionary(TorSharpSettings settings)
         {
             return new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {

@@ -7,8 +7,8 @@
     <ProjectGuid>{F62B195D-145F-4DA4-A4DE-638E423E5D93}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Knapcode.NetTor</RootNamespace>
-    <AssemblyName>Knapcode.NetTor</AssemblyName>
+    <RootNamespace>Knapcode.TorSharp</RootNamespace>
+    <AssemblyName>Knapcode.TorSharp</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -46,8 +46,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Tools\IConfigurationDictionary.cs" />
-    <Compile Include="NetTorException.cs" />
-    <Compile Include="NetTorSettings.cs" />
+    <Compile Include="TorSharpException.cs" />
+    <Compile Include="TorSharpSettings.cs" />
     <Compile Include="PInvoke\Job.cs" />
     <Compile Include="Tools\IConfigurationFormat.cs" />
     <Compile Include="Tools\IToolRunner.cs" />
@@ -55,7 +55,7 @@
     <Compile Include="Tools\HiddenWindowRunner.cs" />
     <Compile Include="Tools\Privoxy\PrivoxySettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="NetTorProxy.cs" />
+    <Compile Include="TorSharpProxy.cs" />
     <Compile Include="Tools\Tool.cs" />
     <Compile Include="Tools\ToolSettings.cs" />
     <Compile Include="Tools\LineByLineConfigurer.cs" />

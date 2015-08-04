@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Globalization;
 
-namespace Knapcode.NetTor.Tools.Tor
+namespace Knapcode.TorSharp.Tools.Tor
 {
     public class TorConfigurationDictionary : IConfigurationDictionary
     {
-        public IDictionary<string, string> GetDictionary(NetTorSettings settings)
+        public IDictionary<string, string> GetDictionary(TorSharpSettings settings)
         {
             var dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {

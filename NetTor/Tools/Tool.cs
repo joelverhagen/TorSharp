@@ -1,4 +1,4 @@
-namespace Knapcode.NetTor.Tools
+namespace Knapcode.TorSharp.Tools
 {
     public class Tool
     {

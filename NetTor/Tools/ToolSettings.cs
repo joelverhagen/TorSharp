@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Knapcode.NetTor.Tools
+namespace Knapcode.TorSharp.Tools
 {
     public class ToolSettings
     {

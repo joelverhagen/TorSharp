@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 
-namespace Knapcode.NetTor.Tools
+namespace Knapcode.TorSharp.Tools
 {
     public interface IConfigurationDictionary
     {
-        IDictionary<string, string> GetDictionary(NetTorSettings settings);
+        IDictionary<string, string> GetDictionary(TorSharpSettings settings);
     }
 }

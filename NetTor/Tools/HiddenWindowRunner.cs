@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Knapcode.NetTor.PInvoke;
+using Knapcode.TorSharp.PInvoke;
 
-namespace Knapcode.NetTor.Tools
+namespace Knapcode.TorSharp.Tools
 {
     public class HiddenWindowRunner : IToolRunner
     {

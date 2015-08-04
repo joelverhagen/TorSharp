@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Knapcode.NetTor.PInvoke
+namespace Knapcode.TorSharp.PInvoke
 {
     public static partial class WindowsApi
     {

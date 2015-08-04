@@ -4,13 +4,13 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
-using Knapcode.NetTor.Tools;
-using Knapcode.NetTor.Tools.Privoxy;
-using Knapcode.NetTor.Tools.Tor;
+using Knapcode.TorSharp.Tools;
+using Knapcode.TorSharp.Tools.Privoxy;
+using Knapcode.TorSharp.Tools.Tor;
 
-namespace Knapcode.NetTor
+namespace Knapcode.TorSharp
 {
-    public class NetTorProxy
+    public class TorSharpProxy
     {
         private static readonly ToolSettings PrivoxyToolSettings = new ToolSettings
         {
@@ -33,12 +33,12 @@ namespace Knapcode.NetTor
         };
         
         private bool _initialized;
-        private readonly NetTorSettings _settings;
+        private readonly TorSharpSettings _settings;
         private readonly VirtualDesktopRunner _virtualDesktopRunner;
         private Tool _tor;
         private Tool _privoxy;
 
-        public NetTorProxy(NetTorSettings settings)
+        public TorSharpProxy(TorSharpSettings settings)
         {
             _settings = settings;
             _virtualDesktopRunner = new VirtualDesktopRunner();
@@ -186,7 +186,7 @@ namespace Knapcode.NetTor
             int fileCount = entries.Count(e => !File.GetAttributes(e).HasFlag(FileAttributes.Directory));
             if (fileCount > 0 || entries.Length != 1)
             {
-                throw new NetTorException($"The tool directory for {tool.Name} was expected to only contain exactly one directory.");
+                throw new TorSharpException($"The tool directory for {tool.Name} was expected to only contain exactly one directory.");
             }
 
             // move each nested file to its parent directory, accounting for a file or directory with the same name as its directory

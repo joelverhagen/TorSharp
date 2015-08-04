@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Knapcode.NetTor.Tools
+namespace Knapcode.TorSharp.Tools
 {
     public interface IToolRunner
     {

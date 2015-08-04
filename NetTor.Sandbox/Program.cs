@@ -3,25 +3,25 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 
-namespace Knapcode.NetTor.Sandbox
+namespace Knapcode.TorSharp.Sandbox
 {
     internal class Program
     {
         private static void Main()
         { 
             // configure
-            var settings = new NetTorSettings
+            var settings = new TorSharpSettings
             {
                 ReloadTools = false,
-                ZippedToolsDirectory = Path.Combine(Path.GetTempPath(), "NetTor", "ZippedTools"),
-                ExtractedToolsDirectory = Path.Combine(Path.GetTempPath(), "NetTor", "ExtractedTools"),
+                ZippedToolsDirectory = Path.Combine(Path.GetTempPath(), "TorSharp", "ZippedTools"),
+                ExtractedToolsDirectory = Path.Combine(Path.GetTempPath(), "TorSharp", "ExtractedTools"),
                 PrivoxyPort = 1337,
                 TorSocksPort = 1338,
                 TorControlPort = 1339,
                 TorControlPassword = "foobar"
             };
 
-            var netTorProxy = new NetTorProxy(settings);
+            var proxy = new TorSharpProxy(settings);
             var handler = new HttpClientHandler { Proxy = new WebProxy(new Uri("http://localhost:" + settings.PrivoxyPort)) };
             var httpClient = new HttpClient(handler);
 
@@ -34,14 +34,14 @@ namespace Knapcode.NetTor.Sandbox
             DownloadFile(settings, "http://sourceforge.net/projects/ijbswa/files/Win32/3.0.23%20%28stable%29/privoxy-3.0.23.zip/download", "privoxy-3.0.23.zip");
 
             // execute
-            netTorProxy.ConfigureAndStartAsync().Wait();
+            proxy.ConfigureAndStartAsync().Wait();
             Console.WriteLine(httpClient.GetStringAsync("http://v4.ipv6-test.com/api/myip.php").Result);
-            netTorProxy.GetNewIdentityAsync().Wait();
+            proxy.GetNewIdentityAsync().Wait();
             Console.WriteLine(httpClient.GetStringAsync("http://v4.ipv6-test.com/api/myip.php").Result);
-            netTorProxy.Stop();
+            proxy.Stop();
         }
 
-        private static void DownloadFile(NetTorSettings settings, string url, string name)
+        private static void DownloadFile(TorSharpSettings settings, string url, string name)
         {
             Directory.CreateDirectory(settings.ZippedToolsDirectory);
             string destination = Path.Combine(settings.ZippedToolsDirectory, name);
