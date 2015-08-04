@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Knapcode.NetTor.Tools;
 using Knapcode.NetTor.Tools.Privoxy;
@@ -54,24 +53,6 @@ namespace Knapcode.NetTor
             }
         }
 
-        public void Stop()
-        {
-            if (_initialized)
-            {
-                _virtualDesktopRunner.Stop();
-                _initialized = false;
-            }
-        }
-
-        public async Task GetNewIdentityAsync()
-        {
-            var client = new TorControlClient();
-            await client.ConnectAsync("localhost", _settings.TorControlPort);
-            await client.AuthenticateAsync(_settings.TorControlPassword);
-            await client.CleanCircuitsAsync();
-            client.Close();
-        }
-
         private async Task InitializeAsync()
         {
             _settings.ZippedToolsDirectory = GetAbsoluteCreate(_settings.ZippedToolsDirectory);
@@ -87,6 +68,24 @@ namespace Knapcode.NetTor
 
             await ConfigureAndStartAsync(_tor, new TorConfigurationDictionary());
             await ConfigureAndStartAsync(_privoxy, new PrivoxyConfigurationDictionary());
+        }
+
+        public async Task GetNewIdentityAsync()
+        {
+            var client = new TorControlClient();
+            await client.ConnectAsync("localhost", _settings.TorControlPort);
+            await client.AuthenticateAsync(_settings.TorControlPassword);
+            await client.CleanCircuitsAsync();
+            client.Close();
+        }
+
+        public void Stop()
+        {
+            if (_initialized)
+            {
+                _virtualDesktopRunner.Stop();
+                _initialized = false;
+            }
         }
 
         private Tool Extract(ToolSettings toolSettings)
@@ -106,10 +105,10 @@ namespace Knapcode.NetTor
 
         private string GetAbsoluteCreate(string directory)
         {
-            string assemblyDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            if (!Path.IsPathRooted(assemblyDirectory))
+            string currentDirectory = Path.GetFullPath(Directory.GetCurrentDirectory());
+            if (!Path.IsPathRooted(currentDirectory))
             {
-                directory = Path.Combine(assemblyDirectory, directory);
+                directory = Path.Combine(currentDirectory, directory);
             }
 
             if (!Directory.Exists(directory))

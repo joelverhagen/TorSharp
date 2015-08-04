@@ -13,8 +13,8 @@ namespace Knapcode.NetTor.Sandbox
             var settings = new NetTorSettings
             {
                 ReloadTools = false,
-                ZippedToolsDirectory = @"ZippedTools",
-                ExtractedToolsDirectory = Path.Combine(Path.GetTempPath(), "NetTor"),
+                ZippedToolsDirectory = Path.Combine(Path.GetTempPath(), "NetTor", "ZippedTools"),
+                ExtractedToolsDirectory = Path.Combine(Path.GetTempPath(), "NetTor", "ExtractedTools"),
                 PrivoxyPort = 1337,
                 TorSocksPort = 1338,
                 TorControlPort = 1339,
@@ -26,8 +26,12 @@ namespace Knapcode.NetTor.Sandbox
             var httpClient = new HttpClient(handler);
 
             // download tools
+            if (settings.ReloadTools)
+            {
+                Directory.Delete(settings.ZippedToolsDirectory, true);
+            }
             DownloadFile(settings, "https://www.torproject.org/dist/torbrowser/4.5.3/tor-win32-0.2.6.9.zip", "tor-win32-0.2.6.9.zip");
-            DownloadFile(settings, "http://sourceforge.net/projects/ijbswa/files/Win32/3.0.23%20%28stable%29/", "privoxy-3.0.23.zip");
+            DownloadFile(settings, "http://sourceforge.net/projects/ijbswa/files/Win32/3.0.23%20%28stable%29/privoxy-3.0.23.zip/download", "privoxy-3.0.23.zip");
 
             // execute
             netTorProxy.ConfigureAndStartAsync().Wait();
