@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TorSharp", "NetTor\TorSharp.csproj", "{F62B195D-145F-4DA4-A4DE-638E423E5D93}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TorSharp", "TorSharp\TorSharp.csproj", "{F62B195D-145F-4DA4-A4DE-638E423E5D93}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TorSharp.Sandbox", "NetTor.Sandbox\TorSharp.Sandbox.csproj", "{B1B318A7-A085-401E-96D3-320FE1066C45}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TorSharp.Sandbox", "TorSharp.Sandbox\TorSharp.Sandbox.csproj", "{B1B318A7-A085-401E-96D3-320FE1066C45}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
