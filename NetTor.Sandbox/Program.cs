@@ -8,8 +8,9 @@ namespace Knapcode.NetTor.Sandbox
     internal class Program
     {
         private static void Main()
-        {       
-            var netTorProxy = new NetTorProxy(new NetTorSettings
+        { 
+            // configure
+            var settings = new NetTorSettings
             {
                 ReloadTools = false,
                 ZippedToolsDirectory = @"ZippedTools",
@@ -18,25 +19,35 @@ namespace Knapcode.NetTor.Sandbox
                 TorSocksPort = 1338,
                 TorControlPort = 1339,
                 TorControlPassword = "foobar"
-            });
+            };
 
+            var netTorProxy = new NetTorProxy(settings);
+            var handler = new HttpClientHandler { Proxy = new WebProxy(new Uri("http://localhost:" + settings.PrivoxyPort)) };
+            var httpClient = new HttpClient(handler);
+
+            // download tools
+            DownloadFile(settings, "https://www.torproject.org/dist/torbrowser/4.5.3/tor-win32-0.2.6.9.zip", "tor-win32-0.2.6.9.zip");
+            DownloadFile(settings, "http://sourceforge.net/projects/ijbswa/files/Win32/3.0.23%20%28stable%29/", "privoxy-3.0.23.zip");
+
+            // execute
             netTorProxy.ConfigureAndStartAsync().Wait();
-
-            {
-                var handler = new HttpClientHandler { Proxy = new WebProxy(new Uri("http://localhost:1337")) };
-                var client = new HttpClient(handler);
-                Console.WriteLine(client.GetStringAsync("http://v4.ipv6-test.com/api/myip.php").Result);
-            }
-
+            Console.WriteLine(httpClient.GetStringAsync("http://v4.ipv6-test.com/api/myip.php").Result);
             netTorProxy.GetNewIdentityAsync().Wait();
-
-            {
-                var handler = new HttpClientHandler { Proxy = new WebProxy(new Uri("http://localhost:1337")) };
-                var client = new HttpClient(handler);
-                Console.WriteLine(client.GetStringAsync("http://v4.ipv6-test.com/api/myip.php").Result);
-            }
-
+            Console.WriteLine(httpClient.GetStringAsync("http://v4.ipv6-test.com/api/myip.php").Result);
             netTorProxy.Stop();
+        }
+
+        private static void DownloadFile(NetTorSettings settings, string url, string name)
+        {
+            Directory.CreateDirectory(settings.ZippedToolsDirectory);
+            string destination = Path.Combine(settings.ZippedToolsDirectory, name);
+            if (!File.Exists(destination))
+            {
+                using (var webClient = new WebClient())
+                {
+                    webClient.DownloadFile(url, destination);
+                }
+            }
         }
     }
 }
