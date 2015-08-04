@@ -101,7 +101,6 @@ namespace Knapcode.NetTor
             var configurer = new LineByLineConfigurer(configurationDictionary, new ConfigurationFormat());
             await configurer.ApplySettings(tool.ConfigurationPath, _settings);
             await _virtualDesktopRunner.StartAsync(tool);
-            await _virtualDesktopRunner.StartAsync(tool);
             return tool;
         }
 
