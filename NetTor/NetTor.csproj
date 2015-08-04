@@ -70,13 +70,5 @@
     <Compile Include="PInvoke\Process.cs" />
     <Compile Include="Tools\VirtualDesktopRunner.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="ZippedTools\privoxy-3.0.23.zip">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="ZippedTools\tor-win32-0.2.6.9.zip">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
