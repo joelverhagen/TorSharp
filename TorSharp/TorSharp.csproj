@@ -9,7 +9,8 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Knapcode.TorSharp</RootNamespace>
     <AssemblyName>Knapcode.TorSharp</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -69,6 +70,9 @@
     <Compile Include="PInvoke\Window.cs" />
     <Compile Include="PInvoke\Process.cs" />
     <Compile Include="Tools\VirtualDesktopRunner.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TorSharp.nuspec" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
