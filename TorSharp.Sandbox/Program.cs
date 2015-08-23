@@ -2,13 +2,17 @@
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
+using Knapcode.TorSharp.Tools;
+using Knapcode.TorSharp.Tools.Privoxy;
+using Knapcode.TorSharp.Tools.Tor;
 
 namespace Knapcode.TorSharp.Sandbox
 {
     internal class Program
     {
         private static void Main()
-        { 
+        {
             // configure
             var settings = new TorSharpSettings
             {
@@ -30,8 +34,8 @@ namespace Knapcode.TorSharp.Sandbox
             {
                 Directory.Delete(settings.ZippedToolsDirectory, true);
             }
-            DownloadFile(settings, "https://www.torproject.org/dist/torbrowser/4.5.3/tor-win32-0.2.6.9.zip", "tor-win32-0.2.6.9.zip");
-            DownloadFile(settings, "http://sourceforge.net/projects/ijbswa/files/Win32/3.0.23%20%28stable%29/privoxy-3.0.23.zip/download", "privoxy-3.0.23.zip");
+            DownloadFileAsync(settings, new TorFetcher(new HttpClient())).Wait();
+            DownloadFileAsync(settings, new PrivoxyFetcher(new HttpClient())).Wait();
 
             // execute
             proxy.ConfigureAndStartAsync().Wait();
@@ -41,15 +45,17 @@ namespace Knapcode.TorSharp.Sandbox
             proxy.Stop();
         }
 
-        private static void DownloadFile(TorSharpSettings settings, string url, string name)
+        private static async Task DownloadFileAsync(TorSharpSettings settings, IFileFetcher fetcher)
         {
             Directory.CreateDirectory(settings.ZippedToolsDirectory);
-            string destination = Path.Combine(settings.ZippedToolsDirectory, name);
-            if (!File.Exists(destination))
+            var file = await fetcher.GetLatestAsync();
+            string filePath = Path.Combine(settings.ZippedToolsDirectory, file.Name);
+            if (!File.Exists(filePath))
             {
-                using (var webClient = new WebClient())
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
-                    webClient.DownloadFile(url, destination);
+                    var contentStream = await file.GetContentAsync();
+                    await contentStream.CopyToAsync(fileStream);
                 }
             }
         }

@@ -39,6 +39,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Net.Http" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -47,6 +48,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Tools\IConfigurationDictionary.cs" />
+    <Compile Include="Tools\IFileFetcher.cs" />
+    <Compile Include="Tools\DownloadableFile.cs" />
+    <Compile Include="Tools\Privoxy\PrivoxyFetcher.cs" />
+    <Compile Include="Tools\Tor\TorFetcher.cs" />
     <Compile Include="TorSharpException.cs" />
     <Compile Include="TorSharpSettings.cs" />
     <Compile Include="PInvoke\Job.cs" />
