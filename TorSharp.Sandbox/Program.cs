@@ -2,10 +2,7 @@
 using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
 using Knapcode.TorSharp.Tools;
-using Knapcode.TorSharp.Tools.Privoxy;
-using Knapcode.TorSharp.Tools.Tor;
 
 namespace Knapcode.TorSharp.Sandbox
 {
@@ -17,8 +14,8 @@ namespace Knapcode.TorSharp.Sandbox
             var settings = new TorSharpSettings
             {
                 ReloadTools = false,
-                ZippedToolsDirectory = Path.Combine(Path.GetTempPath(), "TorSharp", "ZippedTools"),
-                ExtractedToolsDirectory = Path.Combine(Path.GetTempPath(), "TorSharp", "ExtractedTools"),
+                ZippedToolsDirectory = Path.Combine(Path.GetTempPath(), "Knapcode.TorSharp.Sandbox", "ZippedTools"),
+                ExtractedToolsDirectory = Path.Combine(Path.GetTempPath(), "Knapcode.TorSharp.Sandbox", "ExtractedTools"),
                 PrivoxyPort = 1337,
                 TorSocksPort = 1338,
                 TorControlPort = 1339,
