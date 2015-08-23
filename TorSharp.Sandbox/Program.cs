@@ -25,39 +25,18 @@ namespace Knapcode.TorSharp.Sandbox
                 TorControlPassword = "foobar"
             };
 
+            // download tools
+            new ToolFetcher(settings, new HttpClient()).FetchAsync().Wait();
+
+            // execute
             var proxy = new TorSharpProxy(settings);
             var handler = new HttpClientHandler { Proxy = new WebProxy(new Uri("http://localhost:" + settings.PrivoxyPort)) };
             var httpClient = new HttpClient(handler);
-
-            // download tools
-            if (settings.ReloadTools)
-            {
-                Directory.Delete(settings.ZippedToolsDirectory, true);
-            }
-            DownloadFileAsync(settings, new TorFetcher(new HttpClient())).Wait();
-            DownloadFileAsync(settings, new PrivoxyFetcher(new HttpClient())).Wait();
-
-            // execute
             proxy.ConfigureAndStartAsync().Wait();
-            Console.WriteLine(httpClient.GetStringAsync("http://v4.ipv6-test.com/api/myip.php").Result);
+            Console.WriteLine(httpClient.GetStringAsync("http://icanhazip.com/").Result.Trim());
             proxy.GetNewIdentityAsync().Wait();
-            Console.WriteLine(httpClient.GetStringAsync("http://v4.ipv6-test.com/api/myip.php").Result);
+            Console.WriteLine(httpClient.GetStringAsync("http://icanhazip.com/").Result.Trim());
             proxy.Stop();
-        }
-
-        private static async Task DownloadFileAsync(TorSharpSettings settings, IFileFetcher fetcher)
-        {
-            Directory.CreateDirectory(settings.ZippedToolsDirectory);
-            var file = await fetcher.GetLatestAsync();
-            string filePath = Path.Combine(settings.ZippedToolsDirectory, file.Name);
-            if (!File.Exists(filePath))
-            {
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    var contentStream = await file.GetContentAsync();
-                    await contentStream.CopyToAsync(fileStream);
-                }
-            }
         }
     }
 }

@@ -51,6 +51,7 @@
     <Compile Include="Tools\IFileFetcher.cs" />
     <Compile Include="Tools\DownloadableFile.cs" />
     <Compile Include="Tools\Privoxy\PrivoxyFetcher.cs" />
+    <Compile Include="Tools\ToolFetcher.cs" />
     <Compile Include="Tools\Tor\TorFetcher.cs" />
     <Compile Include="TorSharpException.cs" />
     <Compile Include="TorSharpSettings.cs" />
