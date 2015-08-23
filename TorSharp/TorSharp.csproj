@@ -55,10 +55,7 @@
     <Compile Include="TorSharpException.cs" />
     <Compile Include="TorSharpSettings.cs" />
     <Compile Include="PInvoke\Job.cs" />
-    <Compile Include="Tools\IConfigurationFormat.cs" />
-    <Compile Include="Tools\IToolRunner.cs" />
     <Compile Include="Tools\Privoxy\PrivoxyConfigurationDictionary.cs" />
-    <Compile Include="Tools\HiddenWindowRunner.cs" />
     <Compile Include="Tools\Privoxy\PrivoxySettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TorSharpProxy.cs" />
@@ -74,7 +71,7 @@
     <Compile Include="PInvoke\Desktop.cs" />
     <Compile Include="PInvoke\Window.cs" />
     <Compile Include="PInvoke\Process.cs" />
-    <Compile Include="Tools\VirtualDesktopRunner.cs" />
+    <Compile Include="Tools\ToolRunner.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TorSharp.nuspec" />

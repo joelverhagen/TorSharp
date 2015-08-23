@@ -8,7 +8,12 @@ using Knapcode.TorSharp.PInvoke;
 
 namespace Knapcode.TorSharp.Tools
 {
-    public class VirtualDesktopRunner : IToolRunner
+    public interface IToolRunner
+    {
+        Task StartAsync(Tool tool);
+        void Stop();
+    }
+    public class ToolRunner : IToolRunner
     {
         private const string DesktopName = "TorSharpDesktop";
         private readonly object _jobHandleLock = new object();

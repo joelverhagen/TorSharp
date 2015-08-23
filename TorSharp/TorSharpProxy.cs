@@ -34,14 +34,14 @@ namespace Knapcode.TorSharp
         
         private bool _initialized;
         private readonly TorSharpSettings _settings;
-        private readonly VirtualDesktopRunner _virtualDesktopRunner;
+        private readonly ToolRunner _toolRunner;
         private Tool _tor;
         private Tool _privoxy;
 
         public TorSharpProxy(TorSharpSettings settings)
         {
             _settings = settings;
-            _virtualDesktopRunner = new VirtualDesktopRunner();
+            _toolRunner = new ToolRunner();
         }
 
         public async Task ConfigureAndStartAsync()
@@ -83,7 +83,7 @@ namespace Knapcode.TorSharp
         {
             if (_initialized)
             {
-                _virtualDesktopRunner.Stop();
+                _toolRunner.Stop();
                 _initialized = false;
             }
         }
@@ -99,7 +99,7 @@ namespace Knapcode.TorSharp
         {
             var configurer = new LineByLineConfigurer(configurationDictionary, new ConfigurationFormat());
             await configurer.ApplySettings(tool.ConfigurationPath, _settings);
-            await _virtualDesktopRunner.StartAsync(tool);
+            await _toolRunner.StartAsync(tool);
             return tool;
         }
 

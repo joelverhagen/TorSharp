@@ -3,6 +3,11 @@ using System.Text.RegularExpressions;
 
 namespace Knapcode.TorSharp.Tools
 {
+    public interface IConfigurationFormat
+    {
+        string UpdateLine(IDictionary<string, string> dictionary, string originalLine);
+        string CreateLine(KeyValuePair<string, string> pair);
+    }
     public class ConfigurationFormat : IConfigurationFormat
     {
         public Regex CommentPattern => new Regex(@"^\s*#+");
