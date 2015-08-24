@@ -2,7 +2,7 @@
 using System.IO;
 using System.Net;
 using System.Net.Http;
-using Knapcode.TorSharp.Tools;
+using System.Threading.Tasks;
 
 namespace Knapcode.TorSharp.Sandbox
 {
@@ -10,12 +10,16 @@ namespace Knapcode.TorSharp.Sandbox
     {
         private static void Main()
         {
+            MainAsync().Wait();
+        }
+
+        private static async Task MainAsync()
+        {
             // configure
             var settings = new TorSharpSettings
             {
-                ReloadTools = false,
-                ZippedToolsDirectory = Path.Combine(Path.GetTempPath(), "Knapcode.TorSharp.Sandbox", "ZippedTools"),
-                ExtractedToolsDirectory = Path.Combine(Path.GetTempPath(), "Knapcode.TorSharp.Sandbox", "ExtractedTools"),
+                ZippedToolsDirectory = Path.Combine(Path.GetTempPath(), "TorZipped"),
+                ExtractedToolsDirectory = Path.Combine(Path.GetTempPath(), "TorExtracted"),
                 PrivoxyPort = 1337,
                 TorSocksPort = 1338,
                 TorControlPort = 1339,
@@ -23,16 +27,19 @@ namespace Knapcode.TorSharp.Sandbox
             };
 
             // download tools
-            new TorSharpToolFetcher(settings, new HttpClient()).FetchAsync().Wait();
+            await new TorSharpToolFetcher(settings, new HttpClient()).FetchAsync();
 
             // execute
             var proxy = new TorSharpProxy(settings);
-            var handler = new HttpClientHandler { Proxy = new WebProxy(new Uri("http://localhost:" + settings.PrivoxyPort)) };
+            var handler = new HttpClientHandler
+            {
+                Proxy = new WebProxy(new Uri("http://localhost:" + settings.PrivoxyPort))
+            };
             var httpClient = new HttpClient(handler);
-            proxy.ConfigureAndStartAsync().Wait();
-            Console.WriteLine(httpClient.GetStringAsync("http://icanhazip.com/").Result.Trim());
-            proxy.GetNewIdentityAsync().Wait();
-            Console.WriteLine(httpClient.GetStringAsync("http://icanhazip.com/").Result.Trim());
+            await proxy.ConfigureAndStartAsync();
+            Console.WriteLine(await httpClient.GetStringAsync("http://icanhazip.com"));
+            await proxy.GetNewIdentityAsync();
+            Console.WriteLine(await httpClient.GetStringAsync("http://icanhazip.com"));
             proxy.Stop();
         }
     }
