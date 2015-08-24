@@ -1,18 +1,24 @@
 ﻿using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Knapcode.TorSharp.Tools;
 using Knapcode.TorSharp.Tools.Privoxy;
 using Knapcode.TorSharp.Tools.Tor;
 
-namespace Knapcode.TorSharp.Tools
+namespace Knapcode.TorSharp
 {
-    public class ToolFetcher
+    public interface ITorSharpToolFetcher
+    {
+        Task FetchAsync();
+    }
+
+    public class TorSharpToolFetcher : ITorSharpToolFetcher
     {
         private readonly TorSharpSettings _settings;
         private readonly PrivoxyFetcher _privoxyFetcher;
         private readonly TorFetcher _torFetcher;
 
-        public ToolFetcher(TorSharpSettings settings, HttpClient client)
+        public TorSharpToolFetcher(TorSharpSettings settings, HttpClient client)
         {
             _settings = settings;
             _privoxyFetcher = new PrivoxyFetcher(client);

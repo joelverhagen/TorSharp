@@ -10,7 +10,14 @@ using Knapcode.TorSharp.Tools.Tor;
 
 namespace Knapcode.TorSharp
 {
-    public class TorSharpProxy
+    public interface ITorSharpProxy
+    {
+        Task ConfigureAndStartAsync();
+        Task GetNewIdentityAsync();
+        void Stop();
+    }
+
+    public class TorSharpProxy : ITorSharpProxy
     {
         private static readonly ToolSettings PrivoxyToolSettings = new ToolSettings
         {

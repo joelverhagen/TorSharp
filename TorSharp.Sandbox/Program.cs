@@ -23,7 +23,7 @@ namespace Knapcode.TorSharp.Sandbox
             };
 
             // download tools
-            new ToolFetcher(settings, new HttpClient()).FetchAsync().Wait();
+            new TorSharpToolFetcher(settings, new HttpClient()).FetchAsync().Wait();
 
             // execute
             var proxy = new TorSharpProxy(settings);
