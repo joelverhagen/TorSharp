@@ -43,17 +43,17 @@ namespace Knapcode.TorSharp.Tools
                 {
                     // traverse each line looking for the designed configuration
                     string originalLine;
-                    while ((originalLine = await reader.ReadLineAsync()) != null)
+                    while ((originalLine = await reader.ReadLineAsync().ConfigureAwait(false)) != null)
                     {
                         string newLine = dictionary.Count > 0 ? _format.UpdateLine(dictionary, originalLine) : originalLine;
-                        await writer.WriteLineAsync(newLine);
+                        await writer.WriteLineAsync(newLine).ConfigureAwait(false);
                     }
 
                     // write the remaining lines
                     foreach (var pair in dictionary.OrderBy(p => p.Key))
                     {
                         string newLine = _format.CreateLine(pair);
-                        await writer.WriteLineAsync(newLine);
+                        await writer.WriteLineAsync(newLine).ConfigureAwait(false);
                     }
                 }
 

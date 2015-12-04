@@ -22,7 +22,7 @@ namespace Knapcode.TorSharp.Tools.Privoxy
         public async Task<DownloadableFile> GetLatestAsync()
         {
             SyndicationFeed syndicationFeed;
-            using (var stream = await _httpClient.GetStreamAsync(BaseUrl))
+            using (var stream = await _httpClient.GetStreamAsync(BaseUrl).ConfigureAwait(false))
             {
                 var streamReader = new StreamReader(stream);
                 var xmlReader = XmlReader.Create(streamReader);

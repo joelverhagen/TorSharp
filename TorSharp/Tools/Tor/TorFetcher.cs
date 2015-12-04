@@ -19,7 +19,7 @@ namespace Knapcode.TorSharp.Tools.Tor
 
         public async Task<DownloadableFile> GetLatestAsync()
         {
-            var versionsContent = await _httpClient.GetStringAsync(BaseUrl);
+            var versionsContent = await _httpClient.GetStringAsync(BaseUrl).ConfigureAwait(false);
             var latestVersion = GetLinks(versionsContent)
                 .Select(x => new {Link = x, Version = GetVersion(x)})
                 .Where(x => x.Version != null)
@@ -31,7 +31,7 @@ namespace Knapcode.TorSharp.Tools.Tor
             }
 
             var listUrl = new Uri(BaseUrl, latestVersion.Link);
-            var listContent = await _httpClient.GetStringAsync(listUrl);
+            var listContent = await _httpClient.GetStringAsync(listUrl).ConfigureAwait(false);
             var name = GetLinks(listContent).FirstOrDefault(x => Regex.IsMatch(x, @"^tor-win32-.+\.zip$"));
             if (name == null)
             {

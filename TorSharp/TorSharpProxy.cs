@@ -55,7 +55,7 @@ namespace Knapcode.TorSharp
         {
             if (!_initialized)
             {
-                await InitializeAsync();
+                await InitializeAsync().ConfigureAwait(false);
                 _initialized = true;
             }
         }
@@ -73,17 +73,18 @@ namespace Knapcode.TorSharp
                 _settings.HashedTorControlPassword = new TorPasswordHasher().HashPassword(_tor, _settings.TorControlPassword);
             }
 
-            await ConfigureAndStartAsync(_tor, new TorConfigurationDictionary());
-            await ConfigureAndStartAsync(_privoxy, new PrivoxyConfigurationDictionary());
+            await ConfigureAndStartAsync(_tor, new TorConfigurationDictionary()).ConfigureAwait(false);
+            await ConfigureAndStartAsync(_privoxy, new PrivoxyConfigurationDictionary()).ConfigureAwait(false);
         }
 
         public async Task GetNewIdentityAsync()
         {
-            var client = new TorControlClient();
-            await client.ConnectAsync("localhost", _settings.TorControlPort);
-            await client.AuthenticateAsync(_settings.TorControlPassword);
-            await client.CleanCircuitsAsync();
-            client.Close();
+            using (var client = new TorControlClient())
+            {
+                await client.ConnectAsync("localhost", _settings.TorControlPort).ConfigureAwait(false);
+                await client.AuthenticateAsync(_settings.TorControlPassword).ConfigureAwait(false);
+                await client.CleanCircuitsAsync().ConfigureAwait(false);
+            }
         }
 
         public void Stop()
@@ -105,8 +106,8 @@ namespace Knapcode.TorSharp
         private async Task<Tool> ConfigureAndStartAsync(Tool tool, IConfigurationDictionary configurationDictionary)
         {
             var configurer = new LineByLineConfigurer(configurationDictionary, new ConfigurationFormat());
-            await configurer.ApplySettings(tool.ConfigurationPath, _settings);
-            await _toolRunner.StartAsync(tool);
+            await configurer.ApplySettings(tool.ConfigurationPath, _settings).ConfigureAwait(false);
+            await _toolRunner.StartAsync(tool).ConfigureAwait(false);
             return tool;
         }
 

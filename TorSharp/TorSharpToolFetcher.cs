@@ -28,20 +28,20 @@ namespace Knapcode.TorSharp
         public async Task FetchAsync()
         {
             Directory.CreateDirectory(_settings.ZippedToolsDirectory);
-            await DownloadFileAsync(_privoxyFetcher);
-            await DownloadFileAsync(_torFetcher);
+            await DownloadFileAsync(_privoxyFetcher).ConfigureAwait(false);
+            await DownloadFileAsync(_torFetcher).ConfigureAwait(false);
         }
 
         private async Task DownloadFileAsync(IFileFetcher fetcher)
         {
-            var file = await fetcher.GetLatestAsync();
+            var file = await fetcher.GetLatestAsync().ConfigureAwait(false);
             string filePath = Path.Combine(_settings.ZippedToolsDirectory, file.Name);
             if (!File.Exists(filePath) || _settings.ReloadTools)
             {
                 using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
-                    var contentStream = await file.GetContentAsync();
-                    await contentStream.CopyToAsync(fileStream);
+                    var contentStream = await file.GetContentAsync().ConfigureAwait(false);
+                    await contentStream.CopyToAsync(fileStream).ConfigureAwait(false);
                 }
             }
         }
