@@ -40,7 +40,7 @@ namespace Knapcode.TorSharp.Tools.Tor
             {
                 _tcpClient.Close();
                 _reader.Dispose();
-                _reader.Dispose();
+                _writer.Dispose();
             }
         }
 
