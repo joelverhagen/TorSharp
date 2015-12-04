@@ -1,11 +1,12 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Knapcode.TorSharp.Tools.Tor
 {
-    public class TorControlClient
+    public class TorControlClient : IDisposable
     {
         private const string SuccessResponse = "250 OK";
         private const int BufferSize = 256;
@@ -34,7 +35,7 @@ namespace Knapcode.TorSharp.Tools.Tor
             await SendCommandAsync("SIGNAL NEWNYM");
         }
 
-        public void Close()
+        public void Dispose()
         {
             if (_tcpClient != null)
             {
@@ -42,6 +43,11 @@ namespace Knapcode.TorSharp.Tools.Tor
                 _reader.Dispose();
                 _writer.Dispose();
             }
+        }
+
+        public void Close()
+        {
+            Dispose();
         }
 
         private async Task<string> SendCommandAsync(string command)
