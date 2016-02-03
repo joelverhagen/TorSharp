@@ -57,14 +57,24 @@ namespace Knapcode.TorSharp.Tools
                     }
                 }
 
+                // If the original file exists, remove it before copying over the temporary file.
                 if (File.Exists(path))
                 {
-                    File.Replace(temporaryPath, path, null);
+                    string backupPath = path + ".bak";
+
+                    // If there has already been a backup, just delete the original.
+                    if (File.Exists(backupPath))
+                    {
+                        File.Delete(path);
+                    }
+                    else
+                    {
+                        // Backup the original if there is not already a backup.
+                        File.Move(path, backupPath);
+                    }
                 }
-                else
-                {
-                    File.Move(temporaryPath, path);
-                }
+
+                File.Move(temporaryPath, path);
             }
             finally
             {
