@@ -24,5 +24,6 @@ namespace Knapcode.TorSharp
         public int PrivoxyPort { get; set; }
         public string TorControlPassword { get; set; }
         public string HashedTorControlPassword { get; set; }
+        public string TorDataDirectory { get; set; }
     }
 }
