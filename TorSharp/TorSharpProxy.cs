@@ -41,14 +41,17 @@ namespace Knapcode.TorSharp
         
         private bool _initialized;
         private readonly TorSharpSettings _settings;
-        private readonly ToolRunner _toolRunner;
+        private readonly IToolRunner _toolRunner;
         private Tool _tor;
         private Tool _privoxy;
 
         public TorSharpProxy(TorSharpSettings settings)
         {
             _settings = settings;
-            _toolRunner = new ToolRunner();
+            _toolRunner =
+                settings.ToolRunnerType == ToolRunnerTypes.Default
+                    ? (IToolRunner)new ToolRunner()
+                    : new SimpleToolRunner();
         }
 
         public async Task ConfigureAndStartAsync()
