@@ -62,7 +62,7 @@ namespace Knapcode.TorSharp.Tools
                         IntPtr extendedPointer = Marshal.AllocHGlobal(length);
                         Marshal.StructureToPtr(extended, extendedPointer, false);
 
-                        if (!WindowsApi.SetInformationJobObject(_jobHandle, WindowsApi.JOBOBJECTINFOCLASS.ExtendedLimitInformation, extendedPointer, (uint) length))
+                        if (!WindowsApi.SetInformationJobObject(_jobHandle, WindowsApi.JOBOBJECTINFOCLASS.ExtendedLimitInformation, extendedPointer, (uint) length) && throwOnError)
                         {
                             throw new TorSharpException($"Unable to set information on the job object. Error: {WindowsUtility.GetLastErrorMessage()}.");
                         }
