@@ -8,7 +8,7 @@ using Knapcode.TorSharp.PInvoke;
 
 namespace Knapcode.TorSharp.Tools
 {
-    public class VirtualDesktopToolRunner : IToolRunner, IDisposable
+    public class VirtualDesktopToolRunner : IToolRunner
     {
         private const string DesktopName = "TorSharpDesktop";
         private readonly object _jobHandleLock = new object();
@@ -106,11 +106,6 @@ namespace Knapcode.TorSharp.Tools
                     }
                 }
             }
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
         }
     }
 }
