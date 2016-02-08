@@ -1,7 +1,24 @@
 using System.IO;
+using Knapcode.TorSharp.Tools;
 
 namespace Knapcode.TorSharp
 {
+    /// <summary>
+    /// The types of tools runner.
+    /// </summary>
+    public enum ToolRunnerTypes
+    {
+        /// <summary>
+        /// The default tool runner, specifically the <see cref="ToolRunner"/>.
+        /// </summary>
+        Default = 0,
+
+        /// <summary>
+        /// The <see cref="SimpleToolRunner"/>.
+        /// </summary>
+        Simple,
+    }
+
     public class TorSharpSettings
     {
         public static readonly string DefaultToolsDirectory = Path.Combine(Path.GetTempPath(), "Knapcode.TorSharp");
@@ -17,6 +34,7 @@ namespace Knapcode.TorSharp
         }
 
         public bool ReloadTools { get; set; }
+        public ToolRunnerTypes ToolRunnerType { get; set; }
         public string ZippedToolsDirectory { get; set; }
         public string ExtractedToolsDirectory { get; set; }
         public int TorSocksPort { get; set; }
