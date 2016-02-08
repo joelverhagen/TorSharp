@@ -6,17 +6,20 @@ namespace Knapcode.TorSharp
     /// <summary>
     /// The types of tools runner.
     /// </summary>
-    public enum ToolRunnerTypes
+    public enum ToolRunnerType
     {
         /// <summary>
-        /// The default tool runner, specifically the <see cref="ToolRunner"/>.
+        /// A tool runner that uses the Windows API to create a virtual desktop and process jobs
+        /// to start a tool and keep it hidden. The associated implementation of
+        /// <see cref="IToolRunner"/> is <see cref="VirtualDesktopToolRunner"/>.
         /// </summary>
-        Default = 0,
+        VirtualDesktop,
 
         /// <summary>
-        /// The <see cref="SimpleToolRunner"/>.
+        /// A tool runner that uses basic processes to start and stop jobs. The associated
+        /// implementation of <see cref="IToolRunner"/> is <see cref="SimpleToolRunner"/>.
         /// </summary>
-        Simple,
+        Simple
     }
 
     public class TorSharpSettings
@@ -31,10 +34,11 @@ namespace Knapcode.TorSharp
             PrivoxyPort = 18118;
             TorSocksPort = 19050;
             TorControlPort = 19051;
+            ToolRunnerType = ToolRunnerType.VirtualDesktop;
         }
 
         public bool ReloadTools { get; set; }
-        public ToolRunnerTypes ToolRunnerType { get; set; }
+        public ToolRunnerType ToolRunnerType { get; set; }
         public string ZippedToolsDirectory { get; set; }
         public string ExtractedToolsDirectory { get; set; }
         public int TorSocksPort { get; set; }

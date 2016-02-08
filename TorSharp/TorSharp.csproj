@@ -50,6 +50,7 @@
     <Compile Include="Tools\IConfigurationDictionary.cs" />
     <Compile Include="Tools\IFileFetcher.cs" />
     <Compile Include="Tools\DownloadableFile.cs" />
+    <Compile Include="Tools\IToolRunner.cs" />
     <Compile Include="Tools\Privoxy\PrivoxyFetcher.cs" />
     <Compile Include="Tools\SimpleToolRunner.cs" />
     <Compile Include="TorSharpToolFetcher.cs" />
@@ -73,7 +74,7 @@
     <Compile Include="PInvoke\Desktop.cs" />
     <Compile Include="PInvoke\Window.cs" />
     <Compile Include="PInvoke\Process.cs" />
-    <Compile Include="Tools\ToolRunner.cs" />
+    <Compile Include="Tools\VirtualDesktopToolRunner.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TorSharp.nuspec" />

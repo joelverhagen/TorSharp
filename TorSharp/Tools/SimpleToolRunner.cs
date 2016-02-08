@@ -78,7 +78,9 @@ namespace Knapcode.TorSharp.Tools
         protected virtual void Dispose(bool disposing)
         {
             if (_disposed)
+            {
                 return;
+            }
 
             if (disposing)
             {
@@ -94,7 +96,6 @@ namespace Knapcode.TorSharp.Tools
 
             // release any unmanaged objects
             // set the object references to null
-
             _disposed = true;
         }
     }

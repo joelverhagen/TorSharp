@@ -49,8 +49,8 @@ namespace Knapcode.TorSharp
         {
             _settings = settings;
             _toolRunner =
-                settings.ToolRunnerType == ToolRunnerTypes.Default
-                    ? (IToolRunner)new ToolRunner()
+                settings.ToolRunnerType == ToolRunnerType.VirtualDesktop
+                    ? (IToolRunner)new VirtualDesktopToolRunner()
                     : new SimpleToolRunner();
         }
 
