@@ -62,16 +62,14 @@ namespace Knapcode.TorSharp.Tools
                 {
                     string backupPath = path + ".bak";
 
-                    // If there has already been a backup, just delete the original.
+                    // If there has already been a backup, delete it.
                     if (File.Exists(backupPath))
                     {
-                        File.Delete(path);
+                        File.Delete(backupPath);
                     }
-                    else
-                    {
-                        // Backup the original if there is not already a backup.
-                        File.Move(path, backupPath);
-                    }
+
+                    // Backup the last config.
+                    File.Move(path, backupPath);
                 }
 
                 File.Move(temporaryPath, path);
