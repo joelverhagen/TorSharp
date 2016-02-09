@@ -23,7 +23,8 @@ namespace Knapcode.TorSharp.Sandbox
                 PrivoxyPort = 1337,
                 TorSocksPort = 1338,
                 TorControlPort = 1339,
-                TorControlPassword = "foobar"
+                TorControlPassword = "foobar",
+                ToolRunnerType = ToolRunnerType.Simple
             };
 
             // download tools

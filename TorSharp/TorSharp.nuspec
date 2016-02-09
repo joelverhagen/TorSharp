@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Knapcode.TorSharp</id>
-    <version>1.3.1</version>
+    <version>1.4.0</version>
     <title>TorSharp</title>
     <authors>Joel Verhagen</authors>
     <licenseUrl>https://raw.githubusercontent.com/joelverhagen/TorSharp/master/LICENSE</licenseUrl>
@@ -10,13 +10,14 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Use Tor for your C# HTTP clients. Tor + Privoxy = :heart:</description>
     <releaseNotes>
+* 1.4.0 Add tool runner without jobs, configure Tor data directory, fix file system race condition.
 * 1.3.1 Fix dispose issue in TorControlClient.
 * 1.3.0 Extract interfaces and rename ToolFetcher to TorSharpToolFetcher.
 * 1.2.0 Add tool to download the latest Tor and Privoxy.
 * 1.1.0 Target .NET 4.5 instead of .NET 4.5.2.
 * 1.0.0 Initial release.
     </releaseNotes>
-    <copyright>Copyright (c) 2015 Joel Verhagen</copyright>
+    <copyright>Copyright (c) 2016 Joel Verhagen</copyright>
     <tags>tor proxy privoxy http socks5</tags>
   </metadata>
 </package>
