@@ -38,7 +38,7 @@ namespace Knapcode.TorSharp.Tests
 
         public static ReservedPort Reserve()
         {
-            var port = 1024;
+            var port = 50000;
             while (port < ushort.MaxValue)
             {
                 port++;
