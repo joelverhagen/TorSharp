@@ -17,7 +17,6 @@ namespace Knapcode.TorSharp.Tests
             using (var te = TestEnvironment.Initialize())
             {
                 // Arrange
-                te.DeleteOnDispose = false;
                 var settings = te.BuildSettings();
                 settings.ToolRunnerType = ToolRunnerType.VirtualDesktop;
 
@@ -32,7 +31,6 @@ namespace Knapcode.TorSharp.Tests
             using (var te = TestEnvironment.Initialize())
             {
                 // Arrange
-                te.DeleteOnDispose = false;
                 var settings = te.BuildSettings();
                 settings.ToolRunnerType = ToolRunnerType.Simple;
 
@@ -49,29 +47,27 @@ namespace Knapcode.TorSharp.Tests
             };
 
             var httpClient = new HttpClient(handler);
-            var proxy = new TorSharpProxy(settings);
+            using (var proxy = new TorSharpProxy(settings))
+            {
+                // Act
+                // download tools
+                await new TorSharpToolFetcher(settings, new HttpClient()).FetchAsync();
 
-            // Act
-            // download tools
-            await new TorSharpToolFetcher(settings, new HttpClient()).FetchAsync();
+                // start the proxy
+                await proxy.ConfigureAndStartAsync();
 
-            // start the proxy
-            await proxy.ConfigureAndStartAsync();
+                // execute some HTTP requests
+                var unparsedIpA = await httpClient.GetStringAsync("http://ipv4.icanhazip.com");
+                await proxy.GetNewIdentityAsync();
+                var unparsedIpB = await httpClient.GetStringAsync("http://ipv4.icanhazip.com");
 
-            // execute some HTTP requests
-            var unparsedIpA = await httpClient.GetStringAsync("http://ipv4.icanhazip.com");
-            await proxy.GetNewIdentityAsync();
-            var unparsedIpB = await httpClient.GetStringAsync("http://ipv4.icanhazip.com");
-
-            // stop
-            proxy.Stop();
-
-            // Assert
-            var ipA = IPAddress.Parse(unparsedIpA.Trim());
-            var ipB = IPAddress.Parse(unparsedIpB.Trim());
-            Assert.Equal(AddressFamily.InterNetwork, ipA.AddressFamily);
-            Assert.Equal(AddressFamily.InterNetwork, ipB.AddressFamily);
-            Assert.NotEqual(ipA, ipB);
+                // Assert
+                var ipA = IPAddress.Parse(unparsedIpA.Trim());
+                var ipB = IPAddress.Parse(unparsedIpB.Trim());
+                Assert.Equal(AddressFamily.InterNetwork, ipA.AddressFamily);
+                Assert.Equal(AddressFamily.InterNetwork, ipB.AddressFamily);
+                Assert.NotEqual(ipA, ipB);
+            }
         }
     }
 }

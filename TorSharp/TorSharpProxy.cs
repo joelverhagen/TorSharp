@@ -10,7 +10,7 @@ using Knapcode.TorSharp.Tools.Tor;
 
 namespace Knapcode.TorSharp
 {
-    public interface ITorSharpProxy
+    public interface ITorSharpProxy : IDisposable
     {
         Task ConfigureAndStartAsync();
         Task GetNewIdentityAsync();
@@ -232,6 +232,11 @@ namespace Knapcode.TorSharp
             }
 
             return true;
+        }
+
+        public void Dispose()
+        {
+            Stop();
         }
     }
 }

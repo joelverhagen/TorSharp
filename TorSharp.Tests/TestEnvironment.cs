@@ -17,6 +17,7 @@ namespace Knapcode.TorSharp.Tests
             _torControlPassword = torControlPassword;
             _ports = ports;
             _disposed = false;
+            _deleteOnDispose = false;
         }
 
         public bool DeleteOnDispose
@@ -95,6 +96,7 @@ namespace Knapcode.TorSharp.Tests
 
             return new TestEnvironment(guid, baseDirectory, ports);
         }
+
         private static string TempPath
         {
             get
