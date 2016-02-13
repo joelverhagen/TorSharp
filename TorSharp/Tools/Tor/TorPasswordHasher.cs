@@ -31,11 +31,10 @@ namespace Knapcode.TorSharp.Tools.Tor
             process.BeginOutputReadLine();
             process.WaitForExit();
 
-            Console.WriteLine("Path: " + tor.ExecutablePath);
-            Console.WriteLine("Arguments : " + process.StartInfo.Arguments);
-            Console.WriteLine("stdout:" + stdout);
-            Console.WriteLine("stderr:" + stderr);
-            Console.WriteLine("Exit code: " + process.ExitCode);
+            if (process.ExitCode != 0)
+            {
+                throw new TorSharpException($"Tor had exit code {process.ExitCode} (not 0) when hashing the password.");
+            }
 
             return stdout
                 .ToString()

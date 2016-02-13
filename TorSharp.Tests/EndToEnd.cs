@@ -11,10 +11,30 @@ namespace Knapcode.TorSharp.Tests
     public class EndToEnd
     {
         [Fact]
-        public async Task EndToEnd_VirtualDesktopRunner()
+        public async Task EndToEnd_VirtualDesktopToolRunner()
         {
             // Arrange
-            var settings = new TorSharpSettings
+            var settings = GetTestSettings();
+            settings.ToolRunnerType = ToolRunnerType.VirtualDesktop;
+
+            // Act & Assert
+            await ExecuteEndToEndTestAsync(settings);
+        }
+
+        [Fact]
+        public async Task EndToEnd_SimpleToolRunner()
+        {
+            // Arrange
+            var settings = GetTestSettings();
+            settings.ToolRunnerType = ToolRunnerType.Simple;
+
+            // Act & Assert
+            await ExecuteEndToEndTestAsync(settings);
+        }
+
+        private static TorSharpSettings GetTestSettings()
+        {
+            return new TorSharpSettings
             {
                 ZippedToolsDirectory = Path.Combine(Path.GetTempPath(), "TorZipped"),
                 ExtractedToolsDirectory = Path.Combine(Path.GetTempPath(), "TorExtracted"),
@@ -22,10 +42,12 @@ namespace Knapcode.TorSharp.Tests
                 TorSocksPort = 1338,
                 TorControlPort = 1339,
                 TorControlPassword = "foobar",
-                ToolRunnerType = ToolRunnerType.VirtualDesktop,
                 ReloadTools = true
             };
+        }
 
+        private static async Task ExecuteEndToEndTestAsync(TorSharpSettings settings)
+        {
             var handler = new HttpClientHandler
             {
                 Proxy = new WebProxy(new Uri("http://localhost:" + settings.PrivoxyPort))
@@ -45,6 +67,9 @@ namespace Knapcode.TorSharp.Tests
             var unparsedIpA = await httpClient.GetStringAsync("http://ipv4.icanhazip.com");
             await proxy.GetNewIdentityAsync();
             var unparsedIpB = await httpClient.GetStringAsync("http://ipv4.icanhazip.com");
+
+            // stop
+            proxy.Stop();
 
             // Assert
             var ipA = IPAddress.Parse(unparsedIpA.Trim());
