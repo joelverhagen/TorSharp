@@ -1,9 +1,7 @@
 ﻿using System;
-using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
-using System.Security.AccessControl;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -46,7 +44,7 @@ namespace Knapcode.TorSharp.Tests
                 Proxy = new WebProxy(new Uri("http://localhost:" + settings.PrivoxyPort))
             };
 
-            var httpClient = new HttpClient(handler);
+            using (var httpClient = new HttpClient(handler))
             using (var proxy = new TorSharpProxy(settings))
             {
                 // Act

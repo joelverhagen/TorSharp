@@ -13,11 +13,12 @@ namespace Knapcode.TorSharp.Tools.Tor
             {
                 StartInfo =
                 {
-                    FileName = "cmd.exe",
-                    Arguments = $"/c \"{tor.ExecutablePath} --hash-password {password} | more\"",
+                    FileName = tor.ExecutablePath,
+                    Arguments = $"--hash-password {password}",
                     RedirectStandardError = true,
                     RedirectStandardOutput = true,
-                    UseShellExecute = false
+                    UseShellExecute = false,
+                    CreateNoWindow = true
                 }
             };
 
