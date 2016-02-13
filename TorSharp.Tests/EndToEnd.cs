@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
+using System.Security.AccessControl;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -13,37 +14,29 @@ namespace Knapcode.TorSharp.Tests
         [Fact]
         public async Task EndToEnd_VirtualDesktopToolRunner()
         {
-            // Arrange
-            var settings = GetTestSettings();
-            settings.ToolRunnerType = ToolRunnerType.VirtualDesktop;
+            using (var te = TestEnvironment.Initialize())
+            {
+                // Arrange
+                var settings = te.BuildSettings();
+                settings.ToolRunnerType = ToolRunnerType.VirtualDesktop;
 
-            // Act & Assert
-            await ExecuteEndToEndTestAsync(settings);
+                // Act & Assert
+                await ExecuteEndToEndTestAsync(settings);
+            }
         }
 
         [Fact]
         public async Task EndToEnd_SimpleToolRunner()
         {
-            // Arrange
-            var settings = GetTestSettings();
-            settings.ToolRunnerType = ToolRunnerType.Simple;
-
-            // Act & Assert
-            await ExecuteEndToEndTestAsync(settings);
-        }
-
-        private static TorSharpSettings GetTestSettings()
-        {
-            return new TorSharpSettings
+            using (var te = TestEnvironment.Initialize())
             {
-                ZippedToolsDirectory = Path.Combine(Path.GetTempPath(), "TorZipped"),
-                ExtractedToolsDirectory = Path.Combine(Path.GetTempPath(), "TorExtracted"),
-                PrivoxyPort = 1337,
-                TorSocksPort = 1338,
-                TorControlPort = 1339,
-                TorControlPassword = "foobar",
-                ReloadTools = true
-            };
+                // Arrange
+                var settings = te.BuildSettings();
+                settings.ToolRunnerType = ToolRunnerType.Simple;
+
+                // Act & Assert
+                await ExecuteEndToEndTestAsync(settings);
+            }
         }
 
         private static async Task ExecuteEndToEndTestAsync(TorSharpSettings settings)
