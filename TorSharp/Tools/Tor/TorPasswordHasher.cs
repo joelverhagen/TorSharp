@@ -27,6 +27,9 @@ namespace Knapcode.TorSharp.Tools.Tor
             process.BeginOutputReadLine();
             process.WaitForExit();
 
+            Console.WriteLine("Exit code: " + process.ExitCode);
+            Console.WriteLine("Path: " + tor.ExecutablePath);
+            Console.WriteLine("stdout:");
             Console.WriteLine(sb.ToString());
 
             return sb
