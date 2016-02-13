@@ -15,24 +15,29 @@ namespace Knapcode.TorSharp.Tools.Tor
                 {
                     FileName = tor.ExecutablePath,
                     Arguments = $"--hash-password {password}",
+                    RedirectStandardError = true,
                     RedirectStandardOutput = true,
                     UseShellExecute = false
                 }
             };
 
-            var sb = new StringBuilder();
-            process.OutputDataReceived += (sender, args) => sb.AppendLine(args.Data);
+            var stdout = new StringBuilder();
+            var stderr = new StringBuilder();
+
+            process.OutputDataReceived += (sender, args) => stdout.AppendLine(args.Data);
+            process.ErrorDataReceived += (sender, args) => stderr.AppendLine(args.Data);
 
             process.Start();
             process.BeginOutputReadLine();
             process.WaitForExit();
 
-            Console.WriteLine("Exit code: " + process.ExitCode);
             Console.WriteLine("Path: " + tor.ExecutablePath);
-            Console.WriteLine("stdout:");
-            Console.WriteLine(sb.ToString());
+            Console.WriteLine("Arguments : " + process.StartInfo.Arguments);
+            Console.WriteLine("stdout:" + stdout);
+            Console.WriteLine("stderr:" + stderr);
+            Console.WriteLine("Exit code: " + process.ExitCode);
 
-            return sb
+            return stdout
                 .ToString()
                 .Split('\n')
                 .Select(l => l.Trim())
