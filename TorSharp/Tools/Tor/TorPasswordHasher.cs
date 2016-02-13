@@ -24,7 +24,9 @@ namespace Knapcode.TorSharp.Tools.Tor
             var stdout = new StringBuilder();
             var stderr = new StringBuilder();
 
-            process.OutputDataReceived += (sender, args) => stdout.AppendLine(args.Data);
+            process.OutputDataReceived += (sender, args) => { Console.WriteLine("!!!! " + args.Data);
+                                                                stdout.AppendLine(args.Data);
+            };
             process.ErrorDataReceived += (sender, args) => stderr.AppendLine(args.Data);
 
             process.Start();
