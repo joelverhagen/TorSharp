@@ -17,6 +17,7 @@ namespace Knapcode.TorSharp.Tests
             using (var te = TestEnvironment.Initialize())
             {
                 // Arrange
+                te.DeleteOnDispose = false;
                 var settings = te.BuildSettings();
                 settings.ToolRunnerType = ToolRunnerType.VirtualDesktop;
 
@@ -31,6 +32,7 @@ namespace Knapcode.TorSharp.Tests
             using (var te = TestEnvironment.Initialize())
             {
                 // Arrange
+                te.DeleteOnDispose = false;
                 var settings = te.BuildSettings();
                 settings.ToolRunnerType = ToolRunnerType.Simple;
 

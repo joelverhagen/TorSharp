@@ -9,6 +9,7 @@ namespace Knapcode.TorSharp.Tests
         private readonly ReservedPorts _ports;
         private bool _disposed;
         private readonly string _baseDirectory;
+        private bool _deleteOnDispose;
 
         private TestEnvironment(string torControlPassword, string baseDirectory, ReservedPorts ports)
         {
@@ -16,6 +17,16 @@ namespace Knapcode.TorSharp.Tests
             _torControlPassword = torControlPassword;
             _ports = ports;
             _disposed = false;
+        }
+
+        public bool DeleteOnDispose
+        {
+            get { return _deleteOnDispose; }
+            set
+            {
+                ThrowIfDisposed();
+                _deleteOnDispose = value;
+            }
         }
 
         public string BaseDirectory
@@ -53,13 +64,16 @@ namespace Knapcode.TorSharp.Tests
             _disposed = true;
             _ports.Dispose();
 
-            try
+            if (_deleteOnDispose)
             {
-                Directory.Delete(_baseDirectory, true);
-            }
-            catch
-            {
-                // not much we can do
+                try
+                {
+                    Directory.Delete(_baseDirectory, true);
+                }
+                catch
+                {
+                    // not much we can do
+                }
             }
         }
 
@@ -74,12 +88,29 @@ namespace Knapcode.TorSharp.Tests
         public static TestEnvironment Initialize()
         {
             var guid = Guid.NewGuid().ToString();
-            var baseDirectory = Path.Combine(Path.GetTempPath(), "Knapcode.TorSharp.Tests", guid);
+            var baseDirectory = Path.Combine(TempPath, guid);
 
             var ports = ReservedPorts.Reserve(3);
             Directory.CreateDirectory(baseDirectory);
 
             return new TestEnvironment(guid, baseDirectory, ports);
+        }
+        private static string TempPath
+        {
+            get
+            {
+                var tempPath = Environment.GetEnvironmentVariable("APPVEYOR_BUILD_FOLDER");
+                if (!string.IsNullOrWhiteSpace(tempPath))
+                {
+                    tempPath = Path.Combine(tempPath, "temp");
+                }
+                else
+                {
+                    tempPath = Path.Combine(Path.GetTempPath(), "Knapcode.TorSharp.Tests");
+                }
+
+                return tempPath;
+            }
         }
     }
 }
