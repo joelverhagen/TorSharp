@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -25,6 +26,8 @@ namespace Knapcode.TorSharp.Tools.Tor
             process.Start();
             process.BeginOutputReadLine();
             process.WaitForExit();
+
+            Console.WriteLine(sb.ToString());
 
             return sb
                 .ToString()
