@@ -17,7 +17,7 @@ namespace Knapcode.TorSharp.Tests.TestSupport
             _torControlPassword = torControlPassword;
             _ports = ports;
             _disposed = false;
-            _deleteOnDispose = false;
+            _deleteOnDispose = true;
         }
 
         public bool DeleteOnDispose
