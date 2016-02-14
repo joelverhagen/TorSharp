@@ -21,7 +21,7 @@ namespace Knapcode.TorSharp.Tests
         [Fact]
         public async Task EndToEnd_VirtualDesktopToolRunner()
         {
-            using (var te = TestEnvironment.Initialize())
+            using (var te = TestEnvironment.Initialize(_output))
             {
                 // Arrange
                 var settings = te.BuildSettings();
@@ -35,7 +35,7 @@ namespace Knapcode.TorSharp.Tests
         [Fact]
         public async Task EndToEnd_SimpleToolRunner()
         {
-            using (var te = TestEnvironment.Initialize())
+            using (var te = TestEnvironment.Initialize(_output))
             {
                 // Arrange
                 var settings = te.BuildSettings();
@@ -51,57 +51,23 @@ namespace Knapcode.TorSharp.Tests
             // Arrange
             using (var proxy = new TorSharpProxy(settings))
             {
+                _output.WriteLine($"Initialized proxy with tool runner type {settings.ToolRunnerType}");
+
                 // Act
                 await new TorSharpToolFetcher(settings, new HttpClient()).FetchAsync();
+                _output.WriteLine("The tools have been fetched");
                 await proxy.ConfigureAndStartAsync();
+                _output.WriteLine("The proxy has been started");
 
                 // get the first identity
-                var ipA = await GetCurrentIpAddressAsync(proxy, settings);
-
-                // get the second identity
-                int attempts = 0;
-                IPAddress ipB = ipA;
-                while (attempts < 10 && ipA.Equals(ipB))
-                {
-                    attempts++;
-                    await proxy.GetNewIdentityAsync();
-                    ipB = await GetCurrentIpAddressAsync(proxy, settings);
-                }
-
-                _output.WriteLine($"Got IP B: {ipB}");
-
+                var ipA = await GetCurrentIpAddressAsync(settings);
+                await proxy.GetNewIdentityAsync();
+                _output.WriteLine("Get new identity succeeded");
+                var ipB = await GetCurrentIpAddressAsync(settings);
+                
                 // Assert
                 Assert.Equal(AddressFamily.InterNetwork, ipA.AddressFamily);
                 Assert.Equal(AddressFamily.InterNetwork, ipB.AddressFamily);
-                Assert.NotEqual(ipA, ipB);
-            }
-        }
-
-        private async Task<IPAddress> GetCurrentIpAddressAsync(TorSharpProxy proxy, TorSharpSettings settings)
-        {
-            int attempts = 0;
-            while (true)
-            {
-                attempts++;
-
-                if (attempts > 0)
-                {
-                    await proxy.GetNewIdentityAsync();
-                }
-
-                try
-                {
-                    return await GetCurrentIpAddressAsync(settings);
-                }
-                catch(Exception e)
-                {
-                    if (attempts >= 3)
-                    {
-                        throw;
-                    }
-
-                    _output.WriteLine($"Get IP attempt {attempts} failed:{Environment.NewLine}{e}");
-                }
             }
         }
 
@@ -114,7 +80,6 @@ namespace Knapcode.TorSharp.Tests
 
             using (var httpClient = new HttpClient(handler))
             {
-                httpClient.Timeout = TimeSpan.FromSeconds(10);
                 var ip = (await httpClient.GetStringAsync("http://ipv4.icanhazip.com")).Trim();
                 _output.WriteLine($"Get IP succeeded: {ip}");
                 return IPAddress.Parse(ip);

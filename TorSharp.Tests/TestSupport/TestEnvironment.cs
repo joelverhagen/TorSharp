@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Linq;
+using Xunit.Abstractions;
 
 namespace Knapcode.TorSharp.Tests.TestSupport
 {
@@ -8,11 +10,13 @@ namespace Knapcode.TorSharp.Tests.TestSupport
         private readonly string _torControlPassword;
         private readonly ReservedPorts _ports;
         private bool _disposed;
+        private readonly ITestOutputHelper _output;
         private readonly string _baseDirectory;
         private bool _deleteOnDispose;
 
-        private TestEnvironment(string torControlPassword, string baseDirectory, ReservedPorts ports)
+        private TestEnvironment(ITestOutputHelper output, string torControlPassword, string baseDirectory, ReservedPorts ports)
         {
+            _output = output;
             _baseDirectory = baseDirectory;
             _torControlPassword = torControlPassword;
             _ports = ports;
@@ -61,6 +65,8 @@ namespace Knapcode.TorSharp.Tests.TestSupport
             {
                 return;
             }
+            
+            _output.WriteLine("Disposing the test environment");
 
             _disposed = true;
             _ports.Dispose();
@@ -71,9 +77,10 @@ namespace Knapcode.TorSharp.Tests.TestSupport
                 {
                     Directory.Delete(_baseDirectory, true);
                 }
-                catch
+                catch(Exception e)
                 {
                     // not much we can do
+                    _output.WriteLine($"Error when deleting when the test environment:{Environment.NewLine}{e}");
                 }
             }
         }
@@ -86,33 +93,18 @@ namespace Knapcode.TorSharp.Tests.TestSupport
             }
         }
 
-        public static TestEnvironment Initialize()
+        public static TestEnvironment Initialize(ITestOutputHelper output)
         {
             var guid = Guid.NewGuid().ToString();
-            var baseDirectory = Path.Combine(TempPath, guid);
+            var baseDirectory = Path.Combine(Path.GetTempPath(), "Knapcode.TorSharp.Tests", guid);
+            output.WriteLine($"Initializing test environment in base directory: {baseDirectory}");
 
             var ports = ReservedPorts.Reserve(3);
+            output.WriteLine($"Reserved ports: {string.Join(", ", ports.Ports)}");
+
             Directory.CreateDirectory(baseDirectory);
 
-            return new TestEnvironment(guid, baseDirectory, ports);
-        }
-
-        private static string TempPath
-        {
-            get
-            {
-                var tempPath = Environment.GetEnvironmentVariable("APPVEYOR_BUILD_FOLDER");
-                if (!string.IsNullOrWhiteSpace(tempPath))
-                {
-                    tempPath = Path.Combine(tempPath, "temp");
-                }
-                else
-                {
-                    tempPath = Path.Combine(Path.GetTempPath(), "Knapcode.TorSharp.Tests");
-                }
-
-                return tempPath;
-            }
+            return new TestEnvironment(output, guid, baseDirectory, ports);
         }
     }
 }
