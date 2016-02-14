@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
+using Knapcode.TorSharp.Adapters;
 using Knapcode.TorSharp.Tools;
 using Knapcode.TorSharp.Tools.Privoxy;
 using Knapcode.TorSharp.Tools.Tor;
@@ -42,12 +43,14 @@ namespace Knapcode.TorSharp
         private bool _initialized;
         private readonly TorSharpSettings _settings;
         private readonly IToolRunner _toolRunner;
+        private readonly TorPasswordHasher _torPasswordHasher;
         private Tool _tor;
         private Tool _privoxy;
 
         public TorSharpProxy(TorSharpSettings settings)
         {
             _settings = settings;
+            _torPasswordHasher = new TorPasswordHasher(new RandomFactory());
             _toolRunner =
                 settings.ToolRunnerType == ToolRunnerType.VirtualDesktop
                     ? (IToolRunner)new VirtualDesktopToolRunner()
@@ -73,7 +76,7 @@ namespace Knapcode.TorSharp
 
             if (_settings.TorControlPassword != null && _settings.HashedTorControlPassword == null)
             {
-                _settings.HashedTorControlPassword = new TorPasswordHasher().HashPassword(_tor, _settings.TorControlPassword);
+                _settings.HashedTorControlPassword = _torPasswordHasher.HashPassword(_settings.TorControlPassword);
             }
 
             await ConfigureAndStartAsync(_tor, new TorConfigurationDictionary()).ConfigureAwait(false);

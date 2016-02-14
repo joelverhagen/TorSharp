@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
 using System.Threading.Tasks;
+using Knapcode.TorSharp.Tests.TestSupport;
 using Xunit;
 
 namespace Knapcode.TorSharp.Tests

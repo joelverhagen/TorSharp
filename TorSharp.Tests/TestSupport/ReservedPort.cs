@@ -1,11 +1,10 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Threading;
 
-namespace Knapcode.TorSharp.Tests
+namespace Knapcode.TorSharp.Tests.TestSupport
 {
     public class ReservedPort : IDisposable
     {

@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace Knapcode.TorSharp.Tests
+namespace Knapcode.TorSharp.Tests.TestSupport
 {
     public class ReservedPorts : IDisposable
     {

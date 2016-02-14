@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace Knapcode.TorSharp.Tests
+namespace Knapcode.TorSharp.Tests.TestSupport
 {
     public class TestEnvironment : IDisposable
     {

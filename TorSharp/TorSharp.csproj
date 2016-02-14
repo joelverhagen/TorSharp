@@ -53,6 +53,7 @@
     <Compile Include="Tools\IToolRunner.cs" />
     <Compile Include="Tools\Privoxy\PrivoxyFetcher.cs" />
     <Compile Include="Tools\SimpleToolRunner.cs" />
+    <Compile Include="Adapters\Random.cs" />
     <Compile Include="TorSharpToolFetcher.cs" />
     <Compile Include="Tools\Tor\TorFetcher.cs" />
     <Compile Include="TorSharpException.cs" />
