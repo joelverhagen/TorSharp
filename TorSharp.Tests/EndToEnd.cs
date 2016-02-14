@@ -69,7 +69,7 @@ namespace Knapcode.TorSharp.Tests
                     var unparsedIpB = await httpClient.GetStringAsync("http://ipv4.icanhazip.com");
                     ipB = IPAddress.Parse(unparsedIpB.Trim());
                 }
-                while (Equals(ipA, ipB) && attempts < 5);
+                while (Equals(ipA, ipB) && attempts < 10);
 
                 // Assert
                 Assert.Equal(AddressFamily.InterNetwork, ipA.AddressFamily);
