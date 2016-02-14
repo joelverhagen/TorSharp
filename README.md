@@ -4,6 +4,8 @@ Use Tor for your C# HTTP clients. Tor + Privoxy = :heart:
 
 All you need is client code that can use a simple HTTP proxy.
 
+[![Build status](https://ci.appveyor.com/api/projects/status/4a5wbp7cg51rmw3e)](https://ci.appveyor.com/project/joelverhagen/torsharp)
+
 ## Details
 
 - Uses Privoxy to redirect HTTP proxy traffic to Tor.
