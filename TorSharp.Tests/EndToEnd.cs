@@ -57,15 +57,23 @@ namespace Knapcode.TorSharp.Tests
 
                 // execute some HTTP requests
                 var unparsedIpA = await httpClient.GetStringAsync("http://ipv4.icanhazip.com");
-                await proxy.GetNewIdentityAsync();
-                var unparsedIpB = await httpClient.GetStringAsync("http://ipv4.icanhazip.com");
+                var ipA = IPAddress.Parse(unparsedIpA.Trim());
+
+                // get a new identity
+                IPAddress ipB;
+                int attempts = 0;
+                do
+                {
+                    attempts++;
+                    await proxy.GetNewIdentityAsync();
+                    var unparsedIpB = await httpClient.GetStringAsync("http://ipv4.icanhazip.com");
+                    ipB = IPAddress.Parse(unparsedIpB.Trim());
+                }
+                while (Equals(ipA, ipB) && attempts < 5);
 
                 // Assert
-                var ipA = IPAddress.Parse(unparsedIpA.Trim());
-                var ipB = IPAddress.Parse(unparsedIpB.Trim());
                 Assert.Equal(AddressFamily.InterNetwork, ipA.AddressFamily);
                 Assert.Equal(AddressFamily.InterNetwork, ipB.AddressFamily);
-                Assert.NotEqual(ipA, ipB);
             }
         }
     }
