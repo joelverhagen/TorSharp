@@ -37,7 +37,7 @@ namespace Knapcode.TorSharp
             WorkingDirectory = @"Tor",
             ConfigurationPath = @"Data\Tor\torrc",
             IsNested = false,
-            GetArguments = t => new[] { "-f", t.ConfigurationPath }
+            GetArguments = t => new[] { "-f", '\"' + t.ConfigurationPath + '\"'}
         };
         
         private bool _initialized;
