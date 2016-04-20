@@ -18,6 +18,8 @@ All you need is client code that can use a simple HTTP proxy.
 Install-Package Knapcode.TorSharp
 ```
 
+[![NuGet version](https://img.shields.io/nuget/v/Knapcode.TorSharp.svg)](https://www.nuget.org/packages/Knapcode.TorSharp)
+
 ## Example
 
 ```csharp
