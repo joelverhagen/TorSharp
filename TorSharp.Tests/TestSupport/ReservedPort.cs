@@ -76,7 +76,7 @@ namespace Knapcode.TorSharp.Tests.TestSupport
                 .Select(e => e.Port)
                 .Contains(port);
 
-            return collision;
+            return !collision;
         }
 
         public void Dispose()
