@@ -41,14 +41,8 @@ namespace Knapcode.TorSharp.Tests.TestSupport
             while (port < ushort.MaxValue)
             {
                 port++;
-
-                var collision = IPGlobalProperties
-                    .GetIPGlobalProperties()
-                    .GetActiveTcpListeners()
-                    .Select(e => e.Port)
-                    .Contains(port);
-
-                if (collision)
+                
+                if (!IsPortFree(port))
                 {
                     continue;
                 }
@@ -72,6 +66,17 @@ namespace Knapcode.TorSharp.Tests.TestSupport
             }
 
             return null;
+        }
+
+        private static bool IsPortFree(int port)
+        {
+            var collision = IPGlobalProperties
+                .GetIPGlobalProperties()
+                .GetActiveTcpListeners()
+                .Select(e => e.Port)
+                .Contains(port);
+
+            return collision;
         }
 
         public void Dispose()

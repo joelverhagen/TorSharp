@@ -11,7 +11,7 @@ namespace Knapcode.TorSharp.Tests.TestSupport
         private readonly ReservedPorts _ports;
         private bool _disposed;
         private readonly ITestOutputHelper _output;
-        private readonly string _baseDirectory;
+        private string _baseDirectory;
         private bool _deleteOnDispose;
 
         private TestEnvironment(ITestOutputHelper output, string torControlPassword, string baseDirectory, ReservedPorts ports)
@@ -40,6 +40,12 @@ namespace Knapcode.TorSharp.Tests.TestSupport
             {
                 ThrowIfDisposed();
                 return _baseDirectory;
+            }
+
+            set
+            {
+                ThrowIfDisposed();
+                _baseDirectory = value;
             }
         }
 

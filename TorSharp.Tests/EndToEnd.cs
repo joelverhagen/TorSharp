@@ -1,9 +1,12 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using Knapcode.TorSharp.Tests.TestSupport;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -19,7 +22,37 @@ namespace Knapcode.TorSharp.Tests
         }
 
         [Fact]
-        public async Task EndToEnd_VirtualDesktopToolRunner()
+        public async Task VirtualDesktopToolRunner_ConfigurationPathsWithSpaces()
+        {
+            using (var te = TestEnvironment.Initialize(_output))
+            {
+                // Arrange
+                te.BaseDirectory = Path.Combine(te.BaseDirectory, "Path With Spaces");
+                var settings = te.BuildSettings();
+                settings.ToolRunnerType = ToolRunnerType.VirtualDesktop;
+
+                // Act & Assert
+                await ExecuteEndToEndTestAsync(settings);
+            }
+        }
+
+        [Fact]
+        public async Task SimpleToolRunner_ConfigurationPathsWithSpaces()
+        {
+            using (var te = TestEnvironment.Initialize(_output))
+            {
+                // Arrange
+                te.BaseDirectory = Path.Combine(te.BaseDirectory, "Path With Spaces");
+                var settings = te.BuildSettings();
+                settings.ToolRunnerType = ToolRunnerType.Simple;
+
+                // Act & Assert
+                await ExecuteEndToEndTestAsync(settings);
+            }
+        }
+
+        [Fact]
+        public async Task VirtualDesktopToolRunner_EndToEnd()
         {
             using (var te = TestEnvironment.Initialize(_output))
             {
@@ -33,7 +66,7 @@ namespace Knapcode.TorSharp.Tests
         }
 
         [Fact]
-        public async Task EndToEnd_SimpleToolRunner()
+        public async Task SimpleToolRunner_EndToEnd()
         {
             using (var te = TestEnvironment.Initialize(_output))
             {
@@ -51,7 +84,7 @@ namespace Knapcode.TorSharp.Tests
             // Arrange
             using (var proxy = new TorSharpProxy(settings))
             {
-                _output.WriteLine($"Initialized proxy with tool runner type {settings.ToolRunnerType}");
+                TraceSettings(settings);
 
                 // Act
                 await new TorSharpToolFetcher(settings, new HttpClient()).FetchAsync();
@@ -69,6 +102,21 @@ namespace Knapcode.TorSharp.Tests
                 Assert.Equal(AddressFamily.InterNetwork, ipA.AddressFamily);
                 Assert.Equal(AddressFamily.InterNetwork, ipB.AddressFamily);
             }
+        }
+
+        private void TraceSettings(TorSharpSettings settings)
+        {
+            var serializerSettings = new JsonSerializerSettings
+            {
+                Converters =
+                {
+                    new StringEnumConverter()
+                }
+            };
+
+            var json = JsonConvert.SerializeObject(settings, Formatting.Indented, serializerSettings);
+
+            _output.WriteLine("TorSharpSettings:" + Environment.NewLine + json);
         }
 
         private async Task<IPAddress> GetCurrentIpAddressAsync(TorSharpSettings settings)

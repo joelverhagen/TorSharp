@@ -27,7 +27,7 @@ namespace Knapcode.TorSharp
             WorkingDirectory = ".",
             ConfigurationPath = "config.txt",
             IsNested = true,
-            GetArguments = t => new[] { t.ConfigurationPath }
+            GetArguments = t => new[] { '\"' + t.ConfigurationPath + '\"' }
         };
 
         private static readonly ToolSettings TorToolSettings = new ToolSettings
