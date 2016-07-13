@@ -18,7 +18,7 @@ namespace Knapcode.TorSharp.PInvoke
         [DllImport("kernel32.dll")]
         public static extern bool TerminateJobObject(IntPtr hJob, uint uExitCode);
 
-        public static short JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x2000;
+        public static uint JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x2000;
 
         public enum JOBOBJECTINFOCLASS
         {
@@ -36,13 +36,13 @@ namespace Knapcode.TorSharp.PInvoke
         {
             public long PerProcessUserTimeLimit;
             public long PerJobUserTimeLimit;
-            public short LimitFlags;
+            public uint LimitFlags;
             public UIntPtr MinimumWorkingSetSize;
             public UIntPtr MaximumWorkingSetSize;
-            public short ActiveProcessLimit;
-            public long Affinity;
-            public short PriorityClass;
-            public short SchedulingClass;
+            public uint ActiveProcessLimit;
+            public UIntPtr Affinity;
+            public uint PriorityClass;
+            public uint SchedulingClass;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -61,16 +61,16 @@ namespace Knapcode.TorSharp.PInvoke
         {
             public JOBOBJECT_BASIC_LIMIT_INFORMATION BasicLimitInformation;
             public IO_COUNTERS IoInfo;
-            public uint ProcessMemoryLimit;
-            public uint JobMemoryLimit;
-            public uint PeakProcessMemoryUsed;
-            public uint PeakJobMemoryUsed;
+            public UIntPtr ProcessMemoryLimit;
+            public UIntPtr JobMemoryLimit;
+            public UIntPtr PeakProcessMemoryUsed;
+            public UIntPtr PeakJobMemoryUsed;
         }
 
         [StructLayout(LayoutKind.Sequential)]
         public struct SECURITY_ATTRIBUTES
         {
-            public int nLength;
+            public uint nLength;
             public IntPtr lpSecurityDescriptor;
             public int bInheritHandle;
         }
