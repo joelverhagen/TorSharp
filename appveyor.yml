@@ -1,0 +1,9 @@
+version: 1.5.{build}
+before_build:
+- cmd: nuget restore
+build:
+  verbosity: minimal
+test_script:
+- cmd: >-
+    %xunit20%\xunit.console.x86 "%APPVEYOR_BUILD_FOLDER%\TorSharp.Tests\bin\Debug\Knapcode.TorSharp.Tests.dll" -appveyor
+    %xunit20%\xunit.console "%APPVEYOR_BUILD_FOLDER%\TorSharp.Tests\bin\Debug\Knapcode.TorSharp.Tests.dll" -appveyor
