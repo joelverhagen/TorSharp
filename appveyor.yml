@@ -5,5 +5,5 @@ build:
   verbosity: minimal
 test_script:
 - cmd: >-
-    %xunit20%\xunit.console.x86 "%APPVEYOR_BUILD_FOLDER%\TorSharp.Tests\bin\Debug\Knapcode.TorSharp.Tests.dll" -appveyor
-    %xunit20%\xunit.console "%APPVEYOR_BUILD_FOLDER%\TorSharp.Tests\bin\Debug\Knapcode.TorSharp.Tests.dll" -appveyor
+    "%APPVEYOR_BUILD_FOLDER%\packages\xunit.runner.console.2.1.0\tools\xunit.console.x86.exe" "%APPVEYOR_BUILD_FOLDER%\TorSharp.Tests\bin\Debug\Knapcode.TorSharp.Tests.dll" -appveyor
+    "%APPVEYOR_BUILD_FOLDER%\packages\xunit.runner.console.2.1.0\tools\xunit.console.exe" "%APPVEYOR_BUILD_FOLDER%\TorSharp.Tests\bin\Debug\Knapcode.TorSharp.Tests.dll" -appveyor
