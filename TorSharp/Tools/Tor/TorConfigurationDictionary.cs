@@ -24,6 +24,11 @@ namespace Knapcode.TorSharp.Tools.Tor
                 dictionary["DataDirectory"] = settings.TorDataDirectory;
             }
 
+            if (settings.TorStrictNodes != null)
+            {
+                dictionary["StrictNodes"] = (bool)settings.TorStrictNodes ? "1" : "0";
+            }
+
             return dictionary;
         }
     }
