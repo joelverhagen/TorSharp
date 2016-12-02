@@ -79,7 +79,7 @@ namespace Knapcode.TorSharp
                 _settings.HashedTorControlPassword = _torPasswordHasher.HashPassword(_settings.TorControlPassword);
             }
 
-            await ConfigureAndStartAsync(_tor, new TorConfigurationDictionary()).ConfigureAwait(false);
+            await ConfigureAndStartAsync(_tor, new TorConfigurationDictionary(_tor.DirectoryPath)).ConfigureAwait(false);
             await ConfigureAndStartAsync(_privoxy, new PrivoxyConfigurationDictionary()).ConfigureAwait(false);
         }
 
