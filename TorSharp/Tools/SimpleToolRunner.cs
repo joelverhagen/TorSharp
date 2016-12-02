@@ -33,6 +33,19 @@ namespace Knapcode.TorSharp.Tools
             };
 
             Process process = Process.Start(startInfo);
+            
+            process.OutputDataReceived += (object sender, DataReceivedEventArgs e) =>
+            {
+                Console.WriteLine(e.Data);
+            };
+
+            process.ErrorDataReceived += (object sender, DataReceivedEventArgs e) =>
+            {
+                Console.Error.WriteLine(e.Data);
+            };
+
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
 
             if (process == null)
             {
