@@ -35,13 +35,13 @@ namespace Knapcode.TorSharp.Tools.Tor
             if (settings.TorExitNodes != null)
             {
                 dictionary["ExitNodes"] = settings.TorExitNodes;
-                dictionary["GeoIPFile"] = Path.Combine(_torDirectoryPath, "Data\\Tor\\geoip");
-                dictionary["GeoIPv6File"] = Path.Combine(_torDirectoryPath, "Data\\Tor\\geoip6");
+                dictionary["GeoIPFile"] = Path.Combine(_torDirectoryPath, Path.Combine("Data", "Tor", "geoip"));
+                dictionary["GeoIPv6File"] = Path.Combine(_torDirectoryPath, Path.Combine("Data", "Tor", "geoip6"));
             }
 
             if (settings.TorStrictNodes != null)
             {
-                dictionary["StrictNodes"] = (bool)settings.TorStrictNodes ? "1" : "0";
+                dictionary["StrictNodes"] = settings.TorStrictNodes.Value ? "1" : "0";
             }
 
             return dictionary;
