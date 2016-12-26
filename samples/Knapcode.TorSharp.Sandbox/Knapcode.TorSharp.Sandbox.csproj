@@ -51,7 +51,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TorSharp\TorSharp.csproj">
+    <ProjectReference Include="..\..\src\Knapcode.TorSharp\Knapcode.TorSharp.csproj">
       <Project>{f62b195d-145f-4da4-a4de-638e423e5d93}</Project>
       <Name>TorSharp</Name>
     </ProjectReference>
