@@ -21,6 +21,8 @@
 * 1.1.0 Target .NET 4.5 instead of .NET 4.5.2.
 * 1.0.0 Initial release.
     </PackageReleaseNotes>
+    <Copyright>Copyright (c) 2016 Joel Verhagen</Copyright>
+    <PackageTags>tor proxy privoxy http socks5</PackageTags>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="**\*.cs" />
