@@ -1,84 +1,32 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk" ToolsVersion="15.0">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F62B195D-145F-4DA4-A4DE-638E423E5D93}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Knapcode.TorSharp</RootNamespace>
-    <AssemblyName>Knapcode.TorSharp</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <TargetFrameworks>net45</TargetFrameworks>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject />
+    <Version>1.6.0</Version>
+    <Authors>Joel Verhagen</Authors>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/joelverhagen/TorSharp/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/joelverhagen/TorSharp</PackageProjectUrl>
+    <Description>Use Tor for your C# HTTP clients. Tor + Privoxy = :heart:</Description>
+    <PackageReleaseNotes>
+* 1.6.0 Add configuration API for tor exit nodes.
+* 1.5.3 Fix P/Invoke stubs to work on x64 so ToolRunnerType.VirtualDesktop works.
+* 1.5.2 Paths now fully work when they have spaces in them.
+* 1.5.1 Fix bug where usernames with spaces in them are not supported.
+* 1.5.0 Hash Tor passwords in process (by duplicating the hash algorithm).
+* 1.4.0 Add tool runner without jobs, configure Tor data directory, fix file system race condition.
+* 1.3.1 Fix dispose issue in TorControlClient.
+* 1.3.0 Extract interfaces and rename ToolFetcher to TorSharpToolFetcher.
+* 1.2.0 Add tool to download the latest Tor and Privoxy.
+* 1.1.0 Target .NET 4.5 instead of .NET 4.5.2.
+* 1.0.0 Initial release.
+    </PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="System.Net.Http" />
+    <Compile Include="**\*.cs" />
+    <EmbeddedResource Include="**\*.resx" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Tools\IConfigurationDictionary.cs" />
-    <Compile Include="Tools\IFileFetcher.cs" />
-    <Compile Include="Tools\DownloadableFile.cs" />
-    <Compile Include="Tools\IToolRunner.cs" />
-    <Compile Include="Tools\Privoxy\PrivoxyFetcher.cs" />
-    <Compile Include="Tools\SimpleToolRunner.cs" />
-    <Compile Include="Adapters\Random.cs" />
-    <Compile Include="TorSharpToolFetcher.cs" />
-    <Compile Include="Tools\Tor\TorFetcher.cs" />
-    <Compile Include="TorSharpException.cs" />
-    <Compile Include="TorSharpSettings.cs" />
-    <Compile Include="PInvoke\Job.cs" />
-    <Compile Include="Tools\Privoxy\PrivoxyConfigurationDictionary.cs" />
-    <Compile Include="Tools\Privoxy\PrivoxySettings.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TorSharpProxy.cs" />
-    <Compile Include="Tools\Tool.cs" />
-    <Compile Include="Tools\ToolSettings.cs" />
-    <Compile Include="Tools\LineByLineConfigurer.cs" />
-    <Compile Include="Tools\Tor\TorConfigurationDictionary.cs" />
-    <Compile Include="Tools\Tor\TorControlClient.cs" />
-    <Compile Include="Tools\Tor\TorControlException.cs" />
-    <Compile Include="Tools\Tor\TorPasswordHasher.cs" />
-    <Compile Include="Tools\Tor\TorSettings.cs" />
-    <Compile Include="Tools\ConfigurationFormat.cs" />
-    <Compile Include="PInvoke\Desktop.cs" />
-    <Compile Include="PInvoke\Window.cs" />
-    <Compile Include="PInvoke\Process.cs" />
-    <Compile Include="Tools\VirtualDesktopToolRunner.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="TorSharp.nuspec" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
