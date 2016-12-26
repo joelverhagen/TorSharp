@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -24,24 +23,24 @@ namespace Knapcode.TorSharp.Sandbox
                 TorSocksPort = 1338,
                 TorControlPort = 1339,
                 TorControlPassword = "foobar",
-                ToolRunnerType = ToolRunnerType.Simple
+                ToolRunnerType = ToolRunnerType.VirtualDesktop,
+                WaitForTestEndpoint = true
             };
 
             // download tools
             await new TorSharpToolFetcher(settings, new HttpClient()).FetchAsync();
 
             // execute
-            var proxy = new TorSharpProxy(settings);
-            var handler = new HttpClientHandler
+            using (var proxy = new TorSharpProxy(settings))
+            using (var handler = proxy.CreateHttpClientHandler())
+            using (var httpClient = new HttpClient(handler))
             {
-                Proxy = new WebProxy(new Uri("http://localhost:" + settings.PrivoxyPort))
-            };
-            var httpClient = new HttpClient(handler);
-            await proxy.ConfigureAndStartAsync();
-            Console.WriteLine(await httpClient.GetStringAsync("http://icanhazip.com"));
-            await proxy.GetNewIdentityAsync();
-            Console.WriteLine(await httpClient.GetStringAsync("http://icanhazip.com"));
-            proxy.Stop();
+                await proxy.ConfigureAndStartAsync();
+                Console.WriteLine(await httpClient.GetStringAsync("http://icanhazip.com"));
+
+                await proxy.GetNewIdentityAsync();
+                Console.WriteLine(await httpClient.GetStringAsync("http://icanhazip.com"));
+            }
         }
     }
 }

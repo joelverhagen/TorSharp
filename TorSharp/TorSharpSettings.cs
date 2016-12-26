@@ -35,6 +35,8 @@ namespace Knapcode.TorSharp
             TorSocksPort = 19050;
             TorControlPort = 19051;
             ToolRunnerType = ToolRunnerType.VirtualDesktop;
+            TestEndpoint = "https://duckduckgo.com/";
+            WaitForTestEndpoint = false;
         }
 
         public bool ReloadTools { get; set; }
@@ -49,5 +51,7 @@ namespace Knapcode.TorSharp
         public string TorControlPassword { get; set; }
         public string HashedTorControlPassword { get; set; }
         public string TorDataDirectory { get; set; }
+        public string TestEndpoint { get; set; }
+        public bool WaitForTestEndpoint { get; set; }
     }
 }

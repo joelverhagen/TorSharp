@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Knapcode.TorSharp.Adapters;
 using Knapcode.TorSharp.Tools;
@@ -61,12 +63,38 @@ namespace Knapcode.TorSharp
         {
             if (!_initialized)
             {
-                await InitializeAsync().ConfigureAwait(false);
+                await ConfigureAndStartInternalAsync().ConfigureAwait(false);
                 _initialized = true;
             }
         }
 
-        private async Task InitializeAsync()
+        public async Task WaitForConnectionAsync()
+        {
+            using (var handler = CreateHttpClientHandler())
+            using (var httpClient = new HttpClient(handler))
+            using (var request = new HttpRequestMessage(HttpMethod.Head, _settings.TestEndpoint))
+            using (var response = await httpClient.SendAsync(request).ConfigureAwait(false))
+            {
+            }
+        }
+
+        public HttpClientHandler CreateHttpClientHandler()
+        {
+            var uriBuilder = new UriBuilder
+            {
+                Scheme = "http",
+                Host = "127.0.0.1",
+                Port = _settings.PrivoxyPort
+            };
+
+            return new HttpClientHandler
+            {
+                Proxy = new WebProxy(uriBuilder.Uri),
+                AllowAutoRedirect = false
+            };
+        }
+
+        private async Task ConfigureAndStartInternalAsync()
         {
             _settings.ZippedToolsDirectory = GetAbsoluteCreate(_settings.ZippedToolsDirectory);
             _settings.ExtractedToolsDirectory = GetAbsoluteCreate(_settings.ExtractedToolsDirectory);
@@ -81,6 +109,11 @@ namespace Knapcode.TorSharp
 
             await ConfigureAndStartAsync(_tor, new TorConfigurationDictionary(_tor.DirectoryPath)).ConfigureAwait(false);
             await ConfigureAndStartAsync(_privoxy, new PrivoxyConfigurationDictionary()).ConfigureAwait(false);
+
+            if (_settings.WaitForTestEndpoint)
+            {
+                await WaitForConnectionAsync().ConfigureAwait(false);
+            }
         }
 
         public async Task GetNewIdentityAsync()
