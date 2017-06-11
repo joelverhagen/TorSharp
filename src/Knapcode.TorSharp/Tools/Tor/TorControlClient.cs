@@ -39,7 +39,11 @@ namespace Knapcode.TorSharp.Tools.Tor
         {
             if (_tcpClient != null)
             {
+#if NET45
                 _tcpClient.Close();
+#else
+                _tcpClient.Dispose();
+#endif
                 _reader.Dispose();
                 _writer.Dispose();
             }

@@ -27,7 +27,7 @@ namespace Knapcode.TorSharp.Adapters
     {
         public IRandom Create()
         {
-            return new Random(new RNGCryptoServiceProvider());
+            return new Random(RandomNumberGenerator.Create());
         }
     }
 

@@ -7,6 +7,7 @@ using System.Text;
 
 namespace Knapcode.TorSharp.PInvoke
 {
+#if NET45
     public static partial class WindowsApi
     {
         public const int SW_SHOW = 5;
@@ -74,4 +75,5 @@ namespace Knapcode.TorSharp.PInvoke
             return handles;
         }
     }
+#endif
 }

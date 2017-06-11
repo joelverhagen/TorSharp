@@ -8,12 +8,14 @@ namespace Knapcode.TorSharp
     /// </summary>
     public enum ToolRunnerType
     {
+#if NET45
         /// <summary>
         /// A tool runner that uses the Windows API to create a virtual desktop and process jobs
         /// to start a tool and keep it hidden. The associated implementation of
         /// <see cref="IToolRunner"/> is <see cref="VirtualDesktopToolRunner"/>.
         /// </summary>
         VirtualDesktop,
+#endif
 
         /// <summary>
         /// A tool runner that uses basic processes to start and stop jobs. The associated
@@ -34,7 +36,11 @@ namespace Knapcode.TorSharp
             PrivoxyPort = 18118;
             TorSocksPort = 19050;
             TorControlPort = 19051;
+#if NET45
             ToolRunnerType = ToolRunnerType.VirtualDesktop;
+#else
+            ToolRunnerType = ToolRunnerType.Simple;
+#endif
             TestEndpoint = "https://duckduckgo.com/";
             WaitForTestEndpoint = false;
         }

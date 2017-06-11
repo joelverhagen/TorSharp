@@ -33,7 +33,7 @@ namespace Knapcode.TorSharp.Tools.Tor
             var count = (16 + (c & 15)) << ((c >> 4) + EXPBIAS);
 
             byte[] hash;
-            using (var d = SHA1.Create())
+            using (var d = new IncrementalSHA1())
             {
                 var tmp = s2KSpecifier
                        .Take(8)
@@ -45,17 +45,17 @@ namespace Knapcode.TorSharp.Tools.Tor
                 {
                     if (count > secretLen)
                     {
-                        d.TransformBlock(tmp, 0, tmp.Length, null, -1);
+                        d.TransformBlock(tmp, 0, tmp.Length);
                         count -= secretLen;
                     }
                     else
                     {
-                        d.TransformBlock(tmp, 0, count, null, -1);
+                        d.TransformBlock(tmp, 0, count);
                         count = 0;
                     }
                 }
 
-                d.TransformFinalBlock(new byte[0], 0, 0);
+                d.TransformFinalBlock();
                 hash = d.Hash;
             }
 
@@ -72,5 +72,62 @@ namespace Knapcode.TorSharp.Tools.Tor
                 .Replace("-", string.Empty)
                 .ToUpper();
         }
+
+#if NET45
+        private class IncrementalSHA1 : IDisposable
+        {
+            private readonly SHA1 _hash;
+
+            public IncrementalSHA1()
+            {
+                _hash = SHA1.Create();
+            }
+
+            public byte[] Hash { get; private set; }
+
+            public void Dispose()
+            {
+                _hash.Dispose();
+            }
+
+            public void TransformBlock(byte[] data, int offset, int count)
+            {
+                _hash.TransformBlock(data, offset, count, null, -1);
+            }
+
+            public void TransformFinalBlock()
+            {
+                _hash.TransformFinalBlock(new byte[0], 0, 0);
+                Hash = _hash.Hash;
+            }
+        }
+#else
+        private class IncrementalSHA1 : IDisposable
+        {
+            private readonly IncrementalHash _hash;
+
+            public IncrementalSHA1()
+            {
+                _hash = IncrementalHash.CreateHash(HashAlgorithmName.SHA1);
+            }
+
+            public byte[] Hash { get; private set; }
+
+            public void Dispose()
+            {
+                _hash.Dispose();
+            }
+
+            public void TransformBlock(byte[] data, int offset, int count)
+            {
+                _hash.AppendData(data, offset, count);
+            }
+
+            public void TransformFinalBlock()
+            {
+                Hash = _hash.GetHashAndReset();
+            }
+        }
+#endif
     }
 }

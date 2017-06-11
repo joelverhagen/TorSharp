@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace Knapcode.TorSharp.PInvoke
 {
+#if NET45
     public static partial class WindowsApi
     {
         public const uint INFINITE = 0xFFFFFFFF;
@@ -105,4 +106,5 @@ namespace Knapcode.TorSharp.PInvoke
             return new Win32Exception(Marshal.GetLastWin32Error()).Message;
         }
     }
+#endif
 }

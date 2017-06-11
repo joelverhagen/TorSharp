@@ -17,7 +17,7 @@ if (-Not (Test-Path $dotnetInstall)) {
     Invoke-WebRequest -Uri $dotnetInstallUrl -OutFile $dotnetInstall
 }
 
-& $dotnetInstall -i $dotnetDir -Version 1.0.0-preview4-004233
+& $dotnetInstall -i $dotnetDir -Version 1.0.4
 
 # restore
 & $dotnet restore $sln

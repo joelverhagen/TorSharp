@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Threading;
+using System.Net;
+using System.Net.Sockets;
 
 namespace Knapcode.TorSharp.Tests.TestSupport
 {
@@ -12,13 +11,11 @@ namespace Knapcode.TorSharp.Tests.TestSupport
         private static readonly HashSet<int> ReservedPorts = new HashSet<int>();
 
         private readonly int _port;
-        private readonly Mutex _mutex;
         private bool _disposed;
 
-        private ReservedPort(int port, Mutex mutex)
+        private ReservedPort(int port)
         {
             _port = port;
-            _mutex = mutex;
             _disposed = false;
         }
 
@@ -46,9 +43,7 @@ namespace Knapcode.TorSharp.Tests.TestSupport
                 {
                     continue;
                 }
-
-                bool createdNew;
-                Mutex mutex = new Mutex(false, $@"Global\Knapcode.TorSharp.Tests.ReservedPort-{port}", out createdNew);
+                
                 lock (Lock)
                 {
                     if (ReservedPorts.Contains(port))
@@ -56,12 +51,8 @@ namespace Knapcode.TorSharp.Tests.TestSupport
                         continue;
                     }
 
-                    var acquired = mutex.WaitOne(0, false);
-                    if (acquired)
-                    {
-                        ReservedPorts.Add(port);
-                        return new ReservedPort(port, mutex);
-                    }
+                    ReservedPorts.Add(port);
+                    return new ReservedPort(port);
                 }
             }
 
@@ -70,28 +61,33 @@ namespace Knapcode.TorSharp.Tests.TestSupport
 
         private static bool IsPortFree(int port)
         {
-            var collision = IPGlobalProperties
-                .GetIPGlobalProperties()
-                .GetActiveTcpListeners()
-                .Select(e => e.Port)
-                .Contains(port);
-
-            return !collision;
+            var tcpListener = new TcpListener(IPAddress.Loopback, port);
+            try
+            {
+                tcpListener.Start();
+                return true;
+            }
+            catch (SocketException)
+            {
+                return false;
+            }
+            finally
+            {
+                tcpListener.Stop();
+            }
         }
 
         public void Dispose()
         {
-            if (_disposed)
-            {
-                return;
-            }
-
-            _disposed = true;
-            _mutex.ReleaseMutex();
-            _mutex.Dispose();
             lock (Lock)
             {
+                if (_disposed)
+                {
+                    return;
+                }
+
                 ReservedPorts.Remove(_port);
+                _disposed = true;
             }
         }
     }

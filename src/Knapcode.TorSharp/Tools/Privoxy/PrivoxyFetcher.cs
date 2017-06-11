@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.ServiceModel.Syndication;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace Knapcode.TorSharp.Tools.Privoxy
 {
@@ -21,40 +22,89 @@ namespace Knapcode.TorSharp.Tools.Privoxy
 
         public async Task<DownloadableFile> GetLatestAsync()
         {
-            SyndicationFeed syndicationFeed;
+            XDocument document;
             using (var stream = await _httpClient.GetStreamAsync(BaseUrl).ConfigureAwait(false))
             {
                 var streamReader = new StreamReader(stream);
-                var xmlReader = XmlReader.Create(streamReader);
-                syndicationFeed = SyndicationFeed.Load(xmlReader);
-                if (syndicationFeed == null)
+                var xmlReader = XmlReader.Create(streamReader, new XmlReaderSettings
                 {
-                    return null;
-                }
+                    IgnoreWhitespace = true,
+                    IgnoreComments = true,
+                    IgnoreProcessingInstructions = true
+                });
+                document = XDocument.Load(xmlReader, LoadOptions.None);
             }
 
-            var latest = syndicationFeed
-                .Items
-                .Where(i => i.Links.Any())
-                .OrderByDescending(i => i.PublishDate)
-                .FirstOrDefault(IsMatch);
-
-            if (latest == null)
+            var item = document
+                .Root
+                .Elements()
+                .Where(e => e.Name.LocalName == "channel")
+                .SelectMany(e => e.Elements())
+                .Where(e => e.Name.LocalName == "item")
+                .Select(e => GetItem(e))
+                .Where(e => e != null && IsMatch(e))
+                .OrderByDescending(e => e.Published)
+                .FirstOrDefault();
+            
+            if (item == null)
             {
                 return null;
             }
 
-            var name = latest.Title.Text.Split('/').Last();
+            var name = item.Title.Split('/').Last();
             return new DownloadableFile
             {
                 Name = name,
-                GetContentAsync = () => _httpClient.GetStreamAsync(latest.Links.First().Uri)
+                GetContentAsync = () => _httpClient.GetStreamAsync(item.Link)
             };
         }
 
-        private bool IsMatch(SyndicationItem item)
+        private Item GetItem(XElement el)
         {
-            return Regex.IsMatch(item.Title.Text, @"privoxy-[\d\.]+.zip$", RegexOptions.IgnoreCase);
+            var titleEl = el.Elements().Where(e => e.Name.LocalName == "title").FirstOrDefault();
+            var linkEl = el.Elements().Where(e => e.Name.LocalName == "link").FirstOrDefault();
+            var publishedEl = el.Elements().Where(e => e.Name.LocalName == "pubDate").FirstOrDefault();
+
+            if (titleEl == null || linkEl == null || publishedEl == null)
+            {
+                return null;
+            }
+
+            var title = titleEl.Value.Trim();
+            var link = linkEl.Value.Trim();
+            var unparsedPublished = publishedEl.Value.Trim();
+            var parsedPublished = ParseRssDateTimeOffset(unparsedPublished);
+
+            return new Item
+            {
+                Title = title,
+                Link = link,
+                Published = parsedPublished,
+            };
+        }
+
+        private bool IsMatch(Item item)
+        {
+            return Regex.IsMatch(item.Title, @"privoxy-[\d\.]+.zip$", RegexOptions.IgnoreCase);
+        }
+
+        private static DateTimeOffset ParseRssDateTimeOffset(string input)
+        {
+            var readyToParse = input.Trim();
+
+            if (readyToParse.EndsWith(" UT"))
+            {
+                readyToParse = readyToParse.Substring(0, readyToParse.Length - 3) + " -00:00";
+            }
+
+            return DateTimeOffset.ParseExact(readyToParse, "ddd, dd MMM yyyy HH:mm:ss zzz", CultureInfo.InvariantCulture);
+        }
+
+        private class Item
+        {
+            public string Title { get; set; }
+            public string Link { get; set; }
+            public DateTimeOffset Published { get; set; }
         }
     }
 }

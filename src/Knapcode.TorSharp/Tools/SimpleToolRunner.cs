@@ -29,7 +29,9 @@ namespace Knapcode.TorSharp.Tools
                 RedirectStandardError = true,
                 UseShellExecute = false,
                 CreateNoWindow = true,
+#if NET45
                 WindowStyle = ProcessWindowStyle.Hidden,
+#endif
             };
 
             Process process = Process.Start(startInfo);
@@ -64,6 +66,7 @@ namespace Knapcode.TorSharp.Tools
                 Process process;
                 _processes.TryTake(out process);
 
+#if NET45
                 // If the process has not yet exited, ask nicely first.
                 if (!process.HasExited)
                 {
@@ -72,6 +75,7 @@ namespace Knapcode.TorSharp.Tools
                         process.WaitForExit(1000);
                     }
                 }
+#endif
 
                 // Still not exited? Then it's no more Mr Nice Guy.
                 if (!process.HasExited)

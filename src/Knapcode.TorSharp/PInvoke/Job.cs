@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Knapcode.TorSharp.PInvoke
 {
+#if NET45
     public static partial class WindowsApi
     {
         [DllImport("kernel32.dll")]
@@ -75,4 +76,5 @@ namespace Knapcode.TorSharp.PInvoke
             public int bInheritHandle;
         }
     }
+#endif
 }

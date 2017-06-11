@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Knapcode.TorSharp.PInvoke
 {
+#if NET45
     public static partial class WindowsApi
     {
         public const uint DELETE = 0x00010000;
@@ -137,4 +138,5 @@ namespace Knapcode.TorSharp.PInvoke
             return pids;
         }
     }
+#endif
 }

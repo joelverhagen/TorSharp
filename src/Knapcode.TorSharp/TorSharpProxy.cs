@@ -53,10 +53,19 @@ namespace Knapcode.TorSharp
         {
             _settings = settings;
             _torPasswordHasher = new TorPasswordHasher(new RandomFactory());
-            _toolRunner =
-                settings.ToolRunnerType == ToolRunnerType.VirtualDesktop
-                    ? (IToolRunner)new VirtualDesktopToolRunner()
-                    : new SimpleToolRunner();
+
+#if NET45
+            if (settings.ToolRunnerType == ToolRunnerType.VirtualDesktop)
+            {
+                _toolRunner = new VirtualDesktopToolRunner();
+            }
+            else
+            {
+                _toolRunner = new SimpleToolRunner();
+            }
+#else
+            _toolRunner = new SimpleToolRunner();
+#endif
         }
 
         public async Task ConfigureAndStartAsync()
@@ -89,7 +98,7 @@ namespace Knapcode.TorSharp
 
             return new HttpClientHandler
             {
-                Proxy = new WebProxy(uriBuilder.Uri),
+                Proxy = new SimpleWebProxy(uriBuilder.Uri),
                 AllowAutoRedirect = false
             };
         }

@@ -21,6 +21,7 @@ namespace Knapcode.TorSharp.Tests
             _output = output;
         }
 
+#if NET45
         [Fact]
         public async Task VirtualDesktopToolRunner_ConfigurationPathsWithSpaces()
         {
@@ -37,6 +38,21 @@ namespace Knapcode.TorSharp.Tests
         }
 
         [Fact]
+        public async Task VirtualDesktopToolRunner_EndToEnd()
+        {
+            using (var te = TestEnvironment.Initialize(_output))
+            {
+                // Arrange
+                var settings = te.BuildSettings();
+                settings.ToolRunnerType = ToolRunnerType.VirtualDesktop;
+
+                // Act & Assert
+                await ExecuteEndToEndTestAsync(settings);
+            }
+        }
+#endif
+
+        [Fact]
         public async Task SimpleToolRunner_ConfigurationPathsWithSpaces()
         {
             using (var te = TestEnvironment.Initialize(_output))
@@ -45,20 +61,6 @@ namespace Knapcode.TorSharp.Tests
                 te.BaseDirectory = Path.Combine(te.BaseDirectory, "Path With Spaces");
                 var settings = te.BuildSettings();
                 settings.ToolRunnerType = ToolRunnerType.Simple;
-
-                // Act & Assert
-                await ExecuteEndToEndTestAsync(settings);
-            }
-        }
-
-        [Fact]
-        public async Task VirtualDesktopToolRunner_EndToEnd()
-        {
-            using (var te = TestEnvironment.Initialize(_output))
-            {
-                // Arrange
-                var settings = te.BuildSettings();
-                settings.ToolRunnerType = ToolRunnerType.VirtualDesktop;
 
                 // Act & Assert
                 await ExecuteEndToEndTestAsync(settings);
@@ -123,7 +125,7 @@ namespace Knapcode.TorSharp.Tests
         {
             var handler = new HttpClientHandler
             {
-                Proxy = new WebProxy(new Uri("http://localhost:" + settings.PrivoxyPort))
+                Proxy = new SimpleWebProxy(new Uri("http://localhost:" + settings.PrivoxyPort))
             };
 
             using (var httpClient = new HttpClient(handler))

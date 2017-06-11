@@ -8,6 +8,7 @@ using Knapcode.TorSharp.PInvoke;
 
 namespace Knapcode.TorSharp.Tools
 {
+#if NET45
     public class VirtualDesktopToolRunner : IToolRunner
     {
         private const string DesktopName = "TorSharpDesktop";
@@ -108,4 +109,5 @@ namespace Knapcode.TorSharp.Tools
             }
         }
     }
+#endif
 }
