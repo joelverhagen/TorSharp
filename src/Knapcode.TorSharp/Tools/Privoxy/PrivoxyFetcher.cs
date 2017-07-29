@@ -48,7 +48,7 @@ namespace Knapcode.TorSharp.Tools.Privoxy
             
             if (item == null)
             {
-                return null;
+                throw new TorSharpException($"No version of Privoxy could be found on RSS feed {BaseUrl}.");
             }
 
             var name = item.Title.Split('/').Last();
