@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net45</TargetFramework>
-    <RuntimeIdentifier>win7-x86</RuntimeIdentifier>
+    <TargetFrameworks>net45;netcoreapp2.0</TargetFrameworks>
+    <RuntimeIdentifier Condition="'$(TargetFramework)' == 'net45'">win7-x86</RuntimeIdentifier>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Knapcode.TorSharp\Knapcode.TorSharp.csproj" />

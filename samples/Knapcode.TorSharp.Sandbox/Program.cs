@@ -23,7 +23,11 @@ namespace Knapcode.TorSharp.Sandbox
                 TorSocksPort = 1338,
                 TorControlPort = 1339,
                 TorControlPassword = "foobar",
+#if NET45
                 ToolRunnerType = ToolRunnerType.VirtualDesktop,
+#else
+                ToolRunnerType = ToolRunnerType.Simple,
+#endif
                 WaitForTestEndpoint = true
             };
 
