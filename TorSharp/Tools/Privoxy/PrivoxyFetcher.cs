@@ -21,6 +21,17 @@ namespace Knapcode.TorSharp.Tools.Privoxy
 
         public async Task<DownloadableFile> GetLatestAsync()
         {
+            var latest = await GetLatestOrNullAsync();
+            if (latest == null)
+            {
+                throw new TorSharpException($"No version of Privoxy could be found on RSS feed {BaseUrl}.");
+            }
+
+            return latest;
+        }
+
+        private async Task<DownloadableFile> GetLatestOrNullAsync()
+        {
             SyndicationFeed syndicationFeed;
             using (var stream = await _httpClient.GetStreamAsync(BaseUrl).ConfigureAwait(false))
             {

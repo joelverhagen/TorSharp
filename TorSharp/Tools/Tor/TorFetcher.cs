@@ -20,22 +20,27 @@ namespace Knapcode.TorSharp.Tools.Tor
         public async Task<DownloadableFile> GetLatestAsync()
         {
             var versionsContent = await _httpClient.GetStringAsync(BaseUrl).ConfigureAwait(false);
-            var latestVersion = GetLinks(versionsContent)
-                .Select(x => new {Link = x, Version = GetVersion(x)})
+            var versions = GetLinks(versionsContent)
+                .Select(x => new { Link = x, Version = GetVersion(x) })
                 .Where(x => x.Version != null)
-                .OrderByDescending(x => x.Version)
-                .FirstOrDefault();
-            if (latestVersion == null)
+                .OrderByDescending(x => x.Version);
+
+            string name = null;
+            Uri listUrl = null;
+            foreach (var version in versions)
             {
-                return null;
+                listUrl = new Uri(BaseUrl, version.Link);
+                var listContent = await _httpClient.GetStringAsync(listUrl).ConfigureAwait(false);
+                name = GetLinks(listContent).FirstOrDefault(x => Regex.IsMatch(x, @"^tor-win32-.+\.zip$"));
+                if (name != null)
+                {
+                    break;
+                }
             }
 
-            var listUrl = new Uri(BaseUrl, latestVersion.Link);
-            var listContent = await _httpClient.GetStringAsync(listUrl).ConfigureAwait(false);
-            var name = GetLinks(listContent).FirstOrDefault(x => Regex.IsMatch(x, @"^tor-win32-.+\.zip$"));
             if (name == null)
             {
-                return null;
+                throw new TorSharpException($"No version of Tor could be found under base URL {BaseUrl}.");
             }
 
             var downloadUrl = new Uri(listUrl, name);
