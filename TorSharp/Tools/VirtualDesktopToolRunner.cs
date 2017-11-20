@@ -37,7 +37,6 @@ namespace Knapcode.TorSharp.Tools
             WindowsApi.PROCESS_INFORMATION targetProcess = WindowsUtility.CreateProcess(startInfo, DesktopName);
             AssociateWithJob(targetProcess, true);
 
-            WindowsApi.CloseDesktop(desktopHandle);
             return Task.FromResult((object) null);
         }
 
