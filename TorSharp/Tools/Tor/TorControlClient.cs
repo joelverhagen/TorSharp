@@ -9,6 +9,7 @@ namespace Knapcode.TorSharp.Tools.Tor
     public class TorControlClient : IDisposable
     {
         private const string SuccessResponse = "250 OK";
+        private const string ClosingConnectionResponse = "250 closing connection";
         private const int BufferSize = 256;
 
         private TcpClient _tcpClient;
@@ -27,12 +28,17 @@ namespace Knapcode.TorSharp.Tools.Tor
         public async Task AuthenticateAsync(string password)
         {
             var command = password != null ? $"AUTHENTICATE \"{password}\"" : "AUTHENTICATE";
-            await SendCommandAsync(command);
+            await SendCommandAsync(command, SuccessResponse);
         }
 
         public async Task CleanCircuitsAsync()
         {
-            await SendCommandAsync("SIGNAL NEWNYM");
+            await SendCommandAsync("SIGNAL NEWNYM", SuccessResponse);
+        }
+
+        public async Task QuitAsync()
+        {
+            await SendCommandAsync("QUIT", ClosingConnectionResponse);
         }
 
         public void Dispose()
@@ -50,7 +56,7 @@ namespace Knapcode.TorSharp.Tools.Tor
             Dispose();
         }
 
-        private async Task<string> SendCommandAsync(string command)
+        private async Task<string> SendCommandAsync(string command, string expectedResponse)
         {
             if (_tcpClient == null)
             {
@@ -61,7 +67,7 @@ namespace Knapcode.TorSharp.Tools.Tor
             await _writer.FlushAsync();
 
             var response = await _reader.ReadLineAsync();
-            if (response != SuccessResponse)
+            if (response != expectedResponse)
             {
                 throw new TorControlException($"The command to authenticate failed with error: {response}");
             }

@@ -90,6 +90,7 @@ namespace Knapcode.TorSharp
                 await client.ConnectAsync("localhost", _settings.TorControlPort).ConfigureAwait(false);
                 await client.AuthenticateAsync(_settings.TorControlPassword).ConfigureAwait(false);
                 await client.CleanCircuitsAsync().ConfigureAwait(false);
+                await client.QuitAsync().ConfigureAwait(false);
             }
         }
 
