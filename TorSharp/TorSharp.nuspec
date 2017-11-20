@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Knapcode.TorSharp</id>
-    <version>1.6.1</version>
+    <version>1.6.2</version>
     <title>TorSharp</title>
     <authors>Joel Verhagen</authors>
     <licenseUrl>https://raw.githubusercontent.com/joelverhagen/TorSharp/master/LICENSE</licenseUrl>
@@ -10,6 +10,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Use Tor for your C# HTTP clients. Tor + Privoxy = :heart:</description>
     <releaseNotes>
+* 1.6.2 Fix a bug where ToolRunnerType.VirtualDesktop was breaking on Windows 10 (version 1709).
 * 1.6.1 Fix a bug in the Tor fetcher caused by Tor versions with no Windows build.
 * 1.6.0 Add configuration API for tor exit nodes.
 * 1.5.3 Fix P/Invoke stubs to work on x64 so ToolRunnerType.VirtualDesktop works.
