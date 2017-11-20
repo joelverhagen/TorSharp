@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Knapcode.TorSharp.PInvoke;
 
@@ -14,7 +15,7 @@ namespace Knapcode.TorSharp.Tools
         private readonly object _jobHandleLock = new object();
         private IntPtr _jobHandle;
         private readonly object _processIdsLock = new object();
-        private readonly IList<int> _processIds = new List<int>();
+        private readonly HashSet<int> _processIds = new HashSet<int>();
 
         public Task StartAsync(Tool tool)
         {
@@ -65,9 +66,12 @@ namespace Knapcode.TorSharp.Tools
                 }
             }
 
-            lock (_processIdsLock)
+            if (processInformation.dwProcessId != 0)
             {
-                _processIds.Add(processInformation.dwProcessId);
+                lock (_processIdsLock)
+                {
+                    _processIds.Add(processInformation.dwProcessId);
+                }
             }
 
             if (!WindowsApi.AssignProcessToJobObject(_jobHandle, processInformation.hProcess) && throwOnError)
@@ -93,12 +97,22 @@ namespace Knapcode.TorSharp.Tools
                         // wait for all jobs to complete
                         lock (_processIdsLock)
                         {
+                            var firstAttempt = true;
                             while (_processIds.Any())
                             {
-                                if (Process.GetProcesses().All(p => p.Id != _processIds[0]))
+                                if (!firstAttempt)
                                 {
-                                    _processIds.RemoveAt(0);
+                                    Thread.Sleep(100);
                                 }
+
+                                firstAttempt = false;
+
+                                var allProcessIds = Process
+                                    .GetProcesses()
+                                    .Select(x => x.Id)
+                                    .ToList();
+
+                                _processIds.IntersectWith(allProcessIds);
                             }
                         }
 

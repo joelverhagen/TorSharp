@@ -24,7 +24,7 @@ namespace Knapcode.TorSharp.Sandbox
                 TorSocksPort = 1338,
                 TorControlPort = 1339,
                 TorControlPassword = "foobar",
-                ToolRunnerType = ToolRunnerType.Simple
+                ToolRunnerType = ToolRunnerType.VirtualDesktop
             };
 
             // download tools
@@ -38,9 +38,9 @@ namespace Knapcode.TorSharp.Sandbox
             };
             var httpClient = new HttpClient(handler);
             await proxy.ConfigureAndStartAsync();
-            Console.WriteLine(await httpClient.GetStringAsync("http://icanhazip.com"));
+            Console.WriteLine(await httpClient.GetStringAsync("https://api.ipify.org"));
             await proxy.GetNewIdentityAsync();
-            Console.WriteLine(await httpClient.GetStringAsync("http://icanhazip.com"));
+            Console.WriteLine(await httpClient.GetStringAsync("https://api.ipify.org"));
             proxy.Stop();
         }
     }
