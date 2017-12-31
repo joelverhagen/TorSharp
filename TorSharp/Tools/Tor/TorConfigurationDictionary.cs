@@ -27,10 +27,7 @@ namespace Knapcode.TorSharp.Tools.Tor
                 dictionary["HashedControlPassword"] = settings.HashedTorControlPassword;
             }
 
-            if (!string.IsNullOrWhiteSpace(settings.TorDataDirectory))
-            {
-                dictionary["DataDirectory"] = settings.TorDataDirectory;
-            }
+            dictionary["DataDirectory"] = !string.IsNullOrWhiteSpace(settings.TorDataDirectory) ? settings.TorDataDirectory : Path.Combine(_torDirectoryPath, "Data\\Tor");
 
             if (settings.TorExitNodes != null)
             {
