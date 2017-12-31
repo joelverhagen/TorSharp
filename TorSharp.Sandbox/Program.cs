@@ -10,7 +10,7 @@ namespace Knapcode.TorSharp.Sandbox
     {
         private static void Main()
         {
-            MainAsync().Wait();
+            MainAsync().GetAwaiter().GetResult();
         }
 
         private static async Task MainAsync()
@@ -38,9 +38,9 @@ namespace Knapcode.TorSharp.Sandbox
             };
             var httpClient = new HttpClient(handler);
             await proxy.ConfigureAndStartAsync();
-            Console.WriteLine(await httpClient.GetStringAsync("https://api.ipify.org"));
+            Console.WriteLine(await httpClient.GetStringAsync("http://api.ipify.org"));
             await proxy.GetNewIdentityAsync();
-            Console.WriteLine(await httpClient.GetStringAsync("https://api.ipify.org"));
+            Console.WriteLine(await httpClient.GetStringAsync("http://api.ipify.org"));
             proxy.Stop();
         }
     }

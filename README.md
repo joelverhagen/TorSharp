@@ -45,8 +45,8 @@ var handler = new HttpClientHandler
 };
 var httpClient = new HttpClient(handler);
 await proxy.ConfigureAndStartAsync();
-Console.WriteLine(await httpClient.GetStringAsync("http://icanhazip.com"));
+Console.WriteLine(await httpClient.GetStringAsync("http://api.ipify.org"));
 await proxy.GetNewIdentityAsync();
-Console.WriteLine(await httpClient.GetStringAsync("http://icanhazip.com"));
+Console.WriteLine(await httpClient.GetStringAsync("http://api.ipify.org"));
 proxy.Stop();
 ```
