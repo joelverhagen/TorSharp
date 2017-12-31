@@ -128,7 +128,7 @@ namespace Knapcode.TorSharp.Tests
 
             using (var httpClient = new HttpClient(handler))
             {
-                var ip = (await httpClient.GetStringAsync("http://ipv4.icanhazip.com")).Trim();
+                var ip = (await httpClient.GetStringAsync("https://api.ipify.org")).Trim();
                 _output.WriteLine($"Get IP succeeded: {ip}");
                 return IPAddress.Parse(ip);
             }
