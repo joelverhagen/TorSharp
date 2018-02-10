@@ -1,4 +1,3 @@
-using System;
 using System.Security.Cryptography;
 
 namespace Knapcode.TorSharp.Adapters
@@ -21,23 +20,5 @@ namespace Knapcode.TorSharp.Adapters
         {
             _rng.GetBytes(bytes);
         }
-    }
-
-    public class RandomFactory : IRandomFactory
-    {
-        public IRandom Create()
-        {
-            return new Random(new RNGCryptoServiceProvider());
-        }
-    }
-
-    public interface IRandomFactory
-    {
-        IRandom Create();
-    }
-
-    public interface IRandom : IDisposable
-    {
-        void GetBytes(byte[] bytes);
     }
 }

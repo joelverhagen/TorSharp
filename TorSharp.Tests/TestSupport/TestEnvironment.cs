@@ -56,11 +56,17 @@ namespace Knapcode.TorSharp.Tests.TestSupport
             {
                 ZippedToolsDirectory = Path.Combine(BaseDirectory, "Zipped"),
                 ExtractedToolsDirectory = Path.Combine(BaseDirectory, "Extracted"),
-                TorDataDirectory = Path.Combine(BaseDirectory, "TorData"),
-                PrivoxyPort = _ports.Ports[0],
-                TorSocksPort = _ports.Ports[1],
-                TorControlPort = _ports.Ports[2],
-                TorControlPassword = _torControlPassword,
+                PrivoxySettings =
+                {
+                    Port = _ports.Ports[0],
+                },
+                TorSettings =
+                {
+                    DataDirectory = Path.Combine(BaseDirectory, "TorData"),
+                    SocksPort = _ports.Ports[1],
+                    ControlPort = _ports.Ports[2],
+                    ControlPassword = _torControlPassword,
+                },
                 ReloadTools = true
             };
         }

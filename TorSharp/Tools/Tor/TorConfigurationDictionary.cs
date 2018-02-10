@@ -18,27 +18,37 @@ namespace Knapcode.TorSharp.Tools.Tor
         {
             var dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
-                { "SocksPort", settings.TorSocksPort.ToString(CultureInfo.InvariantCulture) },
-                { "ControlPort", settings.TorControlPort.ToString(CultureInfo.InvariantCulture) }
+                { "SocksPort", settings.TorSettings.SocksPort.ToString(CultureInfo.InvariantCulture) },
+                { "ControlPort", settings.TorSettings.ControlPort.ToString(CultureInfo.InvariantCulture) }
             };
 
-            if (settings.HashedTorControlPassword != null)
+            if (settings.TorSettings.HashedControlPassword != null)
             {
-                dictionary["HashedControlPassword"] = settings.HashedTorControlPassword;
+                dictionary["HashedControlPassword"] = settings.TorSettings.HashedControlPassword;
             }
 
-            dictionary["DataDirectory"] = !string.IsNullOrWhiteSpace(settings.TorDataDirectory) ? settings.TorDataDirectory : Path.Combine(_torDirectoryPath, "Data\\Tor");
-
-            if (settings.TorExitNodes != null)
+            string dataDictionary;
+            if (!string.IsNullOrWhiteSpace(settings.TorSettings.DataDirectory))
             {
-                dictionary["ExitNodes"] = settings.TorExitNodes;
-                dictionary["GeoIPFile"] = Path.Combine(_torDirectoryPath, Path.Combine("Data", "Tor", "geoip"));
-                dictionary["GeoIPv6File"] = Path.Combine(_torDirectoryPath, Path.Combine("Data", "Tor", "geoip6"));
+                dataDictionary = settings.TorSettings.DataDirectory;
+            }
+            else
+            {
+                dataDictionary = Path.Combine(_torDirectoryPath, "Data", "Tor");
             }
 
-            if (settings.TorStrictNodes != null)
+            dictionary["DataDirectory"] = dataDictionary;
+
+            if (!string.IsNullOrWhiteSpace(settings.TorSettings.ExitNodes))
             {
-                dictionary["StrictNodes"] = settings.TorStrictNodes.Value ? "1" : "0";
+                dictionary["ExitNodes"] = settings.TorSettings.ExitNodes;
+                dictionary["GeoIPFile"] = Path.Combine(_torDirectoryPath, "Data", "Tor", "geoip");
+                dictionary["GeoIPv6File"] = Path.Combine(_torDirectoryPath, "Data", "Tor", "geoip6");
+            }
+
+            if (settings.TorSettings.StrictNodes.HasValue)
+            {
+                dictionary["StrictNodes"] = settings.TorSettings.StrictNodes.Value ? "1" : "0";
             }
 
             return dictionary;

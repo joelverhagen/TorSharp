@@ -11,13 +11,6 @@ using Knapcode.TorSharp.Tools.Tor;
 
 namespace Knapcode.TorSharp
 {
-    public interface ITorSharpProxy : IDisposable
-    {
-        Task ConfigureAndStartAsync();
-        Task GetNewIdentityAsync();
-        void Stop();
-    }
-
     public class TorSharpProxy : ITorSharpProxy
     {
         private static readonly ToolSettings PrivoxyToolSettings = new ToolSettings
@@ -74,9 +67,9 @@ namespace Knapcode.TorSharp
             _tor = Extract(TorToolSettings);
             _privoxy = Extract(PrivoxyToolSettings);
 
-            if (_settings.TorControlPassword != null && _settings.HashedTorControlPassword == null)
+            if (_settings.TorSettings.ControlPassword != null && _settings.TorSettings.HashedControlPassword == null)
             {
-                _settings.HashedTorControlPassword = _torPasswordHasher.HashPassword(_settings.TorControlPassword);
+                _settings.TorSettings.HashedControlPassword = _torPasswordHasher.HashPassword(_settings.TorSettings.ControlPassword);
             }
 
             await ConfigureAndStartAsync(_tor, new TorConfigurationDictionary(_tor.DirectoryPath)).ConfigureAwait(false);
@@ -87,8 +80,8 @@ namespace Knapcode.TorSharp
         {
             using (var client = new TorControlClient())
             {
-                await client.ConnectAsync("localhost", _settings.TorControlPort).ConfigureAwait(false);
-                await client.AuthenticateAsync(_settings.TorControlPassword).ConfigureAwait(false);
+                await client.ConnectAsync("localhost", _settings.TorSettings.ControlPort).ConfigureAwait(false);
+                await client.AuthenticateAsync(_settings.TorSettings.ControlPassword).ConfigureAwait(false);
                 await client.CleanCircuitsAsync().ConfigureAwait(false);
                 await client.QuitAsync().ConfigureAwait(false);
             }
@@ -146,8 +139,7 @@ namespace Knapcode.TorSharp
                 string withoutExtension = Path.GetFileNameWithoutExtension(zipPath);
                 string directoryPath = Path.Combine(_settings.ExtractedToolsDirectory, withoutExtension);
                 string version = withoutExtension.Substring(toolSettings.Prefix.Length);
-                Version parsedVersion;
-                if (!Version.TryParse(version, out parsedVersion))
+                if (!Version.TryParse(version, out var parsedVersion))
                 {
                     continue;
                 }

@@ -42,6 +42,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Adapters\IRandom.cs" />
+    <Compile Include="Adapters\IRandomFactory.cs" />
+    <Compile Include="Adapters\RandomFactory.cs" />
+    <Compile Include="ITorSharpProxy.cs" />
+    <Compile Include="ToolRunnerType.cs" />
     <Compile Include="Tools\IConfigurationDictionary.cs" />
     <Compile Include="Tools\IFileFetcher.cs" />
     <Compile Include="Tools\DownloadableFile.cs" />
@@ -49,6 +54,7 @@
     <Compile Include="Tools\Privoxy\PrivoxyFetcher.cs" />
     <Compile Include="Tools\SimpleToolRunner.cs" />
     <Compile Include="Adapters\Random.cs" />
+    <Compile Include="TorSharpPrivoxySettings.cs" />
     <Compile Include="TorSharpToolFetcher.cs" />
     <Compile Include="Tools\Tor\TorFetcher.cs" />
     <Compile Include="TorSharpException.cs" />
@@ -71,6 +77,7 @@
     <Compile Include="PInvoke\Window.cs" />
     <Compile Include="PInvoke\Process.cs" />
     <Compile Include="Tools\VirtualDesktopToolRunner.cs" />
+    <Compile Include="TorSharpTorSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TorSharp.nuspec" />

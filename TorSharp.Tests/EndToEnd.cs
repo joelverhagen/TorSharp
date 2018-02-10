@@ -123,7 +123,7 @@ namespace Knapcode.TorSharp.Tests
         {
             var handler = new HttpClientHandler
             {
-                Proxy = new WebProxy(new Uri("http://localhost:" + settings.PrivoxyPort))
+                Proxy = new WebProxy(new Uri("http://localhost:" + settings.PrivoxySettings.Port))
             };
 
             using (var httpClient = new HttpClient(handler))
