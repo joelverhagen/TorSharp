@@ -51,6 +51,24 @@ namespace Knapcode.TorSharp.Tools.Tor
                 dictionary["StrictNodes"] = settings.TorSettings.StrictNodes.Value ? "1" : "0";
             }
 
+            if (!string.IsNullOrWhiteSpace(settings.TorSettings.HttpsProxyHost))
+            {
+                dictionary["HTTPSProxy"] = settings.TorSettings.HttpsProxyHost;
+
+                if (settings.TorSettings.HttpsProxyPort.HasValue)
+                {
+                    dictionary["HTTPSProxy"] +=
+                        ":" + settings.TorSettings.HttpsProxyPort.Value.ToString(CultureInfo.InvariantCulture);
+                }
+            }
+
+            if (settings.TorSettings.HttpsProxyUsername != null
+                || settings.TorSettings.HttpsProxyPassword != null)
+            {
+                dictionary["HTTPSProxyAuthenticator"] =
+                    $"{settings.TorSettings.HttpsProxyUsername}:{settings.TorSettings.HttpsProxyPassword}";
+            }
+
             return dictionary;
         }
     }

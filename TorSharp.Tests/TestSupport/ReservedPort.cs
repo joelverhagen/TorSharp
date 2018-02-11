@@ -12,13 +12,13 @@ namespace Knapcode.TorSharp.Tests.TestSupport
         private static readonly HashSet<int> ReservedPorts = new HashSet<int>();
 
         private readonly int _port;
-        private readonly Mutex _mutex;
+        private readonly Semaphore _semaphore;
         private bool _disposed;
 
-        private ReservedPort(int port, Mutex mutex)
+        private ReservedPort(int port, Semaphore semaphore)
         {
             _port = port;
-            _mutex = mutex;
+            _semaphore = semaphore;
             _disposed = false;
         }
 
@@ -46,9 +46,8 @@ namespace Knapcode.TorSharp.Tests.TestSupport
                 {
                     continue;
                 }
-
-                bool createdNew;
-                Mutex mutex = new Mutex(false, $@"Global\Knapcode.TorSharp.Tests.ReservedPort-{port}", out createdNew);
+                
+                var semaphore = new Semaphore(1, 1, $@"Global\Knapcode.TorSharp.Tests.ReservedPort-{port}");
                 lock (Lock)
                 {
                     if (ReservedPorts.Contains(port))
@@ -56,11 +55,11 @@ namespace Knapcode.TorSharp.Tests.TestSupport
                         continue;
                     }
 
-                    var acquired = mutex.WaitOne(0, false);
+                    var acquired = semaphore.WaitOne(TimeSpan.Zero);
                     if (acquired)
                     {
                         ReservedPorts.Add(port);
-                        return new ReservedPort(port, mutex);
+                        return new ReservedPort(port, semaphore);
                     }
                 }
             }
@@ -87,8 +86,8 @@ namespace Knapcode.TorSharp.Tests.TestSupport
             }
 
             _disposed = true;
-            _mutex.ReleaseMutex();
-            _mutex.Dispose();
+            _semaphore.Release();
+            _semaphore.Dispose();
             lock (Lock)
             {
                 ReservedPorts.Remove(_port);

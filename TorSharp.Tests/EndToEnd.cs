@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Knapcode.TorSharp.Tests.TestSupport;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Proxy;
+using Proxy.Configurations;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -72,6 +74,31 @@ namespace Knapcode.TorSharp.Tests
             {
                 // Arrange
                 var settings = te.BuildSettings();
+                settings.ToolRunnerType = ToolRunnerType.Simple;
+
+                // Act & Assert
+                await ExecuteEndToEndTestAsync(settings);
+            }
+        }
+
+        [Fact]
+        public async Task TorHttpsProxy_EndToEnd()
+        {
+            var proxyUsername = "proxy-username";
+            var proxyPassword = "proxy-password";
+            using (var proxyPort = ReservedPort.Reserve())
+            using (var ptp = new PassThroughProxy(proxyPort.Port, new Configuration(
+                new Server(proxyPort.Port, rejectHttpProxy: true),
+                new Authentication(true, proxyUsername, proxyPassword),
+                new Firewall(false, new Rule[0]))))
+            using (var te = TestEnvironment.Initialize(_output))
+            {
+                // Arrange
+                var settings = te.BuildSettings();
+                settings.TorSettings.HttpsProxyHost = "localhost";
+                settings.TorSettings.HttpsProxyPort = proxyPort.Port;
+                settings.TorSettings.HttpsProxyUsername = proxyUsername;
+                settings.TorSettings.HttpsProxyPassword = proxyPassword;
                 settings.ToolRunnerType = ToolRunnerType.Simple;
 
                 // Act & Assert

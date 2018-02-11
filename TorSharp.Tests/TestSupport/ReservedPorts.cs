@@ -35,7 +35,8 @@ namespace Knapcode.TorSharp.Tests.TestSupport
             {
                 for (int i = 0; i < count; i++)
                 {
-                    ports[i] = ReservedPort.Reserve();
+                    var port = ReservedPort.Reserve();
+                    ports[i] = port ?? throw new InvalidOperationException("Could not reserve a port.");
                 }
             }
             catch

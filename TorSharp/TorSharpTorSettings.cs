@@ -18,5 +18,9 @@
         public string ControlPassword { get; set; }
         public string HashedControlPassword { get; set; }
         public string DataDirectory { get; set; }
+        public string HttpsProxyHost { get; set; }
+        public int? HttpsProxyPort { get; set; }
+        public string HttpsProxyUsername { get; set; }
+        public string HttpsProxyPassword { get; set; }
     }
 }
