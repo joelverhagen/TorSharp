@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>Knapcode.TorSharp</id>
-    <version>1.8.0</version>
+    <version>1.8.1</version>
     <authors>Joel Verhagen</authors>
     <licenseUrl>https://raw.githubusercontent.com/joelverhagen/TorSharp/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/joelverhagen/TorSharp</projectUrl>
@@ -10,6 +10,7 @@
     <description>Use Tor for your C# HTTP clients. Tor + Privoxy = :heart:</description>
     <repository type="git" url="https://github.com/joelverhagen/TorSharp" />
     <releaseNotes>
+* 1.8.1 Use Privoxy RSS feed for fetching tools instead of SourceForge.
 * 1.8.0 Add support for HTTPS proxy in Tor and organize TorSettings.
 * 1.7.0 Default Tor DataDirectory to a path relative to the Tor executable.
 * 1.6.2 Fix a bug where ToolRunnerType.VirtualDesktop was breaking on Windows 10 (version 1709).
