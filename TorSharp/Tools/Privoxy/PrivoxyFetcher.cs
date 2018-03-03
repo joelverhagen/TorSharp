@@ -11,7 +11,7 @@ namespace Knapcode.TorSharp.Tools.Privoxy
 {
     public class PrivoxyFetcher : IFileFetcher
     {
-        private static readonly Uri BaseUrl = new Uri("http://sourceforge.net/projects/ijbswa/rss?path=/Win32");
+        private static readonly Uri BaseUrl = new Uri("https://www.privoxy.org/feeds/privoxy-releases.xml");
         private readonly HttpClient _httpClient;
 
         public PrivoxyFetcher(HttpClient httpClient)
@@ -47,6 +47,8 @@ namespace Knapcode.TorSharp.Tools.Privoxy
             var latest = syndicationFeed
                 .Items
                 .Where(i => i.Links.Any())
+                .Where(i => i.Title.Text.StartsWith("Win32/", StringComparison.OrdinalIgnoreCase)
+                         && i.Title.Text.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
                 .OrderByDescending(i => i.PublishDate)
                 .FirstOrDefault(IsMatch);
 
