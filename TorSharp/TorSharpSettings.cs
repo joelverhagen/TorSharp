@@ -10,6 +10,7 @@ namespace Knapcode.TorSharp
         public TorSharpSettings()
         {
             ReloadTools = false;
+            EnableSecurityProtocolsForFetcher = true;
             ZippedToolsDirectory = Path.Combine(DefaultToolsDirectory, "ZippedTools");
             ExtractedToolsDirectory = Path.Combine(DefaultToolsDirectory, "ExtractedTools");
             ToolRunnerType = ToolRunnerType.VirtualDesktop;
@@ -18,6 +19,7 @@ namespace Knapcode.TorSharp
         }
 
         public bool ReloadTools { get; set; }
+        public bool EnableSecurityProtocolsForFetcher { get; set; }
         public ToolRunnerType ToolRunnerType { get; set; }
         public string ZippedToolsDirectory { get; set; }
         public string ExtractedToolsDirectory { get; set; }

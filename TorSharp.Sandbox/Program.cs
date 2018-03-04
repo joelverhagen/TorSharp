@@ -18,6 +18,7 @@ namespace Knapcode.TorSharp.Sandbox
             // configure
             var settings = new TorSharpSettings
             {
+                ReloadTools = true,
                 ZippedToolsDirectory = Path.Combine(Path.GetTempPath(), "TorZipped"),
                 ExtractedToolsDirectory = Path.Combine(Path.GetTempPath(), "TorExtracted"),
                 PrivoxySettings =

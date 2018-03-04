@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.ServiceModel.Syndication;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 
@@ -11,7 +13,10 @@ namespace Knapcode.TorSharp.Tools.Privoxy
 {
     public class PrivoxyFetcher : IFileFetcher
     {
-        private static readonly Uri BaseUrl = new Uri("https://www.privoxy.org/feeds/privoxy-releases.xml");
+        private static readonly Uri PrivoxyBaseUrl = new Uri("https://www.privoxy.org/feeds/privoxy-releases.xml");
+        private static readonly Uri SourceForgeBaseUrl = new Uri("https://sourceforge.net/projects/ijbswa/rss?path=/Win32");
+        private static readonly Uri PrivoxyMirrorBaseUrl = new Uri("https://www.silvester.org.uk/privoxy/Windows/");
+
         private readonly HttpClient _httpClient;
 
         public PrivoxyFetcher(HttpClient httpClient)
@@ -21,36 +26,87 @@ namespace Knapcode.TorSharp.Tools.Privoxy
 
         public async Task<DownloadableFile> GetLatestAsync()
         {
-            var latest = await GetLatestOrNullAsync();
-            if (latest == null)
+            var cts = new CancellationTokenSource();
+
+            var tasks = new List<Task<DownloadableFile>>
             {
-                throw new TorSharpException($"No version of Privoxy could be found on RSS feed {BaseUrl}.");
+                GetLatestOrNullFromRssAsync(PrivoxyBaseUrl, cts.Token, TitleStartWithWin32),
+                GetLatestOrNullFromRssAsync(SourceForgeBaseUrl, cts.Token),
+                GetLatestOrNullFromFileListingAsync(PrivoxyMirrorBaseUrl, cts.Token),
+            };
+            var faults = new List<Task<DownloadableFile>>();
+
+            DownloadableFile result = null;
+            while (tasks.Any() && result == null)
+            {
+                var nextTask = await Task.WhenAny(tasks).ConfigureAwait(false);
+                tasks.Remove(nextTask);
+
+                if (nextTask.Status != TaskStatus.RanToCompletion)
+                {
+                    faults.Add(nextTask);
+                }
+                else
+                {
+                    result = nextTask.Result;
+                }
             }
 
-            return latest;
+            cts.Cancel();
+
+            if (result == null)
+            {
+                if (faults.Any())
+                {
+                    await Task.WhenAll(faults).ConfigureAwait(false);
+                }
+
+                throw new TorSharpException($"No version of Privoxy could be found.");
+            }
+
+            return result;
         }
 
-        private async Task<DownloadableFile> GetLatestOrNullAsync()
+        private async Task<DownloadableFile> GetLatestOrNullFromFileListingAsync(
+            Uri baseUrl,
+            CancellationToken token)
+        {
+            return await FetcherHelpers.GetLatestDownloadableFileAsync(
+                _httpClient,
+                baseUrl,
+                @"privoxy-.+\.zip$",
+                token);
+        }
+
+
+        private async Task<DownloadableFile> GetLatestOrNullFromRssAsync(
+            Uri baseUrl,
+            CancellationToken token,
+            Func<SyndicationItem, bool> predicate = null)
         {
             SyndicationFeed syndicationFeed;
-            using (var stream = await _httpClient.GetStreamAsync(BaseUrl).ConfigureAwait(false))
+            using (var response = await _httpClient.GetAsync(baseUrl, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false))
             {
-                var streamReader = new StreamReader(stream);
-                var xmlReader = XmlReader.Create(streamReader);
-                syndicationFeed = SyndicationFeed.Load(xmlReader);
-                if (syndicationFeed == null)
+                response.EnsureSuccessStatusCode();
+
+                using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                 {
-                    return null;
+                    var streamReader = new StreamReader(stream);
+                    var xmlReader = XmlReader.Create(streamReader);
+                    syndicationFeed = SyndicationFeed.Load(xmlReader);
+                    if (syndicationFeed == null)
+                    {
+                        return null;
+                    }
                 }
             }
 
             var latest = syndicationFeed
                 .Items
                 .Where(i => i.Links.Any())
-                .Where(i => i.Title.Text.StartsWith("Win32/", StringComparison.OrdinalIgnoreCase)
-                         && i.Title.Text.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
+                .Where(predicate ?? (i => true))
                 .OrderByDescending(i => i.PublishDate)
-                .FirstOrDefault(IsMatch);
+                .FirstOrDefault(TitleEndsWithPrivoxyZip);
 
             if (latest == null)
             {
@@ -65,9 +121,14 @@ namespace Knapcode.TorSharp.Tools.Privoxy
             };
         }
 
-        private bool IsMatch(SyndicationItem item)
+        private static bool TitleStartWithWin32(SyndicationItem i)
         {
-            return Regex.IsMatch(item.Title.Text, @"privoxy-[\d\.]+.zip$", RegexOptions.IgnoreCase);
+            return i.Title.Text.StartsWith("Win32/", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool TitleEndsWithPrivoxyZip(SyndicationItem item)
+        {
+            return Regex.IsMatch(item.Title.Text, @"privoxy-[\d\.]+\.zip$", RegexOptions.IgnoreCase);
         }
     }
 }

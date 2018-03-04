@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Knapcode.TorSharp.Tools;
@@ -14,6 +16,8 @@ namespace Knapcode.TorSharp
 
     public class TorSharpToolFetcher : ITorSharpToolFetcher
     {
+        private static bool SecureProtocolsEnabled = false;
+
         private readonly TorSharpSettings _settings;
         private readonly PrivoxyFetcher _privoxyFetcher;
         private readonly TorFetcher _torFetcher;
@@ -27,6 +31,19 @@ namespace Knapcode.TorSharp
 
         public async Task FetchAsync()
         {
+            // If configured, enable all security protocols (a.k.a SSL/TLS protocols). This is necessary, for example,
+            // because SourceForge requires at least TLS 1.1 and some .NET clients don't have this enabled. To minimize
+            // the change of connection failure, enabled all protocols.
+            if (_settings.EnableSecurityProtocolsForFetcher && !SecureProtocolsEnabled)
+            {
+                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Ssl3;
+                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls;
+                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls11;
+                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
+
+                SecureProtocolsEnabled = true;
+            }
+
             Directory.CreateDirectory(_settings.ZippedToolsDirectory);
             await DownloadFileAsync(_privoxyFetcher).ConfigureAwait(false);
             await DownloadFileAsync(_torFetcher).ConfigureAwait(false);
