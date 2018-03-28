@@ -66,7 +66,7 @@ namespace Knapcode.TorSharp.Tools
         private static Version GetVersion(string link)
         {
             var last = Regex
-                .Matches(link, @"(?<Version>\d+(?:\.\d+)+)")
+                .Matches(link, @"(?<Version>\d+(?:\.\d+)+)[ /]")
                 .OfType<Match>()
                 .LastOrDefault();
 
