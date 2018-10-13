@@ -36,10 +36,25 @@ namespace Knapcode.TorSharp
             // the change of connection failure, enabled all protocols.
             if (_settings.EnableSecurityProtocolsForFetcher && !SecureProtocolsEnabled)
             {
-                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Ssl3;
-                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls;
-                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls11;
-                ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
+                var protocols = new[]
+                {
+                    SecurityProtocolType.Ssl3,
+                    SecurityProtocolType.Tls,
+                    SecurityProtocolType.Tls11,
+                    SecurityProtocolType.Tls12
+                };
+
+                foreach (var protocol in protocols)
+                {
+                    try
+                    {
+                        ServicePointManager.SecurityProtocol |= protocol;
+                    }
+                    catch (NotSupportedException)
+                    {
+                        // Not much we can do if the protocol isn't supported. isn't supported.
+                    }
+                }
 
                 SecureProtocolsEnabled = true;
             }
