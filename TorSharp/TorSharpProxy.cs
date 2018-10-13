@@ -15,6 +15,7 @@ namespace Knapcode.TorSharp
     {
         private static readonly ToolSettings PrivoxyToolSettings = new ToolSettings
         {
+            Name = "Privoxy",
             Prefix = "privoxy-",
             ExecutablePath = "privoxy.exe",
             WorkingDirectory = ".",
@@ -25,6 +26,7 @@ namespace Knapcode.TorSharp
 
         private static readonly ToolSettings TorToolSettings = new ToolSettings
         {
+            Name = "Tor",
             Prefix = "tor-win32-",
             ExecutablePath = @"Tor\tor.exe",
             WorkingDirectory = @"Tor",
@@ -129,6 +131,7 @@ namespace Knapcode.TorSharp
 
         private Tool GetLatestTool(ToolSettings toolSettings)
         {
+            var pattern = $"{toolSettings.Prefix}*.zip";
             string[] zipPaths = Directory
                 .EnumerateFiles(_settings.ZippedToolsDirectory, $"{toolSettings.Prefix}*.zip", SearchOption.TopDirectoryOnly)
                 .ToArray();
@@ -159,7 +162,7 @@ namespace Knapcode.TorSharp
 
             if (versions.Count == 0)
             {
-                return null;
+                throw new TorSharpException($"No version of {toolSettings.Name} ({pattern}) was found under {_settings.ZippedToolsDirectory}.");
             }
 
             return versions
