@@ -52,7 +52,7 @@ namespace Knapcode.TorSharp
                     }
                     catch (NotSupportedException)
                     {
-                        // Not much we can do if the protocol isn't supported. isn't supported.
+                        // Not much we can do if the protocol isn't supported. Move on and try the next one.
                     }
                 }
 
