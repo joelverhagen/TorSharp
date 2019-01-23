@@ -4,10 +4,10 @@
   <PropertyGroup>
   	<ArtifactsDirectory Condition="'$(ArtifactsDirectory)' == ''">$(MSBuildThisFileDirectory)artifacts</ArtifactsDirectory>
   	<SolutionName Condition="'$(SolutionName)' == ''">TorSharp</SolutionName>
-    <_ProjectArtifactsDirectory>$(ArtifactsDirectory)/$(SolutionName)/$(MSBuildProjectName)</_ProjectArtifactsDirectory>
-    <BaseIntermediateOutputPath>$(_ProjectArtifactsDirectory)/obj</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)/$(Configuration)/</IntermediateOutputPath>
-    <BaseOutputPath>$(_ProjectArtifactsDirectory)/bin/</BaseOutputPath>
-    <OutputPath>$(BaseOutputPath)$(Configuration)/</OutputPath>
+    <_ProjectArtifactsDirectory>$(ArtifactsDirectory)\$(SolutionName)\$(MSBuildProjectName)\</_ProjectArtifactsDirectory>
+    <BaseIntermediateOutputPath>$(_ProjectArtifactsDirectory)obj\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(Configuration)\</IntermediateOutputPath>
+    <BaseOutputPath>$(_ProjectArtifactsDirectory)bin\</BaseOutputPath>
+    <OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
   </PropertyGroup>
 </Project>
