@@ -10,5 +10,7 @@
         }
 
         public int Port { get; set; }
+
+        public string ListenAddress { get; set; } = "127.0.0.1";
     }
 }
