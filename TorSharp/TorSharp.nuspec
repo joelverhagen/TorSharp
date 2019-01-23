@@ -2,14 +2,15 @@
 <package>
   <metadata>
     <id>Knapcode.TorSharp</id>
-    <version>1.8.4</version>
+    <version>1.8.5</version>
     <authors>Joel Verhagen</authors>
-    <licenseUrl>https://raw.githubusercontent.com/joelverhagen/TorSharp/master/LICENSE</licenseUrl>
+    <license type="expression">MIT</license>
     <projectUrl>https://github.com/joelverhagen/TorSharp</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Use Tor for your C# HTTP clients. Tor + Privoxy = :heart:</description>
     <repository type="git" url="https://github.com/joelverhagen/TorSharp" />
     <releaseNotes>
+* 1.8.5 Add ListenAddress to TorSharpPrivoxySettings to allow external connections.
 * 1.8.4 Improve missing tool message and don't fail due to a SecurityProtocolType not being supported.
 * 1.8.3 Ignore version directories that don't just have digits.
 * 1.8.2 Enable three different ways of downloading Privoxy. Fastest one wins.
