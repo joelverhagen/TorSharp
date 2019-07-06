@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>Knapcode.TorSharp</id>
-    <version>1.8.5</version>
+    <version>1.8.6</version>
     <authors>Joel Verhagen</authors>
     <license type="expression">MIT</license>
     <projectUrl>https://github.com/joelverhagen/TorSharp</projectUrl>
@@ -10,6 +10,7 @@
     <description>Use Tor for your C# HTTP clients. Tor + Privoxy = :heart:</description>
     <repository type="git" url="https://github.com/joelverhagen/TorSharp" />
     <releaseNotes>
+* 1.8.6 Improve error experience when one of the tool ZIP files is invalid.
 * 1.8.5 Add ListenAddress to TorSharpPrivoxySettings to allow external connections.
 * 1.8.4 Improve missing tool message and don't fail due to a SecurityProtocolType not being supported.
 * 1.8.3 Ignore version directories that don't just have digits.
@@ -31,7 +32,7 @@
 * 1.1.0 Target .NET 4.5 instead of .NET 4.5.2.
 * 1.0.0 Initial release.
     </releaseNotes>
-    <copyright>Copyright (c) 2018 Joel Verhagen</copyright>
-    <tags>tor proxy privoxy http socks5</tags>
+    <copyright>Copyright (c) 2019 Joel Verhagen</copyright>
+    <tags>tor proxy privoxy http socks5 onion router https anonymize anonymous</tags>
   </metadata>
 </package>
