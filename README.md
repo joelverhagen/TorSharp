@@ -58,13 +58,14 @@ proxy.Stop();
 This most likely is happening because the URLs where we fetch Tor or Privoxy from are down or have changed. I would
 recommend:
 
-1. [Opening an issue](https://github.com/joelverhagen/TorSharp/issues/new) so I can look into it.
+1. [Open an issue](https://github.com/joelverhagen/TorSharp/issues/new) so I can look into it.
 
-1. Investigating the issue yourself. The
+1. Work around the issue by setting up the tools manually and not using `TorSharpToolFetcher`.
+   [See below](#how-do-i-set-up-the-tools-manually).
+
+1. Investigate the issue yourself. The
    [TorSharp.Sandbox](https://github.com/joelverhagen/TorSharp/blob/release/TorSharp.Sandbox/Program.cs) project is
-   helpful for this.
-
-1. Work around the issue by seting up the tools manually and not using `TorSharpToolFetcher`. See below.
+   helpful for this. Pull requests accepted 🏆.
 
 ### How do I set up the tools manually?
 
