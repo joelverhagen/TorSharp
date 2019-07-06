@@ -186,7 +186,15 @@ namespace Knapcode.TorSharp
                 Directory.Delete(tool.DirectoryPath, true);
             }
 
-            ZipFile.ExtractToDirectory(tool.ZipPath, tool.DirectoryPath);
+            try
+            {
+                ZipFile.ExtractToDirectory(tool.ZipPath, tool.DirectoryPath);
+            }
+            catch (InvalidDataException ex)
+            {
+                throw new TorSharpException($"Failed to extract tool '{tool.Name}'. Verify that the .zip at path '{tool.ZipPath}' is valid.", ex);
+            }
+
             if (!tool.Settings.IsNested)
             {
                 return true;

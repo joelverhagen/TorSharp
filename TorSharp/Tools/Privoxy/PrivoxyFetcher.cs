@@ -78,7 +78,6 @@ namespace Knapcode.TorSharp.Tools.Privoxy
                 token);
         }
 
-
         private async Task<DownloadableFile> GetLatestOrNullFromRssAsync(
             Uri baseUrl,
             CancellationToken token,
@@ -114,10 +113,12 @@ namespace Knapcode.TorSharp.Tools.Privoxy
             }
 
             var name = latest.Title.Text.Split('/').Last();
+            var downloadUrl = latest.Links.First().Uri;
             return new DownloadableFile
             {
                 Name = name,
-                GetContentAsync = () => _httpClient.GetStreamAsync(latest.Links.First().Uri)
+                GetContentAsync = () => _httpClient.GetStreamAsync(downloadUrl),
+                Url = downloadUrl,
             };
         }
 

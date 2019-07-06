@@ -60,6 +60,7 @@ namespace Knapcode.TorSharp.Tools
             {
                 Name = name,
                 GetContentAsync = () => httpClient.GetStreamAsync(downloadUrl),
+                Url = downloadUrl,
             };
         }
 

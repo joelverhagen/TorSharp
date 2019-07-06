@@ -8,5 +8,6 @@ namespace Knapcode.TorSharp.Tools
     {
         public Func<Task<Stream>> GetContentAsync { get; set; }
         public string Name { get; set; }
+        public Uri Url { get; set; }
     }
 }

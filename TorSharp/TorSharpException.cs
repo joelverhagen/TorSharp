@@ -10,6 +10,10 @@ namespace Knapcode.TorSharp
         {
         }
 
+        public TorSharpException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+
         protected TorSharpException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }

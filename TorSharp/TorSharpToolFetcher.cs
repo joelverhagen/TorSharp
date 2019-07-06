@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.IO.Compression;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -70,10 +71,39 @@ namespace Knapcode.TorSharp
             string filePath = Path.Combine(_settings.ZippedToolsDirectory, file.Name);
             if (!File.Exists(filePath) || _settings.ReloadTools)
             {
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                try
                 {
-                    var contentStream = await file.GetContentAsync().ConfigureAwait(false);
-                    await contentStream.CopyToAsync(fileStream).ConfigureAwait(false);
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        var contentStream = await file.GetContentAsync().ConfigureAwait(false);
+                        await contentStream.CopyToAsync(fileStream).ConfigureAwait(false);
+                    }
+
+                    try
+                    {
+                        using (var fileStream = new FileStream(filePath, FileMode.Open))
+                        using (var zipArchive = new ZipArchive(fileStream, ZipArchiveMode.Read))
+                        {
+                            var entries = zipArchive.Entries;
+                        }
+                    }
+                    catch (InvalidDataException ex)
+                    {
+                        throw new TorSharpException($"The tool downloaded from '{file.Url.AbsoluteUri}' could not be read as a ZIP file.", ex);
+                    }
+                }
+                catch
+                {
+                    try
+                    {
+                        File.Delete(filePath);
+                    }
+                    catch
+                    {
+                        // Best effort.
+                    }
+
+                    throw;
                 }
             }
         }
