@@ -3,6 +3,9 @@ using System.IO;
 
 namespace Knapcode.TorSharp
 {
+    /// <summary>
+    /// Settings for how TorSharp behaves.
+    /// </summary>
     public class TorSharpSettings
     {
         public static readonly string DefaultToolsDirectory = Path.Combine(Path.GetTempPath(), "Knapcode.TorSharp");

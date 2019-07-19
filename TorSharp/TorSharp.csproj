@@ -11,6 +11,8 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -47,7 +49,6 @@
     <Compile Include="Adapters\IRandomFactory.cs" />
     <Compile Include="Adapters\RandomFactory.cs" />
     <Compile Include="ToolUtility.cs" />
-    <Compile Include="ITorSharpProxy.cs" />
     <Compile Include="ToolRunnerType.cs" />
     <Compile Include="Tools\IConfigurationDictionary.cs" />
     <Compile Include="Tools\IFileFetcher.cs" />

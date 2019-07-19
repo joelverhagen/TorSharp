@@ -6,8 +6,14 @@ using Knapcode.TorSharp.Tools;
 
 namespace Knapcode.TorSharp
 {
+    /// <summary>
+    /// A support utility for reading the directory containing the tools.
+    /// </summary>
     public static class ToolUtility
     {
+        /// <summary>
+        /// Settings expressing the shape of the Privoxy tool directory.
+        /// </summary>
         public static ToolSettings PrivoxySettings => new ToolSettings
         {
             Name = "Privoxy",
@@ -19,6 +25,9 @@ namespace Knapcode.TorSharp
             GetArguments = t => new[] { '\"' + t.ConfigurationPath + '\"' }
         };
 
+        /// <summary>
+        /// Settings expressing the shape of the Tor tool directory.
+        /// </summary>
         public static ToolSettings TorSettings => new ToolSettings
         {
             Name = "Tor",
@@ -30,17 +39,24 @@ namespace Knapcode.TorSharp
             GetArguments = t => new[] { "-f", '\"' + t.ConfigurationPath + '\"' }
         };
 
-        public static Tool GetLatestToolOrNull(TorSharpSettings settings, ToolSettings toolSettings)
+        /// <summary>
+        /// Read the <see cref="TorSharpSettings.ZippedToolsDirectory"/> and find the latest tool matching the criteria
+        /// in the provided <paramref name="toolSettings"/>. If none is found return null.
+        /// </summary>
+        /// <param name="zippedToolsDirectory">The directory to check.</param>
+        /// <param name="toolSettings">The settings for the tool.</param>
+        /// <returns>The tool, or null if none was found.</returns>
+        public static Tool GetLatestToolOrNull(string zippedToolsDirectory, ToolSettings toolSettings)
         {
             string[] zipPaths = Directory
-                .EnumerateFiles(settings.ZippedToolsDirectory, GetPattern(toolSettings), SearchOption.TopDirectoryOnly)
+                .EnumerateFiles(zippedToolsDirectory, GetPattern(toolSettings), SearchOption.TopDirectoryOnly)
                 .ToArray();
 
             var versions = new List<Tool>();
             foreach (string zipPath in zipPaths)
             {
                 string withoutExtension = Path.GetFileNameWithoutExtension(zipPath);
-                string directoryPath = Path.Combine(settings.ExtractedToolsDirectory, withoutExtension);
+                string directoryPath = Path.Combine(zippedToolsDirectory, withoutExtension);
                 string version = withoutExtension.Substring(toolSettings.Prefix.Length);
                 if (!Version.TryParse(version, out var parsedVersion))
                 {
@@ -65,15 +81,23 @@ namespace Knapcode.TorSharp
                 .FirstOrDefault();
         }
 
-        public static Tool GetLatestTool(TorSharpSettings settings, ToolSettings toolSettings)
+        /// <summary>
+        /// Read the <see cref="TorSharpSettings.ZippedToolsDirectory"/> and find the latest tool matching the criteria
+        /// in the provided <paramref name="toolSettings"/>. If none is found throw an exception.
+        /// </summary>
+        /// <param name="zippedToolsDirectory">The directory to check.</param>
+        /// <param name="toolSettings">The settings for the tool.</param>
+        /// <returns>The tool.</returns>
+        /// <exception cref="TorSharpException">Thrown if now tool is found.</exception>
+        public static Tool GetLatestTool(string zippedToolsDirectory, ToolSettings toolSettings)
         {
-            var tool = GetLatestToolOrNull(settings, toolSettings);
+            var tool = GetLatestToolOrNull(zippedToolsDirectory, toolSettings);
 
             if (tool == null)
             {
                 throw new TorSharpException(
                     $"No version of {toolSettings.Name} ({GetPattern(toolSettings)}) was found under " +
-                    $"{settings.ZippedToolsDirectory}.");
+                    $"{zippedToolsDirectory}.");
             }
 
             return tool;

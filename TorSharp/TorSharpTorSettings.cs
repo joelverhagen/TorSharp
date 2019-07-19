@@ -1,10 +1,16 @@
 ﻿namespace Knapcode.TorSharp
 {
+    /// <summary>
+    /// Settings specific to Tor.
+    /// </summary>
     public class TorSharpTorSettings
     {
         internal const int DefaultSocksPort = 19050;
         internal const int DefaultControlPort = 19051;
 
+        /// <summary>
+        /// Initializes an instance of the TorSharp settings with default ports set.
+        /// </summary>
         public TorSharpTorSettings()
         {
             SocksPort = DefaultSocksPort;

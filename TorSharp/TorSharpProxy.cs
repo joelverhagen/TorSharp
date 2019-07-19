@@ -10,6 +10,17 @@ using Knapcode.TorSharp.Tools.Tor;
 
 namespace Knapcode.TorSharp
 {
+    public interface ITorSharpProxy : IDisposable
+    {
+        Task ConfigureAndStartAsync();
+        Task GetNewIdentityAsync();
+        void Stop();
+    }
+
+    /// <summary>
+    /// The main proxy controller implementation. This class handles extracting the tools (Privoxy and Tor),
+    /// configuring them, starting them, and stopping them.
+    /// </summary>
     public class TorSharpProxy : ITorSharpProxy
     {
         private bool _initialized;
@@ -19,9 +30,13 @@ namespace Knapcode.TorSharp
         private Tool _tor;
         private Tool _privoxy;
 
+        /// <summary>
+        /// Initializes an instance of the proxy controller.
+        /// </summary>
+        /// <param name="settings">The settings to dictate the proxy's behavior.</param>
         public TorSharpProxy(TorSharpSettings settings)
         {
-            _settings = settings;
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _torPasswordHasher = new TorPasswordHasher(new RandomFactory());
             _toolRunner =
                 settings.ToolRunnerType == ToolRunnerType.VirtualDesktop
@@ -29,6 +44,10 @@ namespace Knapcode.TorSharp
                     : new SimpleToolRunner();
         }
 
+        /// <summary>
+        /// Configure the tools and start them.
+        /// </summary>
+        /// <returns>A task.</returns>
         public async Task ConfigureAndStartAsync()
         {
             if (!_initialized)
@@ -55,6 +74,10 @@ namespace Knapcode.TorSharp
             await ConfigureAndStartAsync(_privoxy, new PrivoxyConfigurationDictionary()).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Tell Tor to clean the circuit and get a new identity.
+        /// </summary>
+        /// <returns>A task.</returns>
         public async Task GetNewIdentityAsync()
         {
             using (var client = new TorControlClient())
@@ -66,6 +89,10 @@ namespace Knapcode.TorSharp
             }
         }
 
+
+        /// <summary>
+        /// Stop the tools so that the proxy is no longer listening on the configured port.
+        /// </summary>
         public void Stop()
         {
             if (_initialized)
@@ -77,7 +104,7 @@ namespace Knapcode.TorSharp
 
         private Tool Extract(ToolSettings toolSettings)
         {
-            Tool tool = ToolUtility.GetLatestTool(_settings, toolSettings);
+            Tool tool = ToolUtility.GetLatestTool(_settings.ZippedToolsDirectory, toolSettings);
 
             ExtractTool(tool, _settings.ReloadTools);
             return tool;
@@ -107,10 +134,6 @@ namespace Knapcode.TorSharp
             return directory;
         }
 
-        /// <summary>Extracts the provided tool.</summary>
-        /// <param name="tool">The tool to extract.</param>
-        /// <param name="reloadTool">Whether or not to reload the tool to the disk whether or not it already exists.</param>
-        /// <returns>True if the tool was extracted, false if the tool already existed.</returns>
         private bool ExtractTool(Tool tool, bool reloadTool)
         {
             if (!reloadTool && File.Exists(tool.ExecutablePath))

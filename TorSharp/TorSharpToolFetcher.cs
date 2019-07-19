@@ -15,6 +15,9 @@ namespace Knapcode.TorSharp
         Task FetchAsync();
     }
 
+    /// <summary>
+    /// Fetch the latest version of the tools from the internet.
+    /// </summary>
     public class TorSharpToolFetcher : ITorSharpToolFetcher
     {
         private static bool SecureProtocolsEnabled = false;
@@ -30,6 +33,11 @@ namespace Knapcode.TorSharp
             _torFetcher = new TorFetcher(client);   
         }
 
+        /// <summary>
+        /// Downloads the latest version of the tools to the configured
+        /// <see cref="TorSharpSettings.ZippedToolsDirectory"/>.
+        /// </summary>
+        /// <returns>A task.</returns>
         public async Task FetchAsync()
         {
             Directory.CreateDirectory(_settings.ZippedToolsDirectory);
@@ -41,7 +49,7 @@ namespace Knapcode.TorSharp
         {
             if (_settings.UseExistingTools)
             {
-                var tool = ToolUtility.GetLatestToolOrNull(_settings, toolSettings);
+                var tool = ToolUtility.GetLatestToolOrNull(_settings.ZippedToolsDirectory, toolSettings);
                 if (tool != null)
                 {
                     return;

@@ -47,8 +47,8 @@ namespace Knapcode.TorSharp.Tests
 
                     // Assert
                     Assert.Equal(requestCount, requestCountHandler.RequestCount);
-                    Assert.NotNull(ToolUtility.GetLatestToolOrNull(settings, ToolUtility.PrivoxySettings));
-                    Assert.NotNull(ToolUtility.GetLatestToolOrNull(settings, ToolUtility.TorSettings));
+                    Assert.NotNull(ToolUtility.GetLatestToolOrNull(settings.ZippedToolsDirectory, ToolUtility.PrivoxySettings));
+                    Assert.NotNull(ToolUtility.GetLatestToolOrNull(settings.ZippedToolsDirectory, ToolUtility.TorSettings));
                 }
             }
         }

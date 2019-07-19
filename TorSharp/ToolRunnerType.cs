@@ -1,4 +1,6 @@
-﻿namespace Knapcode.TorSharp
+﻿using Knapcode.TorSharp.Tools;
+
+namespace Knapcode.TorSharp
 {
     /// <summary>
     /// The types of tools runner.
