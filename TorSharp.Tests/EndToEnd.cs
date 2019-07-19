@@ -24,6 +24,36 @@ namespace Knapcode.TorSharp.Tests
         }
 
         [Fact]
+        public async Task TorSharpToolFetcher_UseExistingTools()
+        {
+            using (var te = TestEnvironment.Initialize(_output))
+            {
+                // Arrange
+                var settings = te.BuildSettings();
+                settings.ReloadTools = true;
+                settings.UseExistingTools = true;
+
+                using (var httpClientHandler = new HttpClientHandler())
+                using (var requestCountHandler = new RequestCountHandler { InnerHandler = httpClientHandler })
+                using (var httpClient = new HttpClient(requestCountHandler))
+                using (var proxy = new TorSharpProxy(settings))
+                {
+                    TraceSettings(settings);
+                    await new TorSharpToolFetcher(settings, httpClient).FetchAsync();
+                    var requestCount = requestCountHandler.RequestCount;
+
+                    // Act
+                    await new TorSharpToolFetcher(settings, httpClient).FetchAsync();
+
+                    // Assert
+                    Assert.Equal(requestCount, requestCountHandler.RequestCount);
+                    Assert.NotNull(ToolUtility.GetLatestToolOrNull(settings, ToolUtility.PrivoxySettings));
+                    Assert.NotNull(ToolUtility.GetLatestToolOrNull(settings, ToolUtility.TorSettings));
+                }
+            }
+        }
+
+        [Fact]
         public async Task VirtualDesktopToolRunner_ConfigurationPathsWithSpaces()
         {
             using (var te = TestEnvironment.Initialize(_output))

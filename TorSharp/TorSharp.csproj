@@ -46,6 +46,7 @@
     <Compile Include="Adapters\IRandom.cs" />
     <Compile Include="Adapters\IRandomFactory.cs" />
     <Compile Include="Adapters\RandomFactory.cs" />
+    <Compile Include="ToolUtility.cs" />
     <Compile Include="ITorSharpProxy.cs" />
     <Compile Include="ToolRunnerType.cs" />
     <Compile Include="Tools\IConfigurationDictionary.cs" />

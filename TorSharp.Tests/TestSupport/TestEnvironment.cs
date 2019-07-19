@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Linq;
 using Xunit.Abstractions;
 
 namespace Knapcode.TorSharp.Tests.TestSupport

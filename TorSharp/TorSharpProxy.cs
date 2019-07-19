@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -13,28 +12,6 @@ namespace Knapcode.TorSharp
 {
     public class TorSharpProxy : ITorSharpProxy
     {
-        private static readonly ToolSettings PrivoxyToolSettings = new ToolSettings
-        {
-            Name = "Privoxy",
-            Prefix = "privoxy-",
-            ExecutablePath = "privoxy.exe",
-            WorkingDirectory = ".",
-            ConfigurationPath = "config.txt",
-            IsNested = true,
-            GetArguments = t => new[] { '\"' + t.ConfigurationPath + '\"' }
-        };
-
-        private static readonly ToolSettings TorToolSettings = new ToolSettings
-        {
-            Name = "Tor",
-            Prefix = "tor-win32-",
-            ExecutablePath = @"Tor\tor.exe",
-            WorkingDirectory = @"Tor",
-            ConfigurationPath = @"Data\Tor\torrc",
-            IsNested = false,
-            GetArguments = t => new[] { "-f", '\"' + t.ConfigurationPath + '\"' }
-        };
-        
         private bool _initialized;
         private readonly TorSharpSettings _settings;
         private readonly IToolRunner _toolRunner;
@@ -66,8 +43,8 @@ namespace Knapcode.TorSharp
             _settings.ZippedToolsDirectory = GetAbsoluteCreate(_settings.ZippedToolsDirectory);
             _settings.ExtractedToolsDirectory = GetAbsoluteCreate(_settings.ExtractedToolsDirectory);
 
-            _tor = Extract(TorToolSettings);
-            _privoxy = Extract(PrivoxyToolSettings);
+            _tor = Extract(ToolUtility.TorSettings);
+            _privoxy = Extract(ToolUtility.PrivoxySettings);
 
             if (_settings.TorSettings.ControlPassword != null && _settings.TorSettings.HashedControlPassword == null)
             {
@@ -100,7 +77,8 @@ namespace Knapcode.TorSharp
 
         private Tool Extract(ToolSettings toolSettings)
         {
-            Tool tool = GetLatestTool(toolSettings);
+            Tool tool = ToolUtility.GetLatestTool(_settings, toolSettings);
+
             ExtractTool(tool, _settings.ReloadTools);
             return tool;
         }
@@ -127,47 +105,6 @@ namespace Knapcode.TorSharp
             }
 
             return directory;
-        }
-
-        private Tool GetLatestTool(ToolSettings toolSettings)
-        {
-            var pattern = $"{toolSettings.Prefix}*.zip";
-            string[] zipPaths = Directory
-                .EnumerateFiles(_settings.ZippedToolsDirectory, $"{toolSettings.Prefix}*.zip", SearchOption.TopDirectoryOnly)
-                .ToArray();
-
-            var versions = new List<Tool>();
-            foreach (string zipPath in zipPaths)
-            {
-                string withoutExtension = Path.GetFileNameWithoutExtension(zipPath);
-                string directoryPath = Path.Combine(_settings.ExtractedToolsDirectory, withoutExtension);
-                string version = withoutExtension.Substring(toolSettings.Prefix.Length);
-                if (!Version.TryParse(version, out var parsedVersion))
-                {
-                    continue;
-                }
-
-                versions.Add(new Tool
-                {
-                    Name = toolSettings.Name,
-                    Settings = toolSettings,
-                    ZipPath = zipPath,
-                    DirectoryPath = directoryPath,
-                    Version = version,
-                    ExecutablePath = Path.Combine(directoryPath, toolSettings.ExecutablePath),
-                    WorkingDirectory = Path.Combine(directoryPath, toolSettings.WorkingDirectory),
-                    ConfigurationPath = Path.Combine(directoryPath, toolSettings.ConfigurationPath)
-                });
-            }
-
-            if (versions.Count == 0)
-            {
-                throw new TorSharpException($"No version of {toolSettings.Name} ({pattern}) was found under {_settings.ZippedToolsDirectory}.");
-            }
-
-            return versions
-                .OrderByDescending(t => Version.Parse(t.Version))
-                .First();
         }
 
         /// <summary>Extracts the provided tool.</summary>

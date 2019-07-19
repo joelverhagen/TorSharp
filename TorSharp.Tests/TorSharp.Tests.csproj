@@ -67,6 +67,7 @@
   <ItemGroup>
     <Compile Include="EndToEnd.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestSupport\RequestCountHandler.cs" />
     <Compile Include="TestSupport\ReservedPort.cs" />
     <Compile Include="TestSupport\ReservedPorts.cs" />
     <Compile Include="TestSupport\TestEnvironment.cs" />

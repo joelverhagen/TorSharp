@@ -32,41 +32,24 @@ namespace Knapcode.TorSharp
 
         public async Task FetchAsync()
         {
-            // If configured, enable all security protocols (a.k.a SSL/TLS protocols). This is necessary, for example,
-            // because SourceForge requires at least TLS 1.1 and some .NET clients don't have this enabled. To minimize
-            // the change of connection failure, enabled all protocols.
-            if (_settings.EnableSecurityProtocolsForFetcher && !SecureProtocolsEnabled)
-            {
-                var protocols = new[]
-                {
-                    SecurityProtocolType.Ssl3,
-                    SecurityProtocolType.Tls,
-                    SecurityProtocolType.Tls11,
-                    SecurityProtocolType.Tls12
-                };
-
-                foreach (var protocol in protocols)
-                {
-                    try
-                    {
-                        ServicePointManager.SecurityProtocol |= protocol;
-                    }
-                    catch (NotSupportedException)
-                    {
-                        // Not much we can do if the protocol isn't supported. Move on and try the next one.
-                    }
-                }
-
-                SecureProtocolsEnabled = true;
-            }
-
             Directory.CreateDirectory(_settings.ZippedToolsDirectory);
-            await DownloadFileAsync(_privoxyFetcher).ConfigureAwait(false);
-            await DownloadFileAsync(_torFetcher).ConfigureAwait(false);
+            await DownloadFileAsync(_privoxyFetcher, ToolUtility.PrivoxySettings).ConfigureAwait(false);
+            await DownloadFileAsync(_torFetcher, ToolUtility.TorSettings).ConfigureAwait(false);
         }
 
-        private async Task DownloadFileAsync(IFileFetcher fetcher)
+        private async Task DownloadFileAsync(IFileFetcher fetcher, ToolSettings toolSettings)
         {
+            if (_settings.UseExistingTools)
+            {
+                var tool = ToolUtility.GetLatestToolOrNull(_settings, toolSettings);
+                if (tool != null)
+                {
+                    return;
+                }
+            }
+
+            EnableSecurityProtocols();
+
             var file = await fetcher.GetLatestAsync().ConfigureAwait(false);
             string filePath = Path.Combine(_settings.ZippedToolsDirectory, file.Name);
             if (!File.Exists(filePath) || _settings.ReloadTools)
@@ -105,6 +88,37 @@ namespace Knapcode.TorSharp
 
                     throw;
                 }
+            }
+        }
+
+        private void EnableSecurityProtocols()
+        {
+            // If configured, enable all security protocols (a.k.a SSL/TLS protocols). This is necessary, for example,
+            // because SourceForge requires at least TLS 1.1 and some .NET clients don't have this enabled. To minimize
+            // the change of connection failure, enabled all protocols.
+            if (_settings.EnableSecurityProtocolsForFetcher && !SecureProtocolsEnabled)
+            {
+                var protocols = new[]
+                {
+                    SecurityProtocolType.Ssl3,
+                    SecurityProtocolType.Tls,
+                    SecurityProtocolType.Tls11,
+                    SecurityProtocolType.Tls12
+                };
+
+                foreach (var protocol in protocols)
+                {
+                    try
+                    {
+                        ServicePointManager.SecurityProtocol |= protocol;
+                    }
+                    catch (NotSupportedException)
+                    {
+                        // Not much we can do if the protocol isn't supported. Move on and try the next one.
+                    }
+                }
+
+                SecureProtocolsEnabled = true;
             }
         }
     }

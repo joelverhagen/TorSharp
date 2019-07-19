@@ -49,6 +49,12 @@ namespace Knapcode.TorSharp
         public string ExtractedToolsDirectory { get; set; }
 
         /// <summary>
+        /// Instead of downloading the latest version of the tools in <see cref="TorSharpToolFetcher"/>, use any
+        /// existing tools already downloaded to <see cref="ZippedToolsDirectory"/>.
+        /// </summary>
+        public bool UseExistingTools { get; set; }
+
+        /// <summary>
         /// Settings specific to Privoxy.
         /// </summary>
         public TorSharpPrivoxySettings PrivoxySettings { get; set; }
