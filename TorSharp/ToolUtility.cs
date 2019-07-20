@@ -48,6 +48,11 @@ namespace Knapcode.TorSharp
         /// <returns>The tool, or null if none was found.</returns>
         public static Tool GetLatestToolOrNull(string zippedToolsDirectory, ToolSettings toolSettings)
         {
+            if (!Directory.Exists(zippedToolsDirectory))
+            {
+                return null;
+            }
+
             string[] zipPaths = Directory
                 .EnumerateFiles(zippedToolsDirectory, GetPattern(toolSettings), SearchOption.TopDirectoryOnly)
                 .ToArray();

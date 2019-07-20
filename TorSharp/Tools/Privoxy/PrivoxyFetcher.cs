@@ -117,7 +117,6 @@ namespace Knapcode.TorSharp.Tools.Privoxy
             return new DownloadableFile
             {
                 Name = name,
-                GetContentAsync = () => _httpClient.GetStreamAsync(downloadUrl),
                 Url = downloadUrl,
             };
         }

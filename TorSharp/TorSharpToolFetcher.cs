@@ -12,7 +12,9 @@ namespace Knapcode.TorSharp
 {
     public interface ITorSharpToolFetcher
     {
+        Task<ToolUpdates> CheckForUpdatesAsync();
         Task FetchAsync();
+        Task FetchAsync(ToolUpdates updates);
     }
 
     /// <summary>
@@ -23,56 +25,142 @@ namespace Knapcode.TorSharp
         private static bool SecureProtocolsEnabled = false;
 
         private readonly TorSharpSettings _settings;
+        private readonly HttpClient _httpClient;
         private readonly PrivoxyFetcher _privoxyFetcher;
         private readonly TorFetcher _torFetcher;
 
         public TorSharpToolFetcher(TorSharpSettings settings, HttpClient client)
         {
             _settings = settings;
+            _httpClient = client;
             _privoxyFetcher = new PrivoxyFetcher(client);
             _torFetcher = new TorFetcher(client);   
         }
 
         /// <summary>
-        /// Downloads the latest version of the tools to the configured
+        /// Checks for updates of the tools and returns what is found. Inspect the
+        /// <see cref="ToolUpdates.HasUpdate"/> property to determine whether updates are available. This is
+        /// determined by checking the the latest versions are already downloads to the
         /// <see cref="TorSharpSettings.ZippedToolsDirectory"/>.
         /// </summary>
-        /// <returns>A task.</returns>
-        public async Task FetchAsync()
+        /// <returns>Information about whether there are tool updates.</returns>
+        public async Task<ToolUpdates> CheckForUpdatesAsync()
         {
-            Directory.CreateDirectory(_settings.ZippedToolsDirectory);
-            await DownloadFileAsync(_privoxyFetcher, ToolUtility.PrivoxySettings).ConfigureAwait(false);
-            await DownloadFileAsync(_torFetcher, ToolUtility.TorSettings).ConfigureAwait(false);
+            var updates = await CheckForUpdatesAsync(allowExistingTools: false);
+            return new ToolUpdates(updates.Privoxy, updates.Tor);
         }
 
-        private async Task DownloadFileAsync(IFileFetcher fetcher, ToolSettings toolSettings)
+        private async Task<PartialToolUpdates> CheckForUpdatesAsync(bool allowExistingTools)
         {
-            if (_settings.UseExistingTools)
+            var privoxy = await CheckForUpdateAsync(
+                ToolUtility.PrivoxySettings,
+                _privoxyFetcher,
+                allowExistingTools).ConfigureAwait(false);
+
+            var tor = await CheckForUpdateAsync(
+                ToolUtility.TorSettings,
+                _torFetcher,
+                allowExistingTools).ConfigureAwait(false);
+
+            return new PartialToolUpdates
             {
-                var tool = ToolUtility.GetLatestToolOrNull(_settings.ZippedToolsDirectory, toolSettings);
-                if (tool != null)
-                {
-                    return;
-                }
+                Privoxy = privoxy,
+                Tor = tor,
+            };
+        }
+
+        private async Task<ToolUpdate> CheckForUpdateAsync(
+            ToolSettings toolSettings,
+            IFileFetcher fetcher,
+            bool useExistingTools)
+        {
+            var latestLocal = ToolUtility.GetLatestToolOrNull(_settings.ZippedToolsDirectory, toolSettings);
+            if (useExistingTools && latestLocal != null)
+            {
+                return null;
             }
 
             EnableSecurityProtocols();
 
-            var file = await fetcher.GetLatestAsync().ConfigureAwait(false);
-            string filePath = Path.Combine(_settings.ZippedToolsDirectory, file.Name);
-            if (!File.Exists(filePath) || _settings.ReloadTools)
+            var latestDownload = await fetcher.GetLatestAsync().ConfigureAwait(false);
+            var destinationPath = Path.Combine(_settings.ZippedToolsDirectory, latestDownload.Name);
+
+            ToolUpdateStatus status;
+            if (latestLocal == null)
             {
+                status = ToolUpdateStatus.NoLocalVersion;
+            }
+            else if (!File.Exists(destinationPath))
+            {
+                status = ToolUpdateStatus.NewerVersionAvailable;
+            }
+            else
+            {
+                status = ToolUpdateStatus.NoUpdateAvailable;
+            }
+
+            return new ToolUpdate(
+                status,
+                destinationPath,
+                latestDownload);
+        }
+
+        /// <summary>
+        /// Downloads the latest version of the tools to the configured
+        /// <see cref="TorSharpSettings.ZippedToolsDirectory"/> given the tool updates already discoved. This should
+        /// be called after getting the result of <see cref="CheckForUpdatesAsync()"/>.
+        /// </summary>
+        /// <param name="updates">The updates to download.</param>
+        /// <returns>A task.</returns>
+        public async Task FetchAsync(ToolUpdates updates)
+        {
+            if (updates == null)
+            {
+                throw new ArgumentNullException(nameof(updates));
+            }
+
+            await DownloadFileAsync(updates.Privoxy).ConfigureAwait(false);
+            await DownloadFileAsync(updates.Tor).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Downloads the latest version of the tools to the configured
+        /// <see cref="TorSharpSettings.ZippedToolsDirectory"/>. This method always tries to download the latest
+        /// version of the tools unless <see cref="TorSharpSettings.UseExistingTools"/> is set to true.
+        /// </summary>
+        /// <returns>A task.</returns>
+        public async Task FetchAsync()
+        {
+            var updates = await CheckForUpdatesAsync(_settings.UseExistingTools);
+
+            if (updates.Privoxy != null)
+            {
+                await DownloadFileAsync(updates.Privoxy).ConfigureAwait(false);
+            }
+
+            if (updates.Tor != null)
+            {
+                await DownloadFileAsync(updates.Tor).ConfigureAwait(false);
+            }
+        }
+
+        private async Task DownloadFileAsync(ToolUpdate update)
+        {
+            if (update.Status != ToolUpdateStatus.NoUpdateAvailable || _settings.ReloadTools)
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(update.DestinationPath));
+
                 try
                 {
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    using (var fileStream = new FileStream(update.DestinationPath, FileMode.Create))
+                    using (var contentStream = await _httpClient.GetStreamAsync(update.LatestDownload.Url))
                     {
-                        var contentStream = await file.GetContentAsync().ConfigureAwait(false);
                         await contentStream.CopyToAsync(fileStream).ConfigureAwait(false);
                     }
 
                     try
                     {
-                        using (var fileStream = new FileStream(filePath, FileMode.Open))
+                        using (var fileStream = new FileStream(update.DestinationPath, FileMode.Open))
                         using (var zipArchive = new ZipArchive(fileStream, ZipArchiveMode.Read))
                         {
                             var entries = zipArchive.Entries;
@@ -80,14 +168,14 @@ namespace Knapcode.TorSharp
                     }
                     catch (InvalidDataException ex)
                     {
-                        throw new TorSharpException($"The tool downloaded from '{file.Url.AbsoluteUri}' could not be read as a ZIP file.", ex);
+                        throw new TorSharpException($"The tool downloaded from '{update.LatestDownload.Url.AbsoluteUri}' could not be read as a ZIP file.", ex);
                     }
                 }
                 catch
                 {
                     try
                     {
-                        File.Delete(filePath);
+                        File.Delete(update.DestinationPath);
                     }
                     catch
                     {
@@ -128,6 +216,12 @@ namespace Knapcode.TorSharp
 
                 SecureProtocolsEnabled = true;
             }
+        }
+
+        private class PartialToolUpdates
+        {
+            public ToolUpdate Privoxy { get; set; }
+            public ToolUpdate Tor { get; set; }
         }
     }
 }

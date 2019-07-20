@@ -48,6 +48,9 @@
     <Compile Include="Adapters\IRandom.cs" />
     <Compile Include="Adapters\IRandomFactory.cs" />
     <Compile Include="Adapters\RandomFactory.cs" />
+    <Compile Include="ToolUpdate.cs" />
+    <Compile Include="ToolUpdates.cs" />
+    <Compile Include="ToolUpdateStatus.cs" />
     <Compile Include="ToolUtility.cs" />
     <Compile Include="ToolRunnerType.cs" />
     <Compile Include="Tools\IConfigurationDictionary.cs" />

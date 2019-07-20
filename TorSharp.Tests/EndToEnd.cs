@@ -24,6 +24,45 @@ namespace Knapcode.TorSharp.Tests
         }
 
         [Fact]
+        public async Task TorSharpToolFetcher_CheckForUpdates()
+        {
+            using (var te = TestEnvironment.Initialize(_output))
+            {
+                // Arrange
+                var settings = te.BuildSettings();
+
+                using (var httpClient = new HttpClient())
+                using (var proxy = new TorSharpProxy(settings))
+                {
+                    TraceSettings(settings);
+                    var fetcher = new TorSharpToolFetcher(settings, httpClient);
+                    var fakeOldPrivoxy = Path.Combine(settings.ZippedToolsDirectory, "privoxy-0.0.1.zip");
+
+                    // Act
+                    var initial = await fetcher.CheckForUpdatesAsync();
+                    await fetcher.FetchAsync(initial);
+                    File.Move(initial.Privoxy.DestinationPath, fakeOldPrivoxy);
+                    var newerVersion = await fetcher.CheckForUpdatesAsync();
+                    await fetcher.FetchAsync(newerVersion);
+                    var upToDate = await fetcher.CheckForUpdatesAsync();
+
+                    // Assert
+                    Assert.True(initial.HasUpdate);
+                    Assert.Equal(ToolUpdateStatus.NoLocalVersion, initial.Privoxy.Status);
+                    Assert.Equal(ToolUpdateStatus.NoLocalVersion, initial.Tor.Status);
+
+                    Assert.True(newerVersion.HasUpdate);
+                    Assert.Equal(ToolUpdateStatus.NewerVersionAvailable, newerVersion.Privoxy.Status);
+                    Assert.Equal(ToolUpdateStatus.NoUpdateAvailable, newerVersion.Tor.Status);
+
+                    Assert.False(upToDate.HasUpdate);
+                    Assert.Equal(ToolUpdateStatus.NoUpdateAvailable, upToDate.Privoxy.Status);
+                    Assert.Equal(ToolUpdateStatus.NoUpdateAvailable, upToDate.Tor.Status);
+                }
+            }
+        }
+
+        [Fact]
         public async Task TorSharpToolFetcher_UseExistingTools()
         {
             using (var te = TestEnvironment.Initialize(_output))
@@ -46,6 +85,7 @@ namespace Knapcode.TorSharp.Tests
                     await new TorSharpToolFetcher(settings, httpClient).FetchAsync();
 
                     // Assert
+                    Assert.True(requestCount > 0, "The should be at least one request.");
                     Assert.Equal(requestCount, requestCountHandler.RequestCount);
                     Assert.NotNull(ToolUtility.GetLatestToolOrNull(settings.ZippedToolsDirectory, ToolUtility.PrivoxySettings));
                     Assert.NotNull(ToolUtility.GetLatestToolOrNull(settings.ZippedToolsDirectory, ToolUtility.TorSettings));
