@@ -15,11 +15,11 @@ namespace Knapcode.TorSharp.Tools
             Uri requestUri,
             CancellationToken token)
         {
-            using (var response = await httpClient.GetAsync(requestUri, token))
+            using (var response = await httpClient.GetAsync(requestUri, token).ConfigureAwait(false))
             {
                 response.EnsureSuccessStatusCode();
 
-                return await response.Content.ReadAsStringAsync();
+                return await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             }
         }
 
@@ -30,43 +30,46 @@ namespace Knapcode.TorSharp.Tools
             CancellationToken token)
         {
             var versionsContent = await httpClient.GetStringAsync(baseUrl, token).ConfigureAwait(false);
-            var versions = GetLinks(versionsContent)
+            var versionInfos = GetLinks(versionsContent)
                 .Select(x => new { Link = x, Version = GetVersion(x) })
                 .Where(x => x.Version != null)
                 .OrderByDescending(x => x.Version);
 
-            string relativePath = null;
-            Uri listUrl = null;
-            foreach (var version in versions)
+            Uri downloadUrl = null;
+            foreach (var versionInfo in versionInfos)
             {
-                listUrl = new Uri(baseUrl, version.Link);
+                var listUrl = new Uri(baseUrl, versionInfo.Link);
                 var listContent = await httpClient.GetStringAsync(listUrl, token).ConfigureAwait(false);
-                relativePath = GetLinks(listContent).FirstOrDefault(x => Regex.IsMatch(x, fileNamePattern, RegexOptions.IgnoreCase));
-                if (relativePath != null)
+
+                foreach (var link in GetLinks(listContent))
                 {
-                    break;
+                    var match = Regex.Match(link, fileNamePattern, RegexOptions.IgnoreCase);
+                    if (!match.Success)
+                    {
+                        continue;
+                    }
+
+                    // Get the version from the download URL, not the version list URL.
+                    if (!Version.TryParse(match.Groups["Version"].Value, out var parsedVersion))
+                    {
+                        continue;
+                    }
+
+                    downloadUrl = new Uri(listUrl, link);
+
+                    return new DownloadableFile(
+                        parsedVersion,
+                        downloadUrl);
                 }
             }
 
-            if (relativePath == null)
-            {
-                return null;
-            }
-
-            var downloadUrl = new Uri(listUrl, relativePath);
-            var name = relativePath.Split('/').Last();
-
-            return new DownloadableFile
-            {
-                Name = name,
-                Url = downloadUrl,
-            };
+            return null;
         }
 
         private static Version GetVersion(string link)
         {
             var last = Regex
-                .Matches(link, @"(?<Version>\d+(?:\.\d+)+)[ /]")
+                .Matches(link, @"(?<Version>\d+(?:\.\d+)+)( |%20|/)")
                 .OfType<Match>()
                 .LastOrDefault();
 
@@ -75,8 +78,7 @@ namespace Knapcode.TorSharp.Tools
                 return null;
             }
 
-            Version version;
-            if (!Version.TryParse(last.Groups["Version"].Value, out version))
+            if (!Version.TryParse(last.Groups["Version"].Value, out var version))
             {
                 return null;
             }

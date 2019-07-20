@@ -104,7 +104,9 @@ namespace Knapcode.TorSharp
 
         private Tool Extract(ToolSettings toolSettings)
         {
-            Tool tool = ToolUtility.GetLatestTool(_settings.ZippedToolsDirectory, toolSettings);
+            Tool tool = ToolUtility.GetLatestTool(
+                _settings,
+                toolSettings);
 
             ExtractTool(tool, _settings.ReloadTools);
             return tool;

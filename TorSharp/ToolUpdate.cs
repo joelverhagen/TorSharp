@@ -1,4 +1,5 @@
-﻿using Knapcode.TorSharp.Tools;
+﻿using System;
+using Knapcode.TorSharp.Tools;
 
 namespace Knapcode.TorSharp
 {
@@ -6,12 +7,14 @@ namespace Knapcode.TorSharp
     {
         public ToolUpdate(
             ToolUpdateStatus status,
+            Version localVersion,
             string destinationPath,
             DownloadableFile latestDownload)
         {
             Status = status;
-            DestinationPath = destinationPath;
-            LatestDownload = latestDownload;
+            LocalVersion = localVersion;
+            DestinationPath = destinationPath ?? throw new ArgumentNullException(nameof(destinationPath));
+            LatestDownload = latestDownload ?? throw new ArgumentNullException(nameof(latestDownload));
         }
 
         /// <summary>
@@ -27,6 +30,12 @@ namespace Knapcode.TorSharp
         }
 
         public ToolUpdateStatus Status { get; }
+
+        /// <summary>
+        /// The latest local version. Null if no local version exists as indicated by <see cref="Status"/> with a value
+        /// of <see cref="ToolUpdateStatus.NoLocalVersion"/>.
+        /// </summary>
+        public Version LocalVersion { get; }
 
         /// <summary>
         /// The path that <see cref="LatestDownload"/> would be downloaded to by <see cref="TorSharpToolFetcher"/>.

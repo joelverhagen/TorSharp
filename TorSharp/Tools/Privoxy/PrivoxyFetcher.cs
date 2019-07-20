@@ -13,18 +13,41 @@ namespace Knapcode.TorSharp.Tools.Privoxy
 {
     public class PrivoxyFetcher : IFileFetcher
     {
+        private const string FileNamePattern = @"privoxy[-_](?<Version>[\d\.]+)\.zip$";
+
         private static readonly Uri PrivoxyBaseUrl = new Uri("https://www.privoxy.org/feeds/privoxy-releases.xml");
         private static readonly Uri SourceForgeBaseUrl = new Uri("https://sourceforge.net/projects/ijbswa/rss?path=/Win32");
         private static readonly Uri PrivoxyMirrorBaseUrl = new Uri("https://www.silvester.org.uk/privoxy/Windows/");
 
         private readonly HttpClient _httpClient;
+        private readonly TorSharpSettings _settings;
 
-        public PrivoxyFetcher(HttpClient httpClient)
+        public PrivoxyFetcher(TorSharpSettings settings, HttpClient httpClient)
         {
             _httpClient = httpClient;
+            _settings = settings;
         }
 
         public async Task<DownloadableFile> GetLatestAsync()
+        {
+            switch (_settings.ToolDownloadStrategy)
+            {
+                case ToolDownloadStrategy.First:
+                    {
+                        var results = await GetResultsAsync(takeFirst: true).ConfigureAwait(false);
+                        return results[0];
+                    }
+                case ToolDownloadStrategy.Latest:
+                    {
+                        var results = await GetResultsAsync(takeFirst: false).ConfigureAwait(false);
+                        return results.OrderByDescending(x => x.Version).First();
+                    }
+                default:
+                    throw new NotImplementedException($"The tool download strategy '{_settings.ToolDownloadStrategy}' is not supported.");
+            }
+        }
+
+        private async Task<List<DownloadableFile>> GetResultsAsync(bool takeFirst)
         {
             var cts = new CancellationTokenSource();
 
@@ -34,10 +57,10 @@ namespace Knapcode.TorSharp.Tools.Privoxy
                 GetLatestOrNullFromRssAsync(SourceForgeBaseUrl, cts.Token),
                 GetLatestOrNullFromFileListingAsync(PrivoxyMirrorBaseUrl, cts.Token),
             };
+            var results = new List<DownloadableFile>();
             var faults = new List<Task<DownloadableFile>>();
 
-            DownloadableFile result = null;
-            while (tasks.Any() && result == null)
+            while (tasks.Any() && (!takeFirst || (takeFirst && results.Count == 0)))
             {
                 var nextTask = await Task.WhenAny(tasks).ConfigureAwait(false);
                 tasks.Remove(nextTask);
@@ -48,13 +71,13 @@ namespace Knapcode.TorSharp.Tools.Privoxy
                 }
                 else
                 {
-                    result = nextTask.Result;
+                    results.Add(nextTask.Result);
                 }
             }
 
             cts.Cancel();
 
-            if (result == null)
+            if (results.Count == 0)
             {
                 if (faults.Any())
                 {
@@ -64,18 +87,20 @@ namespace Knapcode.TorSharp.Tools.Privoxy
                 throw new TorSharpException($"No version of Privoxy could be found.");
             }
 
-            return result;
+            return results;
         }
 
         private async Task<DownloadableFile> GetLatestOrNullFromFileListingAsync(
             Uri baseUrl,
             CancellationToken token)
         {
+            await Task.Yield();
+
             return await FetcherHelpers.GetLatestDownloadableFileAsync(
                 _httpClient,
                 baseUrl,
-                @"privoxy-.+\.zip$",
-                token);
+                FileNamePattern,
+                token).ConfigureAwait(false);
         }
 
         private async Task<DownloadableFile> GetLatestOrNullFromRssAsync(
@@ -83,6 +108,8 @@ namespace Knapcode.TorSharp.Tools.Privoxy
             CancellationToken token,
             Func<SyndicationItem, bool> predicate = null)
         {
+            await Task.Yield();
+
             SyndicationFeed syndicationFeed;
             using (var response = await _httpClient.GetAsync(baseUrl, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false))
             {
@@ -100,25 +127,29 @@ namespace Knapcode.TorSharp.Tools.Privoxy
                 }
             }
 
-            var latest = syndicationFeed
+            return syndicationFeed
                 .Items
                 .Where(i => i.Links.Any())
                 .Where(predicate ?? (i => true))
-                .OrderByDescending(i => i.PublishDate)
-                .FirstOrDefault(TitleEndsWithPrivoxyZip);
+                .Where(TitleEndsWithPrivoxyZip)
+                .Select(GetDownloadableFile)
+                .Where(x => x != null)
+                .OrderByDescending(x => x.Version)
+                .FirstOrDefault();
+        }
 
-            if (latest == null)
+        private DownloadableFile GetDownloadableFile(SyndicationItem match)
+        {
+            var fileName = match.Title.Text.Split('/').Last();
+            string withoutExtension = Path.GetFileNameWithoutExtension(fileName);
+            string version = withoutExtension.Substring(ToolUtility.PrivoxySettings.Prefix.Length);
+            if (!Version.TryParse(version, out var parsedVersion))
             {
                 return null;
             }
 
-            var name = latest.Title.Text.Split('/').Last();
-            var downloadUrl = latest.Links.First().Uri;
-            return new DownloadableFile
-            {
-                Name = name,
-                Url = downloadUrl,
-            };
+            var downloadUrl = match.Links.First().Uri;
+            return new DownloadableFile(parsedVersion, downloadUrl);
         }
 
         private static bool TitleStartWithWin32(SyndicationItem i)
@@ -128,7 +159,7 @@ namespace Knapcode.TorSharp.Tools.Privoxy
 
         private static bool TitleEndsWithPrivoxyZip(SyndicationItem item)
         {
-            return Regex.IsMatch(item.Title.Text, @"privoxy-[\d\.]+\.zip$", RegexOptions.IgnoreCase);
+            return Regex.IsMatch(item.Title.Text, FileNamePattern, RegexOptions.IgnoreCase);
         }
     }
 }

@@ -58,6 +58,12 @@ namespace Knapcode.TorSharp
         public bool UseExistingTools { get; set; }
 
         /// <summary>
+        /// What strategy to use when fetching the latest version of a tool. This behavior matters when there are
+        /// multiple URLs or feeds that a checked for a single tool.
+        /// </summary>
+        public ToolDownloadStrategy ToolDownloadStrategy { get; set; }
+
+        /// <summary>
         /// Settings specific to Privoxy.
         /// </summary>
         public TorSharpPrivoxySettings PrivoxySettings { get; set; }

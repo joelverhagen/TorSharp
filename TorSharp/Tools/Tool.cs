@@ -1,3 +1,5 @@
+using System;
+
 namespace Knapcode.TorSharp.Tools
 {
     public class Tool
@@ -5,7 +7,7 @@ namespace Knapcode.TorSharp.Tools
         public ToolSettings Settings { get; set; }
         public string Name { get; set; }
         public string ZipPath { get; set; }
-        public string Version { get; set; }
+        public Version Version { get; set; }
         public string DirectoryPath { get; set; }
         public string ExecutablePath { get; set; }
         public string WorkingDirectory { get; set; }

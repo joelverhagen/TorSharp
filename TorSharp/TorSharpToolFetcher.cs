@@ -33,7 +33,7 @@ namespace Knapcode.TorSharp
         {
             _settings = settings;
             _httpClient = client;
-            _privoxyFetcher = new PrivoxyFetcher(client);
+            _privoxyFetcher = new PrivoxyFetcher(settings, client);
             _torFetcher = new TorFetcher(client);   
         }
 
@@ -46,7 +46,7 @@ namespace Knapcode.TorSharp
         /// <returns>Information about whether there are tool updates.</returns>
         public async Task<ToolUpdates> CheckForUpdatesAsync()
         {
-            var updates = await CheckForUpdatesAsync(allowExistingTools: false);
+            var updates = await CheckForUpdatesAsync(allowExistingTools: false).ConfigureAwait(false);
             return new ToolUpdates(updates.Privoxy, updates.Tor);
         }
 
@@ -74,7 +74,7 @@ namespace Knapcode.TorSharp
             IFileFetcher fetcher,
             bool useExistingTools)
         {
-            var latestLocal = ToolUtility.GetLatestToolOrNull(_settings.ZippedToolsDirectory, toolSettings);
+            var latestLocal = ToolUtility.GetLatestToolOrNull(_settings, toolSettings);
             if (useExistingTools && latestLocal != null)
             {
                 return null;
@@ -83,7 +83,8 @@ namespace Knapcode.TorSharp
             EnableSecurityProtocols();
 
             var latestDownload = await fetcher.GetLatestAsync().ConfigureAwait(false);
-            var destinationPath = Path.Combine(_settings.ZippedToolsDirectory, latestDownload.Name);
+            var fileName = $"{toolSettings.Prefix}{latestDownload.Version}.zip";
+            var destinationPath = Path.Combine(_settings.ZippedToolsDirectory, fileName);
 
             ToolUpdateStatus status;
             if (latestLocal == null)
@@ -101,6 +102,7 @@ namespace Knapcode.TorSharp
 
             return new ToolUpdate(
                 status,
+                latestLocal?.Version,
                 destinationPath,
                 latestDownload);
         }
@@ -131,7 +133,7 @@ namespace Knapcode.TorSharp
         /// <returns>A task.</returns>
         public async Task FetchAsync()
         {
-            var updates = await CheckForUpdatesAsync(_settings.UseExistingTools);
+            var updates = await CheckForUpdatesAsync(_settings.UseExistingTools).ConfigureAwait(false);
 
             if (updates.Privoxy != null)
             {
@@ -153,7 +155,7 @@ namespace Knapcode.TorSharp
                 try
                 {
                     using (var fileStream = new FileStream(update.DestinationPath, FileMode.Create))
-                    using (var contentStream = await _httpClient.GetStreamAsync(update.LatestDownload.Url))
+                    using (var contentStream = await _httpClient.GetStreamAsync(update.LatestDownload.Url).ConfigureAwait(false))
                     {
                         await contentStream.CopyToAsync(fileStream).ConfigureAwait(false);
                     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
@@ -87,8 +88,8 @@ namespace Knapcode.TorSharp.Tests
                     // Assert
                     Assert.True(requestCount > 0, "The should be at least one request.");
                     Assert.Equal(requestCount, requestCountHandler.RequestCount);
-                    Assert.NotNull(ToolUtility.GetLatestToolOrNull(settings.ZippedToolsDirectory, ToolUtility.PrivoxySettings));
-                    Assert.NotNull(ToolUtility.GetLatestToolOrNull(settings.ZippedToolsDirectory, ToolUtility.TorSettings));
+                    Assert.NotNull(ToolUtility.GetLatestToolOrNull(settings, ToolUtility.PrivoxySettings));
+                    Assert.NotNull(ToolUtility.GetLatestToolOrNull(settings, ToolUtility.TorSettings));
                 }
             }
         }
@@ -179,12 +180,13 @@ namespace Knapcode.TorSharp.Tests
         private async Task ExecuteEndToEndTestAsync(TorSharpSettings settings)
         {
             // Arrange
+            using (var httpClient = new HttpClient())
             using (var proxy = new TorSharpProxy(settings))
             {
                 TraceSettings(settings);
 
                 // Act
-                await new TorSharpToolFetcher(settings, new HttpClient()).FetchAsync();
+                await new TorSharpToolFetcher(settings, httpClient).FetchAsync();
                 _output.WriteLine("The tools have been fetched");
                 await proxy.ConfigureAndStartAsync();
                 _output.WriteLine("The proxy has been started");
@@ -198,6 +200,16 @@ namespace Knapcode.TorSharp.Tests
                 // Assert
                 Assert.Equal(AddressFamily.InterNetwork, ipA.AddressFamily);
                 Assert.Equal(AddressFamily.InterNetwork, ipB.AddressFamily);
+
+                var zippedDir = new DirectoryInfo(settings.ZippedToolsDirectory);
+                Assert.True(zippedDir.Exists, "The zipped tools directory should exist.");
+                Assert.Equal(0, zippedDir.EnumerateDirectories().Count());
+                Assert.Equal(2, zippedDir.EnumerateFiles().Count());
+
+                var extractedDir = new DirectoryInfo(settings.ExtractedToolsDirectory);
+                Assert.True(extractedDir.Exists, "The extracted tools directory should exist.");
+                Assert.Equal(2, extractedDir.EnumerateDirectories().Count());
+                Assert.Equal(0, extractedDir.EnumerateFiles().Count());
             }
         }
 
@@ -223,6 +235,7 @@ namespace Knapcode.TorSharp.Tests
                 Proxy = new WebProxy(new Uri("http://localhost:" + settings.PrivoxySettings.Port))
             };
 
+            using (handler)
             using (var httpClient = new HttpClient(handler))
             {
                 var ip = (await httpClient.GetStringAsync("https://api.ipify.org")).Trim();

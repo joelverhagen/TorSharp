@@ -20,13 +20,12 @@ namespace Knapcode.TorSharp.Tools.Tor
             var downloadableFile = await FetcherHelpers.GetLatestDownloadableFileAsync(
                 _httpClient,
                 BaseUrl,
-                @"^tor-win32-.+\.zip$",
-                CancellationToken.None);
+                @"tor-win32-(?<Version>[\d\.]+)\.zip$",
+                CancellationToken.None).ConfigureAwait(false);
 
             if (downloadableFile == null)
             {
                 throw new TorSharpException($"No version of Tor could be found under base URL {BaseUrl}.");
-
             }
 
             return downloadableFile;
