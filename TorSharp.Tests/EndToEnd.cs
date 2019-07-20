@@ -238,6 +238,8 @@ namespace Knapcode.TorSharp.Tests
             using (handler)
             using (var httpClient = new HttpClient(handler))
             {
+                httpClient.Timeout = TimeSpan.FromSeconds(60);
+
                 var ip = (await httpClient.GetStringAsync("https://api.ipify.org")).Trim();
                 _output.WriteLine($"Get IP succeeded: {ip}");
                 return IPAddress.Parse(ip);
