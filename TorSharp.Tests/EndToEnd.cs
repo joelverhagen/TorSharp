@@ -6,8 +6,6 @@ using System.Net.Http;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using Knapcode.TorSharp.Tests.TestSupport;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using Proxy;
 using Proxy.Configurations;
 using Xunit;
@@ -22,76 +20,6 @@ namespace Knapcode.TorSharp.Tests
         public EndToEnd(ITestOutputHelper output)
         {
             _output = output;
-        }
-
-        [Fact]
-        public async Task TorSharpToolFetcher_CheckForUpdates()
-        {
-            using (var te = TestEnvironment.Initialize(_output))
-            {
-                // Arrange
-                var settings = te.BuildSettings();
-
-                using (var httpClient = new HttpClient())
-                using (var proxy = new TorSharpProxy(settings))
-                {
-                    TraceSettings(settings);
-                    var fetcher = new TorSharpToolFetcher(settings, httpClient);
-                    var fakeOldPrivoxy = Path.Combine(settings.ZippedToolsDirectory, "privoxy-0.0.1.zip");
-
-                    // Act
-                    var initial = await fetcher.CheckForUpdatesAsync();
-                    await fetcher.FetchAsync(initial);
-                    File.Move(initial.Privoxy.DestinationPath, fakeOldPrivoxy);
-                    var newerVersion = await fetcher.CheckForUpdatesAsync();
-                    await fetcher.FetchAsync(newerVersion);
-                    var upToDate = await fetcher.CheckForUpdatesAsync();
-
-                    // Assert
-                    Assert.True(initial.HasUpdate);
-                    Assert.Equal(ToolUpdateStatus.NoLocalVersion, initial.Privoxy.Status);
-                    Assert.Equal(ToolUpdateStatus.NoLocalVersion, initial.Tor.Status);
-
-                    Assert.True(newerVersion.HasUpdate);
-                    Assert.Equal(ToolUpdateStatus.NewerVersionAvailable, newerVersion.Privoxy.Status);
-                    Assert.Equal(ToolUpdateStatus.NoUpdateAvailable, newerVersion.Tor.Status);
-
-                    Assert.False(upToDate.HasUpdate);
-                    Assert.Equal(ToolUpdateStatus.NoUpdateAvailable, upToDate.Privoxy.Status);
-                    Assert.Equal(ToolUpdateStatus.NoUpdateAvailable, upToDate.Tor.Status);
-                }
-            }
-        }
-
-        [Fact]
-        public async Task TorSharpToolFetcher_UseExistingTools()
-        {
-            using (var te = TestEnvironment.Initialize(_output))
-            {
-                // Arrange
-                var settings = te.BuildSettings();
-                settings.ReloadTools = true;
-                settings.UseExistingTools = true;
-
-                using (var httpClientHandler = new HttpClientHandler())
-                using (var requestCountHandler = new RequestCountHandler { InnerHandler = httpClientHandler })
-                using (var httpClient = new HttpClient(requestCountHandler))
-                using (var proxy = new TorSharpProxy(settings))
-                {
-                    TraceSettings(settings);
-                    await new TorSharpToolFetcher(settings, httpClient).FetchAsync();
-                    var requestCount = requestCountHandler.RequestCount;
-
-                    // Act
-                    await new TorSharpToolFetcher(settings, httpClient).FetchAsync();
-
-                    // Assert
-                    Assert.True(requestCount > 0, "The should be at least one request.");
-                    Assert.Equal(requestCount, requestCountHandler.RequestCount);
-                    Assert.NotNull(ToolUtility.GetLatestToolOrNull(settings, ToolUtility.PrivoxySettings));
-                    Assert.NotNull(ToolUtility.GetLatestToolOrNull(settings, ToolUtility.TorSettings));
-                }
-            }
         }
 
         [Fact]
@@ -183,7 +111,7 @@ namespace Knapcode.TorSharp.Tests
             using (var httpClient = new HttpClient())
             using (var proxy = new TorSharpProxy(settings))
             {
-                TraceSettings(settings);
+                _output.WriteLine(settings);
 
                 // Act
                 await new TorSharpToolFetcher(settings, httpClient).FetchAsync();
@@ -192,10 +120,10 @@ namespace Knapcode.TorSharp.Tests
                 _output.WriteLine("The proxy has been started");
 
                 // get the first identity
-                var ipA = await GetCurrentIpAddressAsync(settings);
+                var ipA = await GetCurrentIpAddressAsync(proxy, settings);
                 await proxy.GetNewIdentityAsync();
                 _output.WriteLine("Get new identity succeeded");
-                var ipB = await GetCurrentIpAddressAsync(settings);
+                var ipB = await GetCurrentIpAddressAsync(proxy, settings);
                 
                 // Assert
                 Assert.Equal(AddressFamily.InterNetwork, ipA.AddressFamily);
@@ -213,37 +141,37 @@ namespace Knapcode.TorSharp.Tests
             }
         }
 
-        private void TraceSettings(TorSharpSettings settings)
+        private async Task<IPAddress> GetCurrentIpAddressAsync(TorSharpProxy proxy, TorSharpSettings settings)
         {
-            var serializerSettings = new JsonSerializerSettings
+            const int maxAttempts = 3;
+            for (var attempt = 1; attempt <= maxAttempts; attempt++)
             {
-                Converters =
+                try
                 {
-                    new StringEnumConverter()
+
+                    var handler = new HttpClientHandler
+                    {
+                        Proxy = new WebProxy(new Uri("http://localhost:" + settings.PrivoxySettings.Port))
+                    };
+
+                    using (handler)
+                    using (var httpClient = new HttpClient(handler))
+                    {
+                        httpClient.Timeout = TimeSpan.FromSeconds(60);
+
+                        var ip = (await httpClient.GetStringAsync("https://api.ipify.org")).Trim();
+                        _output.WriteLine($"Get IP succeeded: {ip}");
+                        return IPAddress.Parse(ip);
+                    }
                 }
-            };
-
-            var json = JsonConvert.SerializeObject(settings, Formatting.Indented, serializerSettings);
-
-            _output.WriteLine("TorSharpSettings:" + Environment.NewLine + json);
-        }
-
-        private async Task<IPAddress> GetCurrentIpAddressAsync(TorSharpSettings settings)
-        {
-            var handler = new HttpClientHandler
-            {
-                Proxy = new WebProxy(new Uri("http://localhost:" + settings.PrivoxySettings.Port))
-            };
-
-            using (handler)
-            using (var httpClient = new HttpClient(handler))
-            {
-                httpClient.Timeout = TimeSpan.FromSeconds(60);
-
-                var ip = (await httpClient.GetStringAsync("https://api.ipify.org")).Trim();
-                _output.WriteLine($"Get IP succeeded: {ip}");
-                return IPAddress.Parse(ip);
+                catch (Exception ex) when (attempt < maxAttempts)
+                {
+                    _output.WriteLine($"[Attempt {attempt}] An exception was thrown while fetching an IP. Retrying." + Environment.NewLine + ex);
+                    await proxy.GetNewIdentityAsync();
+                }
             }
+
+            throw new NotImplementedException();
         }
     }
 }
