@@ -47,14 +47,17 @@ namespace Knapcode.TorSharp.Tests
         [Theory]
         [InlineData(ToolDownloadStrategy.First)]
         [InlineData(ToolDownloadStrategy.Latest)]
-        public async Task TorSharpToolFetcher_CheckForUpdates()
+        public async Task TorSharpToolFetcher_CheckForUpdates(ToolDownloadStrategy strategy)
         {
             using (var te = TestEnvironment.Initialize(_output))
             {
                 // Arrange
                 var settings = te.BuildSettings();
+                settings.ToolDownloadStrategy = strategy;
 
-                using (var httpClient = new HttpClient())
+                using (var httpClientHandler = new HttpClientHandler())
+                using (var loggingHandler = new LoggingHandler(_output) { InnerHandler = httpClientHandler })
+                using (var httpClient = new HttpClient(loggingHandler))
                 using (var proxy = new TorSharpProxy(settings))
                 {
                     _output.WriteLine(settings);
@@ -97,6 +100,7 @@ namespace Knapcode.TorSharp.Tests
 
                 using (var httpClientHandler = new HttpClientHandler())
                 using (var requestCountHandler = new RequestCountHandler { InnerHandler = httpClientHandler })
+                using (var loggingHandler = new LoggingHandler(_output) { InnerHandler = requestCountHandler })
                 using (var httpClient = new HttpClient(requestCountHandler))
                 using (var proxy = new TorSharpProxy(settings))
                 {
