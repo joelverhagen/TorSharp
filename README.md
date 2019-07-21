@@ -4,7 +4,8 @@ Use Tor for your C# HTTP clients. Tor + Privoxy = :heart:
 
 All you need is client code that can use a simple HTTP proxy.
 
-[![Build status](https://img.shields.io/appveyor/ci/joelverhagen/torsharp.svg)](https://ci.appveyor.com/project/joelverhagen/torsharp)
+[![Build status](https://img.shields.io/appveyor/ci/joelverhagen/torsharp.svg)](https://ci.appveyor.com/project/joelverhagen/torsharp) [![NuGet version](https://img.shields.io/nuget/v/Knapcode.TorSharp.svg)](https://www.nuget.org/packages/Knapcode.TorSharp) ![NuGet downloads](https://img.shields.io/nuget/dt/Knapcode.TorSharp.svg)
+
 
 ## Details
 
@@ -17,8 +18,6 @@ All you need is client code that can use a simple HTTP proxy.
 ```
 Install-Package Knapcode.TorSharp
 ```
-
-[![NuGet version](https://img.shields.io/nuget/v/Knapcode.TorSharp.svg)](https://www.nuget.org/packages/Knapcode.TorSharp)
 
 ## Example
 
