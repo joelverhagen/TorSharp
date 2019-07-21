@@ -17,6 +17,36 @@ namespace Knapcode.TorSharp.Tests
         }
 
         [Fact]
+        public async Task TorSharpToolFetch_AllResultsAreWorking()
+        {
+            using (var te = TestEnvironment.Initialize(_output))
+            {
+                // Arrange
+                var settings = te.BuildSettings();
+                settings.ToolDownloadStrategy = ToolDownloadStrategy.All;
+
+                using (var httpClientHandler = new HttpClientHandler())
+                using (var loggingHandler = new LoggingHandler(_output) { InnerHandler = httpClientHandler })
+                using (var httpClient = new HttpClient(loggingHandler))
+                using (var proxy = new TorSharpProxy(settings))
+                {
+                    _output.WriteLine(settings);
+                    var fetcher = new TorSharpToolFetcher(settings, httpClient);
+
+                    // Act
+                    var updates = await fetcher.CheckForUpdatesAsync();
+
+                    // Assert
+                    Assert.NotNull(updates);
+                    _output.WriteLine("Privoxy URL: " + updates.Privoxy.LatestDownload.Url.AbsoluteUri);
+                    _output.WriteLine("Tor URL: " + updates.Tor.LatestDownload.Url.AbsoluteUri);
+                }
+            }
+        }
+
+        [Theory]
+        [InlineData(ToolDownloadStrategy.First)]
+        [InlineData(ToolDownloadStrategy.Latest)]
         public async Task TorSharpToolFetcher_CheckForUpdates()
         {
             using (var te = TestEnvironment.Initialize(_output))

@@ -38,8 +38,17 @@ namespace Knapcode.TorSharp.Tools.Privoxy
                         return results[0];
                     }
                 case ToolDownloadStrategy.Latest:
+                case ToolDownloadStrategy.All:
                     {
                         var results = await GetResultsAsync(takeFirst: false).ConfigureAwait(false);
+
+                        const int maxCount = 3;
+                        if (_settings.ToolDownloadStrategy == ToolDownloadStrategy.All
+                            && results.Count != maxCount)
+                        {
+                            throw new TorSharpException($"{maxCount - results.Count} out of the {maxCount} Privoxy URLs is not working.");
+                        }
+
                         return results.OrderByDescending(x => x.Version).First();
                     }
                 default:

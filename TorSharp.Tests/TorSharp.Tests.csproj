@@ -66,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EndToEnd.cs" />
+    <Compile Include="TestSupport\LoggingHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestSupport\Extensions.cs" />
     <Compile Include="TestSupport\RequestCountHandler.cs" />
