@@ -131,13 +131,13 @@ namespace Knapcode.TorSharp.Tests
 
                 var zippedDir = new DirectoryInfo(settings.ZippedToolsDirectory);
                 Assert.True(zippedDir.Exists, "The zipped tools directory should exist.");
-                Assert.Equal(0, zippedDir.EnumerateDirectories().Count());
+                Assert.Empty(zippedDir.EnumerateDirectories());
                 Assert.Equal(2, zippedDir.EnumerateFiles().Count());
 
                 var extractedDir = new DirectoryInfo(settings.ExtractedToolsDirectory);
                 Assert.True(extractedDir.Exists, "The extracted tools directory should exist.");
                 Assert.Equal(2, extractedDir.EnumerateDirectories().Count());
-                Assert.Equal(0, extractedDir.EnumerateFiles().Count());
+                Assert.Empty(extractedDir.EnumerateFiles());
             }
         }
 

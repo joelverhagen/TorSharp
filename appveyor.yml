@@ -1,11 +1,8 @@
-version: 1.8.{build}
-image: Visual Studio 2017
-before_build:
-- cmd: nuget restore
-build:
-  verbosity: minimal
+image: Visual Studio 2019
+install:
+- ps: .\build\set-version.ps1
+- ps: Update-AppveyorBuild -Version $env:TorSharpVersion
+build_script:
+- ps: .\build.ps1
 test_script:
-- cmd: >-
-    "%APPVEYOR_BUILD_FOLDER%\packages\xunit.runner.console.2.1.0\tools\xunit.console.x86.exe" "%APPVEYOR_BUILD_FOLDER%\artifacts\TorSharp\TorSharp.Tests\bin\Debug\Knapcode.TorSharp.Tests.dll" -appveyor
-
-    "%APPVEYOR_BUILD_FOLDER%\packages\xunit.runner.console.2.1.0\tools\xunit.console.exe" "%APPVEYOR_BUILD_FOLDER%\artifacts\TorSharp\TorSharp.Tests\bin\Debug\Knapcode.TorSharp.Tests.dll" -appveyor
+- ps: .\test.ps1

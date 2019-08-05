@@ -1,21 +1,31 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2003
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29123.88
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TorSharp", "TorSharp\TorSharp.csproj", "{F62B195D-145F-4DA4-A4DE-638E423E5D93}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TorSharp", "TorSharp\TorSharp.csproj", "{F62B195D-145F-4DA4-A4DE-638E423E5D93}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TorSharp.Sandbox", "TorSharp.Sandbox\TorSharp.Sandbox.csproj", "{B1B318A7-A085-401E-96D3-320FE1066C45}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TorSharp.Sandbox", "TorSharp.Sandbox\TorSharp.Sandbox.csproj", "{B1B318A7-A085-401E-96D3-320FE1066C45}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{164BF19B-98C4-49FF-989B-499EB0E71B8A}"
 	ProjectSection(SolutionItems) = preProject
 		appveyor.yml = appveyor.yml
+		build.ps1 = build.ps1
 		Directory.Build.props = Directory.Build.props
 		LICENSE = LICENSE
+		packages.config = packages.config
 		README.md = README.md
+		test.ps1 = test.ps1
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TorSharp.Tests", "TorSharp.Tests\TorSharp.Tests.csproj", "{22C1582F-8723-428E-8098-0B179E9DE361}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TorSharp.Tests", "TorSharp.Tests\TorSharp.Tests.csproj", "{22C1582F-8723-428E-8098-0B179E9DE361}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{43D2C9DB-0DE5-4B6C-9A4C-0627B748FC15}"
+	ProjectSection(SolutionItems) = preProject
+		build\common.ps1 = build\common.ps1
+		build\set-version.ps1 = build\set-version.ps1
+		build\version.txt = build\version.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +48,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{43D2C9DB-0DE5-4B6C-9A4C-0627B748FC15} = {164BF19B-98C4-49FF-989B-499EB0E71B8A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C9D31863-62E3-48E8-AF13-1E5EE3A20A37}
