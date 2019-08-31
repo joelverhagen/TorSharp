@@ -17,6 +17,7 @@
     <RepositoryUrl>https://github.com/joelverhagen/TorSharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>
+      * 1.9.1 Fix null reference exception in TorControlClient.Dispose().
       * 1.9.0 Add UseExistingTools and CheckForUpdatesAsync so that TorSharpToolFetcher can not download so much.
       * 1.8.6 Improve error experience when one of the tool ZIP files is invalid.
       * 1.8.5 Add ListenAddress to TorSharpPrivoxySettings to allow external connections.
