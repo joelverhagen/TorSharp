@@ -30,7 +30,6 @@ namespace Knapcode.TorSharp.Sandbox
                     ControlPort = 1339,
                     ControlPassword = "foobar",
                 },
-                ToolRunnerType = ToolRunnerType.VirtualDesktop,
             };
 
             // download tools

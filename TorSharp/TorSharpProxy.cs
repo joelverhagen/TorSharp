@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
-using System.Linq;
+using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 using Knapcode.TorSharp.Adapters;
 using Knapcode.TorSharp.Tools;
@@ -23,6 +24,8 @@ namespace Knapcode.TorSharp
     /// </summary>
     public class TorSharpProxy : ITorSharpProxy
     {
+        private const string TorHostName = "localhost";
+
         private bool _initialized;
         private readonly TorSharpSettings _settings;
         private readonly IToolRunner _toolRunner;
@@ -38,10 +41,22 @@ namespace Knapcode.TorSharp
         {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _torPasswordHasher = new TorPasswordHasher(new RandomFactory());
-            _toolRunner =
-                settings.ToolRunnerType == ToolRunnerType.VirtualDesktop
-                    ? (IToolRunner)new VirtualDesktopToolRunner()
-                    : new SimpleToolRunner();
+
+            switch (settings.ToolRunnerType)
+            {
+                case ToolRunnerType.Simple:
+                    _toolRunner = new SimpleToolRunner();
+                    break;
+                case ToolRunnerType.VirtualDesktop:
+                    if (settings.OSPlatform != TorSharpOSPlatform.Windows)
+                    {
+                        settings.RejectRuntime($"use the {nameof(ToolRunnerType.VirtualDesktop)} tool runner");
+                    }
+                    _toolRunner = new VirtualDesktopToolRunner();
+                    break;
+                default:
+                    throw new NotImplementedException($"The '{settings.ToolRunnerType}' tool runner is not supported.");
+            }
         }
 
         /// <summary>
@@ -62,16 +77,22 @@ namespace Knapcode.TorSharp
             _settings.ZippedToolsDirectory = GetAbsoluteCreate(_settings.ZippedToolsDirectory);
             _settings.ExtractedToolsDirectory = GetAbsoluteCreate(_settings.ExtractedToolsDirectory);
 
-            _tor = Extract(ToolUtility.TorSettings);
-            _privoxy = Extract(ToolUtility.PrivoxySettings);
+            var torToolSettings = ToolUtility.GetTorToolSettings(_settings);
+            var privoxyToolSettings = ToolUtility.GetPrivoxyToolSettings(_settings);
+
+            _tor = await ExtractAsync(torToolSettings).ConfigureAwait(false);
+            _privoxy = await ExtractAsync(privoxyToolSettings).ConfigureAwait(false);
 
             if (_settings.TorSettings.ControlPassword != null && _settings.TorSettings.HashedControlPassword == null)
             {
                 _settings.TorSettings.HashedControlPassword = _torPasswordHasher.HashPassword(_settings.TorSettings.ControlPassword);
             }
 
-            await ConfigureAndStartAsync(_tor, new TorConfigurationDictionary(_tor.DirectoryPath)).ConfigureAwait(false);
+            await ConfigureAndStartAsync(_tor, new TorConfigurationDictionary()).ConfigureAwait(false);
             await ConfigureAndStartAsync(_privoxy, new PrivoxyConfigurationDictionary()).ConfigureAwait(false);
+
+            WaitForConnect(TorHostName, _settings.TorSettings.SocksPort);
+            WaitForConnect(_settings.PrivoxySettings.ListenAddress, _settings.PrivoxySettings.Port);
         }
 
         /// <summary>
@@ -82,7 +103,7 @@ namespace Knapcode.TorSharp
         {
             using (var client = new TorControlClient())
             {
-                await client.ConnectAsync("localhost", _settings.TorSettings.ControlPort).ConfigureAwait(false);
+                await client.ConnectAsync(TorHostName, _settings.TorSettings.ControlPort).ConfigureAwait(false);
                 await client.AuthenticateAsync(_settings.TorSettings.ControlPassword).ConfigureAwait(false);
                 await client.CleanCircuitsAsync().ConfigureAwait(false);
                 await client.QuitAsync().ConfigureAwait(false);
@@ -102,20 +123,24 @@ namespace Knapcode.TorSharp
             }
         }
 
-        private Tool Extract(ToolSettings toolSettings)
+        private async Task<Tool> ExtractAsync(ToolSettings toolSettings)
         {
-            Tool tool = ToolUtility.GetLatestTool(
-                _settings,
-                toolSettings);
+            var tool = ToolUtility.GetLatestToolOrNull(_settings, toolSettings);
+            if (tool == null)
+            {
+                throw new TorSharpException(
+                    $"No version of {toolSettings.Name} was found under {_settings.ZippedToolsDirectory}.");
+            }
 
-            ExtractTool(tool, _settings.ReloadTools);
+            await ExtractToolAsync(tool, _settings.ReloadTools).ConfigureAwait(false);
+
             return tool;
         }
 
         private async Task<Tool> ConfigureAndStartAsync(Tool tool, IConfigurationDictionary configurationDictionary)
         {
             var configurer = new LineByLineConfigurer(configurationDictionary, new ConfigurationFormat());
-            await configurer.ApplySettings(tool.ConfigurationPath, _settings).ConfigureAwait(false);
+            await configurer.ApplySettings(tool, _settings).ConfigureAwait(false);
             await _toolRunner.StartAsync(tool).ConfigureAwait(false);
             return tool;
         }
@@ -136,7 +161,7 @@ namespace Knapcode.TorSharp
             return directory;
         }
 
-        private bool ExtractTool(Tool tool, bool reloadTool)
+        private async Task<bool> ExtractToolAsync(Tool tool, bool reloadTool)
         {
             if (!reloadTool && File.Exists(tool.ExecutablePath))
             {
@@ -150,57 +175,63 @@ namespace Knapcode.TorSharp
 
             try
             {
-                ZipFile.ExtractToDirectory(tool.ZipPath, tool.DirectoryPath);
+                await ArchiveUtility.ExtractAsync(
+                    tool.Settings.ZippedToolFormat,
+                    tool.ZipPath,
+                    tool.DirectoryPath,
+                    tool.Settings.GetEntryPath).ConfigureAwait(false);
             }
-            catch (InvalidDataException ex)
+            catch (Exception ex)
             {
-                throw new TorSharpException($"Failed to extract tool '{tool.Name}'. Verify that the .zip at path '{tool.ZipPath}' is valid.", ex);
-            }
-
-            if (!tool.Settings.IsNested)
-            {
-                return true;
-            }
-
-            string[] entries = Directory.EnumerateFileSystemEntries(tool.DirectoryPath).ToArray();
-            int fileCount = entries.Count(e => !File.GetAttributes(e).HasFlag(FileAttributes.Directory));
-            if (fileCount > 0 || entries.Length != 1)
-            {
-                throw new TorSharpException($"The tool directory for {tool.Name} was expected to only contain exactly one directory.");
-            }
-
-            // move each nested file to its parent directory, accounting for a file or directory with the same name as its directory
-            string nestedDirectory = entries.First();
-            string nestedDirectoryName = Path.GetFileName(nestedDirectory);
-            string[] nestedEntries = Directory.EnumerateFileSystemEntries(nestedDirectory).ToArray();
-
-            string duplicate = null;
-            foreach (string nestedEntry in nestedEntries)
-            {
-                string fileName = Path.GetFileName(nestedEntry);
-                if (fileName == nestedDirectoryName)
-                {
-                    duplicate = nestedEntry;
-                    continue;
-                }
-
-                string newLocation = Path.Combine(tool.DirectoryPath, fileName);
-                Directory.Move(nestedEntry, newLocation);
-            }
-
-            if (duplicate != null)
-            {
-                string temporaryLocation = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-                Directory.Move(duplicate, temporaryLocation);
-                Directory.Delete(nestedDirectory, false);
-                Directory.Move(temporaryLocation, nestedDirectory);
-            }
-            else
-            {
-                Directory.Delete(nestedDirectory, false);
+                throw new TorSharpException(
+                    $"Failed to extract tool '{tool.Settings.Name}'. Verify that the .zip at path '{tool.ZipPath}' " +
+                    $"is valid.",
+                    ex);
             }
 
             return true;
+        }
+
+        private bool WaitForConnect(string host, int port)
+        {
+            return WaitForConnect(host, port, _settings.WaitForConnect);
+        }
+
+        private static bool WaitForConnect(string host, int port, TimeSpan duration)
+        {
+            if (duration <= TimeSpan.Zero)
+            {
+                return false;
+            }
+
+            var sleepDuration = TimeSpan.FromMilliseconds(100);
+            var stopwatch = Stopwatch.StartNew();
+            var connected = false;
+            do
+            {
+                try
+                {
+                    using (var tcpClient = new TcpClient())
+                    {
+                        var task = tcpClient.ConnectAsync(host, port);
+                        task.Wait(duration);
+                        if (tcpClient.Connected)
+                        {
+                            connected = true;
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    if (duration - stopwatch.Elapsed > sleepDuration)
+                    {
+                        Thread.Sleep(sleepDuration);
+                    }
+                }
+            }
+            while (!connected && stopwatch.Elapsed < duration);
+
+            return connected;
         }
 
         public void Dispose()

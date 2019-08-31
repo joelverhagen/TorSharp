@@ -5,15 +5,24 @@ if ($env:APPVEYOR) {
     $options = "-appveyor"
 }
 
-$testAssembly = "artifacts\TorSharp\TorSharp.Tests\bin\Release\net452\Knapcode.TorSharp.Tests.dll"
+$netFrameworkTestAssembly = "artifacts\TorSharp\TorSharp.Tests\bin\Release\net452\Knapcode.TorSharp.Tests.dll"
 
-if (Test-Path $testAssembly) {
-    Write-Host "[ Running tests in 32-bit ]" -ForegroundColor DarkGreen
-    & $xunit32 $testAssembly $options
+if (Test-Path $netFrameworkTestAssembly) {
+    Write-Host "[ Running .NET Framework tests in 32-bit ]" -ForegroundColor DarkGreen
+    & $xunit32 $netFrameworkTestAssembly $options
 
-    Write-Host "[ Running tests in 64-bit ]" -ForegroundColor DarkGreen
-    & $xunit64 $testAssembly $options
+    Write-Host "[ Running .NET Framework tests in 64-bit ]" -ForegroundColor DarkGreen
+    & $xunit64 $netFrameworkTestAssembly $options
 } else {
-    Write-Host "[ Running tests with .NET CLI ]" -ForegroundColor DarkGreen
-    dotnet test
+	Write-Host "[ Building .NET Framework tests with .NET CLI ]" -ForegroundColor DarkGreen
+	dotnet build TorSharp.Tests --framework net452
+
+	Write-Host "[ Running .NET Framework tests with .NET CLI ]" -ForegroundColor DarkGreen
+	dotnet test TorSharp.Tests --no-build --framework net452 --verbosity normal
 }
+
+Write-Host "[ Building .NET Core tests with .NET CLI ]" -ForegroundColor DarkGreen
+dotnet build TorSharp.Tests --framework netcoreapp2.0
+
+Write-Host "[ Running .NET Core tests with .NET CLI ]" -ForegroundColor DarkGreen
+dotnet test TorSharp.Tests --no-build --framework netcoreapp2.0 --verbosity normal

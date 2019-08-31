@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.IO.Compression;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -34,7 +33,7 @@ namespace Knapcode.TorSharp
             _settings = settings;
             _httpClient = client;
             _privoxyFetcher = new PrivoxyFetcher(settings, client);
-            _torFetcher = new TorFetcher(client);   
+            _torFetcher = new TorFetcher(settings, client);
         }
 
         /// <summary>
@@ -53,12 +52,12 @@ namespace Knapcode.TorSharp
         private async Task<PartialToolUpdates> CheckForUpdatesAsync(bool allowExistingTools)
         {
             var privoxy = await CheckForUpdateAsync(
-                ToolUtility.PrivoxySettings,
+                ToolUtility.GetPrivoxyToolSettings(_settings),
                 _privoxyFetcher,
                 allowExistingTools).ConfigureAwait(false);
 
             var tor = await CheckForUpdateAsync(
-                ToolUtility.TorSettings,
+                ToolUtility.GetTorToolSettings(_settings),
                 _torFetcher,
                 allowExistingTools).ConfigureAwait(false);
 
@@ -83,7 +82,8 @@ namespace Knapcode.TorSharp
             EnableSecurityProtocols();
 
             var latestDownload = await fetcher.GetLatestAsync().ConfigureAwait(false);
-            var fileName = $"{toolSettings.Prefix}{latestDownload.Version}.zip";
+            var fileExtension = ArchiveUtility.GetFileExtension(latestDownload.Format);
+            var fileName = $"{toolSettings.Prefix}{latestDownload.Version}{fileExtension}";
             var destinationPath = Path.Combine(_settings.ZippedToolsDirectory, fileName);
 
             ToolUpdateStatus status;
@@ -162,15 +162,15 @@ namespace Knapcode.TorSharp
 
                     try
                     {
-                        using (var fileStream = new FileStream(update.DestinationPath, FileMode.Open))
-                        using (var zipArchive = new ZipArchive(fileStream, ZipArchiveMode.Read))
-                        {
-                            var entries = zipArchive.Entries;
-                        }
+                        await ArchiveUtility.TestAsync(
+                            update.LatestDownload.Format,
+                            update.DestinationPath).ConfigureAwait(false);
                     }
-                    catch (InvalidDataException ex)
+                    catch (Exception ex)
                     {
-                        throw new TorSharpException($"The tool downloaded from '{update.LatestDownload.Url.AbsoluteUri}' could not be read as a ZIP file.", ex);
+                        throw new TorSharpException(
+                            $"The tool downloaded from '{update.LatestDownload.Url.AbsoluteUri}' could not be read as a " +
+                            $"{ArchiveUtility.GetFileExtension(update.LatestDownload.Format)} file.", ex);
                     }
                 }
                 catch

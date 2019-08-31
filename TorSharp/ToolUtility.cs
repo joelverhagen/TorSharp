@@ -11,33 +11,67 @@ namespace Knapcode.TorSharp
     /// </summary>
     public static class ToolUtility
     {
-        /// <summary>
-        /// Settings expressing the shape of the Privoxy tool directory.
-        /// </summary>
-        public static ToolSettings PrivoxySettings { get; } = new ToolSettings
-        {
-            Name = "Privoxy",
-            Prefix = "privoxy-",
-            ExecutablePath = "privoxy.exe",
-            WorkingDirectory = ".",
-            ConfigurationPath = "config.txt",
-            IsNested = true,
-            GetArguments = t => new[] { '\"' + t.ConfigurationPath + '\"' }
-        };
+        private const string PrivoxyName = "Privoxy";
+        private const string TorName = "Tor";
 
-        /// <summary>
-        /// Settings expressing the shape of the Tor tool directory.
-        /// </summary>
-        public static ToolSettings TorSettings { get; } = new ToolSettings
+        public static ToolSettings GetPrivoxyToolSettings(TorSharpSettings settings)
         {
-            Name = "Tor",
-            Prefix = "tor-win32-",
-            ExecutablePath = @"Tor\tor.exe",
-            WorkingDirectory = @"Tor",
-            ConfigurationPath = @"Data\Tor\torrc",
-            IsNested = false,
-            GetArguments = t => new[] { "-f", '\"' + t.ConfigurationPath + '\"' }
-        };
+            if (settings.OSPlatform == TorSharpOSPlatform.Windows)
+            {
+                return new ToolSettings
+                {
+                    Name = PrivoxyName,
+                    Prefix = "privoxy-win32",
+                    ExecutablePath = "privoxy.exe",
+                    WorkingDirectory = ".",
+                    ConfigurationPath = "config.txt",
+                    GetArguments = t => new[] { '\"' + t.ConfigurationPath + '\"' },
+                    GetEnvironmentVariables = t => new Dictionary<string, string>(),
+                    ZippedToolFormat = ZippedToolFormat.Zip,
+                    GetEntryPath = e =>
+                    {
+                        var firstSeperatorIndex = e.IndexOfAny(new[] { '/', '\\' });
+                        if (firstSeperatorIndex >= 0)
+                        {
+                            return e.Substring(firstSeperatorIndex + 1);
+                        }
+
+                        return e;
+                    },
+                };
+            }
+            else
+            {
+                settings.RejectRuntime("run Privoxy");
+            }
+
+            throw new NotImplementedException();
+        }
+
+        public static ToolSettings GetTorToolSettings(TorSharpSettings settings)
+        {
+            if (settings.OSPlatform == TorSharpOSPlatform.Windows)
+            {
+                return new ToolSettings
+                {
+                    Name = TorName,
+                    Prefix = "tor-win32-",
+                    ExecutablePath = Path.Combine(TorName, "tor.exe"),
+                    WorkingDirectory = TorName,
+                    ConfigurationPath = Path.Combine("Data", TorName, "torrc"),
+                    GetArguments = t => new[] { "-f", '\"' + t.ConfigurationPath + '\"' },
+                    GetEnvironmentVariables = t => new Dictionary<string, string>(),
+                    ZippedToolFormat = ZippedToolFormat.Zip,
+                    GetEntryPath = e => e,
+                };
+            }
+            else
+            {
+                settings.RejectRuntime("run Tor");
+            }
+
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Read the <see cref="TorSharpSettings.ZippedToolsDirectory"/> and find the latest tool matching the criteria
@@ -55,14 +89,18 @@ namespace Knapcode.TorSharp
                 return null;
             }
 
+            var fileExtension = ArchiveUtility.GetFileExtension(toolSettings.ZippedToolFormat);
+            var pattern = $"{toolSettings.Prefix}*{fileExtension}";
+
             string[] zipPaths = Directory
-                .EnumerateFiles(settings.ZippedToolsDirectory, GetPattern(toolSettings), SearchOption.TopDirectoryOnly)
+                .EnumerateFiles(settings.ZippedToolsDirectory, pattern, SearchOption.TopDirectoryOnly)
                 .ToArray();
 
             var versions = new List<Tool>();
             foreach (string zipPath in zipPaths)
             {
-                string withoutExtension = Path.GetFileNameWithoutExtension(zipPath);
+                string fileName = Path.GetFileName(zipPath);
+                string withoutExtension = fileName.Substring(0, fileName.Length - fileExtension.Length);
                 string directoryPath = Path.Combine(settings.ExtractedToolsDirectory, withoutExtension);
                 string version = withoutExtension.Substring(toolSettings.Prefix.Length);
                 if (!Version.TryParse(version, out var parsedVersion))
@@ -72,49 +110,19 @@ namespace Knapcode.TorSharp
 
                 versions.Add(new Tool
                 {
-                    Name = toolSettings.Name,
                     Settings = toolSettings,
                     ZipPath = zipPath,
                     DirectoryPath = directoryPath,
                     Version = parsedVersion,
                     ExecutablePath = Path.Combine(directoryPath, toolSettings.ExecutablePath),
                     WorkingDirectory = Path.Combine(directoryPath, toolSettings.WorkingDirectory),
-                    ConfigurationPath = Path.Combine(directoryPath, toolSettings.ConfigurationPath)
+                    ConfigurationPath = Path.Combine(directoryPath, toolSettings.ConfigurationPath),
                 });
             }
 
             return versions
                 .OrderByDescending(t => t.Version)
                 .FirstOrDefault();
-        }
-
-        /// <summary>
-        /// Read the <see cref="TorSharpSettings.ZippedToolsDirectory"/> and find the latest tool matching the criteria
-        /// in the provided <paramref name="toolSettings"/>. If none is found throw an exception.
-        /// </summary>
-        /// <param name="settings">The settings for TorSharp.</param>
-        /// <param name="toolSettings">The settings for the tool.</param>
-        /// <returns>The tool.</returns>
-        /// <exception cref="TorSharpException">Thrown if now tool is found.</exception>
-        public static Tool GetLatestTool(
-            TorSharpSettings settings,
-            ToolSettings toolSettings)
-        {
-            var tool = GetLatestToolOrNull(settings, toolSettings);
-
-            if (tool == null)
-            {
-                throw new TorSharpException(
-                    $"No version of {toolSettings.Name} ({GetPattern(toolSettings)}) was found under " +
-                    $"{settings.ZippedToolsDirectory}.");
-            }
-
-            return tool;
-        }
-
-        private static string GetPattern(ToolSettings toolSettings)
-        {
-            return $"{toolSettings.Prefix}*.zip";
         }
     }
 }

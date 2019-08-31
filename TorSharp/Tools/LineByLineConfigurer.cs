@@ -15,10 +15,10 @@ namespace Knapcode.TorSharp.Tools
             _format = format;
         }
 
-        public async Task ApplySettings(string path, TorSharpSettings settings)
+        public async Task ApplySettings(Tool tool, TorSharpSettings settings)
         {
             // convert the settings to a dictionary
-            var dictionary = _configurationDictionary.GetDictionary(settings);
+            var dictionary = _configurationDictionary.GetDictionary(tool, settings);
             
             // write the new settings
             string temporaryPath = null;
@@ -29,9 +29,9 @@ namespace Knapcode.TorSharp.Tools
                 TextReader reader;
 
                 // read the existing configuration, if there is some
-                if (File.Exists(path))
+                if (File.Exists(tool.ConfigurationPath))
                 {
-                    reader = new StreamReader(new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None));
+                    reader = new StreamReader(new FileStream(tool.ConfigurationPath, FileMode.Open, FileAccess.Read, FileShare.None));
                 }
                 else
                 {
@@ -58,9 +58,9 @@ namespace Knapcode.TorSharp.Tools
                 }
 
                 // If the original file exists, remove it before copying over the temporary file.
-                if (File.Exists(path))
+                if (File.Exists(tool.ConfigurationPath))
                 {
-                    string backupPath = path + ".bak";
+                    string backupPath = tool.ConfigurationPath + ".bak";
 
                     // If there has already been a backup, delete it.
                     if (File.Exists(backupPath))
@@ -69,10 +69,10 @@ namespace Knapcode.TorSharp.Tools
                     }
 
                     // Backup the last config.
-                    File.Move(path, backupPath);
+                    File.Move(tool.ConfigurationPath, backupPath);
                 }
 
-                File.Move(temporaryPath, path);
+                File.Move(temporaryPath, tool.ConfigurationPath);
             }
             finally
             {

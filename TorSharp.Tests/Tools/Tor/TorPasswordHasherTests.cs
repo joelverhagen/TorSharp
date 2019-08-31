@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Knapcode.TorSharp.Adapters;
+using Knapcode.TorSharp.Tests.TestSupport;
 using Knapcode.TorSharp.Tools.Tor;
 using Moq;
 using Xunit;
@@ -10,6 +11,7 @@ namespace Knapcode.TorSharp.Tests.Tools.Tor
     public class TorPasswordHasherTests
     {
         [Fact]
+        [DisplayTestMethodName]
         public void TorPasswordHasher_MatchesKnownInput()
         {
             // Arrange

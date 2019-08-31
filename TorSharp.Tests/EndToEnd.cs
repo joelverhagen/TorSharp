@@ -22,7 +22,8 @@ namespace Knapcode.TorSharp.Tests
             _output = output;
         }
 
-        [Fact]
+        [PlatformFact(osPlatform: nameof(TorSharpOSPlatform.Windows))]
+        [DisplayTestMethodName]
         public async Task VirtualDesktopToolRunner_ConfigurationPathsWithSpaces()
         {
             using (var te = TestEnvironment.Initialize(_output))
@@ -38,6 +39,7 @@ namespace Knapcode.TorSharp.Tests
         }
 
         [Fact]
+        [DisplayTestMethodName]
         public async Task SimpleToolRunner_ConfigurationPathsWithSpaces()
         {
             using (var te = TestEnvironment.Initialize(_output))
@@ -52,7 +54,8 @@ namespace Knapcode.TorSharp.Tests
             }
         }
 
-        [Fact]
+        [PlatformFact(osPlatform: nameof(TorSharpOSPlatform.Windows))]
+        [DisplayTestMethodName]
         public async Task VirtualDesktopToolRunner_EndToEnd()
         {
             using (var te = TestEnvironment.Initialize(_output))
@@ -67,6 +70,7 @@ namespace Knapcode.TorSharp.Tests
         }
 
         [Fact]
+        [DisplayTestMethodName]
         public async Task SimpleToolRunner_EndToEnd()
         {
             using (var te = TestEnvironment.Initialize(_output))
@@ -81,6 +85,7 @@ namespace Knapcode.TorSharp.Tests
         }
 
         [Fact]
+        [DisplayTestMethodName]
         public async Task TorHttpsProxy_EndToEnd()
         {
             var proxyUsername = "proxy-username";

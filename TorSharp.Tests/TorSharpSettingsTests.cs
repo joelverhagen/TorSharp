@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using Knapcode.TorSharp.Tests.TestSupport;
 using Xunit;
 
 namespace Knapcode.TorSharp.Tests
@@ -13,6 +15,7 @@ namespace Knapcode.TorSharp.Tests
 
         [Theory]
         [MemberData(nameof(PropertiesData))]
+        [DisplayTestMethodName]
         public void OldSetterSetsNewProperty(Property property)
         {
             var settings = new TorSharpSettings();
@@ -24,6 +27,7 @@ namespace Knapcode.TorSharp.Tests
 
         [Theory]
         [MemberData(nameof(PropertiesData))]
+        [DisplayTestMethodName]
         public void NewSetterSetsOldProperty(Property property)
         {
             var settings = new TorSharpSettings();
@@ -35,6 +39,7 @@ namespace Knapcode.TorSharp.Tests
 
         [Theory]
         [MemberData(nameof(PropertiesData))]
+        [DisplayTestMethodName]
         public void OldSetterHandlesNullNewSettings(Property property)
         {
             var settings = new TorSharpSettings
@@ -122,12 +127,14 @@ namespace Knapcode.TorSharp.Tests
         public class Property
         {
             private Property(
+                string name,
                 Func<TorSharpSettings, object> getOld,
                 Action<TorSharpSettings, object> setOld,
                 Func<TorSharpSettings, object> getNew,
                 Action<TorSharpSettings, object> setNew,
                 object value)
             {
+                Name = name;
                 GetOld = getOld;
                 SetOld = setOld;
                 GetNew = getNew;
@@ -135,23 +142,30 @@ namespace Knapcode.TorSharp.Tests
                 Value = value;
             }
 
+            public string Name { get; }
             public Func<TorSharpSettings, object> GetOld { get; }
             public Action<TorSharpSettings, object> SetOld { get; }
             public Func<TorSharpSettings, object> GetNew { get; }
             public Action<TorSharpSettings, object> SetNew { get; }
             public object Value { get; }
 
+            public override string ToString()
+            {
+                return Name;
+            }
+
             public static Property Create<T>(
                 Func<TorSharpSettings, T> getOld,
                 Action<TorSharpSettings, T> setOld,
-                Func<TorSharpSettings, T> getNew,
+                Expression<Func<TorSharpSettings, T>> getNew,
                 Action<TorSharpSettings, T> setNew,
                 T value)
             {
                 return new Property(
+                    getNew.Body.ToString(),
                     x => getOld(x),
                     (x, y) => setOld(x, (T)y),
-                    x => getNew(x),
+                    x => getNew.Compile()(x),
                     (x, y) => setNew(x, (T)y),
                     value);
             }

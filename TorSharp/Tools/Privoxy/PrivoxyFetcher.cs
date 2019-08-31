@@ -13,19 +13,17 @@ namespace Knapcode.TorSharp.Tools.Privoxy
 {
     public class PrivoxyFetcher : IFileFetcher
     {
-        private const string FileNamePattern = @"privoxy[-_](?<Version>[\d\.]+)\.zip$";
-
         private static readonly Uri PrivoxyBaseUrl = new Uri("https://www.privoxy.org/feeds/privoxy-releases.xml");
-        private static readonly Uri SourceForgeBaseUrl = new Uri("https://sourceforge.net/projects/ijbswa/rss?path=/Win32");
-        private static readonly Uri PrivoxyMirrorBaseUrl = new Uri("https://www.silvester.org.uk/privoxy/Windows/");
+        private static readonly Uri SourceForgeBaseUrl = new Uri("https://sourceforge.net/projects/ijbswa/rss");
+        private static readonly Uri PrivoxyMirrorBaseUrl = new Uri("https://www.silvester.org.uk/privoxy/");
 
         private readonly HttpClient _httpClient;
         private readonly TorSharpSettings _settings;
 
         public PrivoxyFetcher(TorSharpSettings settings, HttpClient httpClient)
         {
-            _httpClient = httpClient;
             _settings = settings;
+            _httpClient = httpClient;
         }
 
         public async Task<DownloadableFile> GetLatestAsync()
@@ -62,8 +60,8 @@ namespace Knapcode.TorSharp.Tools.Privoxy
 
             var tasks = new List<Task<DownloadableFile>>
             {
-                GetLatestOrNullFromRssAsync(PrivoxyBaseUrl, cts.Token, TitleStartWithWin32),
-                GetLatestOrNullFromRssAsync(SourceForgeBaseUrl, cts.Token),
+                GetLatestOrNullFromPrivoxyRssAsync(cts.Token),
+                GetLatestOrNullFromSourceForgeRssAsync(cts.Token),
                 GetLatestOrNullFromFileListingAsync(PrivoxyMirrorBaseUrl, cts.Token),
             };
             var results = new List<DownloadableFile>();
@@ -99,25 +97,56 @@ namespace Knapcode.TorSharp.Tools.Privoxy
             return results;
         }
 
+        private async Task<DownloadableFile> GetLatestOrNullFromPrivoxyRssAsync(CancellationToken token)
+        {
+            await Task.Yield();
+
+            return await GetLatestOrNullFromRssAsync(PrivoxyBaseUrl, token).ConfigureAwait(false);
+        }
+
+        private async Task<DownloadableFile> GetLatestOrNullFromSourceForgeRssAsync(CancellationToken token)
+        {
+            await Task.Yield();
+
+            var directory = GetRssDirectory(SourceForgeBaseUrl);
+            var osBaseUrl = new Uri(SourceForgeBaseUrl.AbsoluteUri + $"?path=/{directory}");
+
+            return await GetLatestOrNullFromRssAsync(osBaseUrl, token).ConfigureAwait(false);
+        }
+
         private async Task<DownloadableFile> GetLatestOrNullFromFileListingAsync(
+            Uri baseUrl,
+            CancellationToken token)
+        {
+            var directory = GetFileListingDirectory(baseUrl);
+            var osBaseUrl = new Uri(baseUrl, $"{directory}/");
+            var fileNamePatternAndFormat = GetFileNamePatternAndFormat(osBaseUrl);
+
+            var downloadableFile = await FetcherHelpers.GetLatestDownloadableFileAsync(
+                _httpClient,
+                osBaseUrl,
+                fileNamePatternAndFormat.Pattern,
+                fileNamePatternAndFormat.Format,
+                token).ConfigureAwait(false);
+
+            if (downloadableFile == null)
+            {
+                throw new TorSharpException(
+                    $"No version of Privoxy could be found under base URL {osBaseUrl.AbsoluteUri} with pattern " +
+                    $"{fileNamePatternAndFormat.Pattern}.");
+            }
+
+            return downloadableFile;
+        }
+
+        private async Task<DownloadableFile> GetLatestOrNullFromRssAsync(
             Uri baseUrl,
             CancellationToken token)
         {
             await Task.Yield();
 
-            return await FetcherHelpers.GetLatestDownloadableFileAsync(
-                _httpClient,
-                baseUrl,
-                FileNamePattern,
-                token).ConfigureAwait(false);
-        }
-
-        private async Task<DownloadableFile> GetLatestOrNullFromRssAsync(
-            Uri baseUrl,
-            CancellationToken token,
-            Func<SyndicationItem, bool> predicate = null)
-        {
-            await Task.Yield();
+            var directory = GetRssDirectory(baseUrl);
+            var fileNamePatternAndFormat = GetFileNamePatternAndFormat(baseUrl);
 
             SyndicationFeed syndicationFeed;
             using (var response = await _httpClient.GetAsync(baseUrl, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false))
@@ -136,39 +165,110 @@ namespace Knapcode.TorSharp.Tools.Privoxy
                 }
             }
 
-            return syndicationFeed
+            var downloadableFile = syndicationFeed
                 .Items
                 .Where(i => i.Links.Any())
-                .Where(predicate ?? (i => true))
-                .Where(TitleEndsWithPrivoxyZip)
-                .Select(GetDownloadableFile)
-                .Where(x => x != null)
+                .Where(i => TitleStartWithDirectory(directory, i))
+                .Select(i => GetDownloadableFile(fileNamePatternAndFormat.Pattern, fileNamePatternAndFormat.Format, i))
+                .Where(i => i != null)
                 .OrderByDescending(x => x.Version)
                 .FirstOrDefault();
+
+            if (downloadableFile == null)
+            {
+                throw new TorSharpException(
+                    $"No version of Privoxy could be found under base URL {baseUrl.AbsoluteUri} with directory " +
+                    $"{directory} and file name pattern {fileNamePatternAndFormat.Pattern}.");
+            }
+
+            return downloadableFile;
         }
 
-        private DownloadableFile GetDownloadableFile(SyndicationItem match)
+        private static bool TitleStartWithDirectory(string directory, SyndicationItem item)
         {
-            var fileName = match.Title.Text.Split('/').Last();
-            string withoutExtension = Path.GetFileNameWithoutExtension(fileName);
-            string version = withoutExtension.Substring(ToolUtility.PrivoxySettings.Prefix.Length);
-            if (!Version.TryParse(version, out var parsedVersion))
+            return Regex.IsMatch(
+                item.Title.Text,
+                $"^/?{directory}/",
+                RegexOptions.IgnoreCase);
+        }
+
+        private DownloadableFile GetDownloadableFile(
+            string fileNamePattern,
+            ZippedToolFormat format,
+            SyndicationItem item)
+        {
+            var match = Regex.Match(
+                item.Title.Text,
+                fileNamePattern,
+                RegexOptions.IgnoreCase);
+
+            if (!match.Success)
             {
                 return null;
             }
 
-            var downloadUrl = match.Links.First().Uri;
-            return new DownloadableFile(parsedVersion, downloadUrl);
+            if (!Version.TryParse(match.Groups["Version"].Value, out var parsedVersion))
+            {
+                return null;
+            }
+
+            var downloadUrl = item.Links.First().Uri;
+            return new DownloadableFile(parsedVersion, downloadUrl, format);
         }
 
-        private static bool TitleStartWithWin32(SyndicationItem i)
+        private string GetFileListingDirectory(Uri baseUrl)
         {
-            return i.Title.Text.StartsWith("Win32/", StringComparison.OrdinalIgnoreCase);
+            string directory = null;
+            if (_settings.OSPlatform == TorSharpOSPlatform.Windows)
+            {
+                directory = "Windows";
+            }
+
+            if (directory == null)
+            {
+                Reject(baseUrl);
+            }
+
+            return directory;
         }
 
-        private static bool TitleEndsWithPrivoxyZip(SyndicationItem item)
+        private string GetRssDirectory(Uri baseUrl)
         {
-            return Regex.IsMatch(item.Title.Text, FileNamePattern, RegexOptions.IgnoreCase);
+            string directory = null;
+            if (_settings.OSPlatform == TorSharpOSPlatform.Windows)
+            {
+                directory = "Win32";
+            }
+
+            if (directory == null)
+            {
+                Reject(baseUrl);
+            }
+
+            return directory;
+        }
+
+        private FileNamePatternAndFormat GetFileNamePatternAndFormat(Uri baseUrl)
+        {
+            var pattern = default(string);
+            var format = default(ZippedToolFormat);
+            if (_settings.OSPlatform == TorSharpOSPlatform.Windows)
+            {
+                pattern = @"privoxy[-_](?<Version>[\d\.]+)\.zip$";
+                format = ZippedToolFormat.Zip;
+            }
+
+            if (pattern == null)
+            {
+                Reject(baseUrl);
+            }
+
+            return new FileNamePatternAndFormat(pattern, format);
+        }
+
+        private void Reject(Uri baseUrl)
+        {
+            _settings.RejectRuntime($"fetch Privoxy from {baseUrl.AbsoluteUri}");
         }
     }
 }

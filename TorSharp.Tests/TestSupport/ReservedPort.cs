@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Threading;
+using System.Net;
+using System.Net.Sockets;
 
 namespace Knapcode.TorSharp.Tests.TestSupport
 {
@@ -12,13 +11,11 @@ namespace Knapcode.TorSharp.Tests.TestSupport
         private static readonly HashSet<int> ReservedPorts = new HashSet<int>();
 
         private readonly int _port;
-        private readonly Semaphore _semaphore;
         private bool _disposed;
 
-        private ReservedPort(int port, Semaphore semaphore)
+        private ReservedPort(int port)
         {
             _port = port;
-            _semaphore = semaphore;
             _disposed = false;
         }
 
@@ -47,7 +44,6 @@ namespace Knapcode.TorSharp.Tests.TestSupport
                     continue;
                 }
                 
-                var semaphore = new Semaphore(1, 1, $@"Global\Knapcode.TorSharp.Tests.ReservedPort-{port}");
                 lock (Lock)
                 {
                     if (ReservedPorts.Contains(port))
@@ -55,12 +51,8 @@ namespace Knapcode.TorSharp.Tests.TestSupport
                         continue;
                     }
 
-                    var acquired = semaphore.WaitOne(TimeSpan.Zero);
-                    if (acquired)
-                    {
-                        ReservedPorts.Add(port);
-                        return new ReservedPort(port, semaphore);
-                    }
+                    ReservedPorts.Add(port);
+                    return new ReservedPort(port);
                 }
             }
 
@@ -69,13 +61,20 @@ namespace Knapcode.TorSharp.Tests.TestSupport
 
         private static bool IsPortFree(int port)
         {
-            var collision = IPGlobalProperties
-                .GetIPGlobalProperties()
-                .GetActiveTcpListeners()
-                .Select(e => e.Port)
-                .Contains(port);
-
-            return !collision;
+            var tcpListener = new TcpListener(IPAddress.Loopback, port);
+            try
+            {
+                tcpListener.Start();
+                return true;
+            }
+            catch (SocketException)
+            {
+                return false;
+            }
+            finally
+            {
+                tcpListener.Stop();
+            }
         }
 
         public void Dispose()
@@ -86,8 +85,6 @@ namespace Knapcode.TorSharp.Tests.TestSupport
             }
 
             _disposed = true;
-            _semaphore.Release();
-            _semaphore.Dispose();
             lock (Lock)
             {
                 ReservedPorts.Remove(_port);

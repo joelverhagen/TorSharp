@@ -20,6 +20,7 @@ namespace Knapcode.TorSharp.Tools
         {
             // start the desired process
             var arguments = string.Join(" ", tool.Settings.GetArguments(tool));
+            var environmentVariables = tool.Settings.GetEnvironmentVariables(tool);
             var startInfo = new ProcessStartInfo
             {
                 FileName = tool.ExecutablePath,
@@ -31,6 +32,11 @@ namespace Knapcode.TorSharp.Tools
                 CreateNoWindow = true,
                 WindowStyle = ProcessWindowStyle.Hidden,
             };
+
+            foreach (var pair in environmentVariables)
+            {
+                startInfo.EnvironmentVariables[pair.Key] = pair.Value;
+            }
 
             Process process = Process.Start(startInfo);
             
@@ -61,23 +67,26 @@ namespace Knapcode.TorSharp.Tools
         {
             while (!_processes.IsEmpty)
             {
-                Process process;
-                _processes.TryTake(out process);
-
-                // If the process has not yet exited, ask nicely first.
-                if (!process.HasExited)
+                if (_processes.TryTake(out var process))
                 {
-                    if (process.CloseMainWindow())
+                    using (process)
                     {
-                        process.WaitForExit(1000);
-                    }
-                }
+                        // If the process has not yet exited, ask nicely first.
+                        if (!process.HasExited)
+                        {
+                            if (process.CloseMainWindow())
+                            {
+                                process.WaitForExit(1000);
+                            }
+                        }
 
-                // Still not exited? Then it's no more Mr Nice Guy.
-                if (!process.HasExited)
-                {
-                    process.Kill();
-                    process.WaitForExit(1000);
+                        // Still not exited? Then it's no more Mr Nice Guy.
+                        if (!process.HasExited)
+                        {
+                            process.Kill();
+                            process.WaitForExit(1000);
+                        }
+                    }
                 }
             }
         }

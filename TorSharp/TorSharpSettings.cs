@@ -1,5 +1,11 @@
 using System;
 using System.IO;
+using System.Text;
+#if NETSTANDARD
+using System.Runtime.InteropServices;
+using SystemOSPlatform = System.Runtime.InteropServices.OSPlatform;
+using SystemArchitecture = System.Runtime.InteropServices.Architecture;
+#endif
 
 namespace Knapcode.TorSharp
 {
@@ -10,13 +16,43 @@ namespace Knapcode.TorSharp
     {
         public static readonly string DefaultToolsDirectory = Path.Combine(Path.GetTempPath(), "Knapcode.TorSharp");
 
+        private ToolRunnerType? _toolRunnerType;
+
         public TorSharpSettings()
         {
             ReloadTools = false;
             EnableSecurityProtocolsForFetcher = true;
             ZippedToolsDirectory = Path.Combine(DefaultToolsDirectory, "ZippedTools");
             ExtractedToolsDirectory = Path.Combine(DefaultToolsDirectory, "ExtractedTools");
-            ToolRunnerType = ToolRunnerType.VirtualDesktop;
+            WaitForConnect = TimeSpan.FromSeconds(5);
+
+#if NETSTANDARD
+            if (RuntimeInformation.IsOSPlatform(SystemOSPlatform.Windows))
+            {
+                OSPlatform = TorSharpOSPlatform.Windows;
+            }
+            else
+            {
+                OSPlatform = TorSharpOSPlatform.Unknown;
+            }
+
+            switch (RuntimeInformation.ProcessArchitecture)
+            {
+                case SystemArchitecture.X86:
+                    Architecture = TorSharpArchitecture.X86;
+                    break;
+                case SystemArchitecture.X64:
+                    Architecture = TorSharpArchitecture.X64;
+                    break;
+                default:
+                    Architecture = TorSharpArchitecture.Unknown;
+                    break;
+            }
+#else
+            OSPlatform = TorSharpOSPlatform.Windows;
+            Architecture = Environment.Is64BitProcess ? TorSharpArchitecture.X64 : TorSharpArchitecture.X86;
+#endif
+
             PrivoxySettings = new TorSharpPrivoxySettings();
             TorSettings = new TorSharpTorSettings();
         }
@@ -35,10 +71,37 @@ namespace Knapcode.TorSharp
         public bool EnableSecurityProtocolsForFetcher { get; set; }
 
         /// <summary>
-        /// The way in which tools should be run. The default is <see cref="ToolRunnerType.VirtualDesktop"/> so that
-        /// the Privoxy and Tor windows are not visible.
+        /// The way in which tools should be run. The default is <see cref="ToolRunnerType.VirtualDesktop"/> on Windows
+        /// so that the Privoxy and Tor windows are not visible and <see cref="ToolRunnerType.Simple"/> for other
+        /// operating systems.
         /// </summary>
-        public ToolRunnerType ToolRunnerType { get; set; }
+        public ToolRunnerType ToolRunnerType
+        {
+            get
+            {
+                var toolRunnerType = _toolRunnerType;
+                if (toolRunnerType == null)
+                {
+                    if (OSPlatform == TorSharpOSPlatform.Windows)
+                    {
+                        return ToolRunnerType.VirtualDesktop;
+                    }
+                    else
+                    {
+                        return ToolRunnerType.Simple;
+                    }
+                }
+                else
+                {
+                    return toolRunnerType.Value;
+                }
+            }
+
+            set
+            {
+                _toolRunnerType = value;
+            }
+        }
 
         /// <summary>
         /// The directory to download the zipped tools. This defaults to <c>%TEMP%\Knapcode.TorSharp\ZippedTools</c>.
@@ -62,6 +125,25 @@ namespace Knapcode.TorSharp
         /// multiple URLs or feeds that a checked for a single tool.
         /// </summary>
         public ToolDownloadStrategy ToolDownloadStrategy { get; set; }
+
+        /// <summary>
+        /// The operating system that TorSharp should assume it is running on. This defaults to
+        /// <see cref="TorSharpOSPlatform.Windows"/> on .NET Framework and is automatically detected on .NET Core.
+        /// </summary>
+        public TorSharpOSPlatform OSPlatform { get; set; }
+
+        /// <summary>
+        /// The CPU architecture that TorSharp should assume it is runnong on. This is automatically detected using the
+        /// architecture of the process.
+        /// </summary>
+        public TorSharpArchitecture Architecture { get; set; }
+
+        /// <summary>
+        /// How long to wait for each tool to accept connections while starting up. This allows for the tools to start
+        /// up before completing the initialization process. Defaults to 5 seconds. This can be completely disabled by
+        /// setting this property to <see cref="TimeSpan.Zero"/>.
+        /// </summary>
+        public TimeSpan WaitForConnect { get; set; }
 
         /// <summary>
         /// Settings specific to Privoxy.
@@ -147,6 +229,16 @@ namespace Knapcode.TorSharp
             }
 
             return PrivoxySettings;
+        }
+
+        internal void RejectRuntime(string action)
+        {
+            var message = new StringBuilder();
+            message.Append($"Cannot {action} on {OSPlatform} OS and {Architecture} architecture.");
+#if NETSTANDARD
+            message.Append($" OS description: {RuntimeInformation.OSDescription}.");
+#endif
+            throw new TorSharpException(message.ToString());
         }
     }
 }

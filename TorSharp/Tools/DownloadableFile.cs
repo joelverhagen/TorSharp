@@ -4,7 +4,7 @@ namespace Knapcode.TorSharp.Tools
 {
     public class DownloadableFile
     {
-        public DownloadableFile(Version version, Uri url)
+        public DownloadableFile(Version version, Uri url, ZippedToolFormat format)
         {
             if (url == null)
             {
@@ -18,6 +18,7 @@ namespace Knapcode.TorSharp.Tools
 
             Version = version ?? throw new ArgumentNullException(nameof(version));
             Url = url;
+            Format = format;
         }
 
         /// <summary>
@@ -29,5 +30,10 @@ namespace Knapcode.TorSharp.Tools
         /// The absolute URL of the tool download.
         /// </summary>
         public Uri Url { get; }
+
+        /// <summary>
+        /// The format of the downloadable file.
+        /// </summary>
+        public ZippedToolFormat Format { get; }
     }
 }

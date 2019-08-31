@@ -8,6 +8,7 @@ namespace Knapcode.TorSharp.Tools
         string UpdateLine(IDictionary<string, string> dictionary, string originalLine);
         string CreateLine(KeyValuePair<string, string> pair);
     }
+
     public class ConfigurationFormat : IConfigurationFormat
     {
         public Regex CommentPattern => new Regex(@"^\s*#+");
@@ -22,8 +23,7 @@ namespace Knapcode.TorSharp.Tools
             }
 
             string key = pieces[0];
-            string value;
-            if (dictionary.TryGetValue(key, out value))
+            if (dictionary.TryGetValue(key, out var value))
             {
                 var keyMatch = Regex.Match(originalLine, @"^(\s*)(?<Key>" + Regex.Escape(key) + @")(\s+)");
                 dictionary.Remove(key);

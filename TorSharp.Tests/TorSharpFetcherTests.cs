@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Knapcode.TorSharp.Tests.TestSupport;
@@ -16,13 +19,17 @@ namespace Knapcode.TorSharp.Tests
             _output = output;
         }
 
-        [Fact]
-        public async Task TorSharpToolFetch_AllResultsAreWorking()
+        [Theory]
+        [MemberData(nameof(Platforms))]
+        [DisplayTestMethodName]
+        public async Task TorSharpToolFetch_AllResultsAreWorking(TorSharpOSPlatform osPlatform, TorSharpArchitecture architecture)
         {
             using (var te = TestEnvironment.Initialize(_output))
             {
                 // Arrange
                 var settings = te.BuildSettings();
+                settings.OSPlatform = osPlatform;
+                settings.Architecture = architecture;
                 settings.ToolDownloadStrategy = ToolDownloadStrategy.All;
 
                 using (var httpClientHandler = new HttpClientHandler())
@@ -47,6 +54,7 @@ namespace Knapcode.TorSharp.Tests
         [Theory]
         [InlineData(ToolDownloadStrategy.First)]
         [InlineData(ToolDownloadStrategy.Latest)]
+        [DisplayTestMethodName]
         public async Task TorSharpToolFetcher_CheckForUpdates(ToolDownloadStrategy strategy)
         {
             using (var te = TestEnvironment.Initialize(_output))
@@ -62,12 +70,15 @@ namespace Knapcode.TorSharp.Tests
                 {
                     _output.WriteLine(settings);
                     var fetcher = new TorSharpToolFetcher(settings, httpClient);
-                    var fakeOldPrivoxy = Path.Combine(settings.ZippedToolsDirectory, "privoxy-0.0.1.zip");
-
-                    // Act
                     var initial = await fetcher.CheckForUpdatesAsync();
                     await fetcher.FetchAsync(initial);
+
+                    var prefix = ToolUtility.GetPrivoxyToolSettings(settings).Prefix;
+                    var extension = Path.GetExtension(initial.Privoxy.DestinationPath);
+                    var fakeOldPrivoxy = Path.Combine(settings.ZippedToolsDirectory, $"{prefix}0.0.1{extension}");
                     File.Move(initial.Privoxy.DestinationPath, fakeOldPrivoxy);
+
+                    // Act
                     var newerVersion = await fetcher.CheckForUpdatesAsync();
                     await fetcher.FetchAsync(newerVersion);
                     var upToDate = await fetcher.CheckForUpdatesAsync();
@@ -89,6 +100,7 @@ namespace Knapcode.TorSharp.Tests
         }
 
         [Fact]
+        [DisplayTestMethodName]
         public async Task TorSharpToolFetcher_UseExistingTools()
         {
             using (var te = TestEnvironment.Initialize(_output))
@@ -114,8 +126,32 @@ namespace Knapcode.TorSharp.Tests
                     // Assert
                     Assert.True(requestCount > 0, "The should be at least one request.");
                     Assert.Equal(requestCount, requestCountHandler.RequestCount);
-                    Assert.NotNull(ToolUtility.GetLatestToolOrNull(settings, ToolUtility.PrivoxySettings));
-                    Assert.NotNull(ToolUtility.GetLatestToolOrNull(settings, ToolUtility.TorSettings));
+                    Assert.NotNull(ToolUtility.GetLatestToolOrNull(settings, ToolUtility.GetPrivoxyToolSettings(settings)));
+                    Assert.NotNull(ToolUtility.GetLatestToolOrNull(settings, ToolUtility.GetTorToolSettings(settings)));
+                }
+            }
+        }
+
+        public static IEnumerable<object[]> Platforms
+        {
+            get
+            {
+                foreach (var osPlatform in Enum.GetValues(typeof(TorSharpOSPlatform)).Cast<TorSharpOSPlatform>())
+                {
+                    if (osPlatform == TorSharpOSPlatform.Unknown)
+                    {
+                        continue;
+                    }
+
+                    foreach (var architecture in Enum.GetValues(typeof(TorSharpArchitecture)).Cast<TorSharpArchitecture>())
+                    {
+                        if (architecture == TorSharpArchitecture.Unknown)
+                        {
+                            continue;
+                        }
+
+                        yield return new object[] { osPlatform, architecture };
+                    }
                 }
             }
         }

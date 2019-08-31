@@ -10,8 +10,9 @@ namespace Knapcode.TorSharp.Tools
         /// <summary>
         /// Configure a tool given the provided settings.
         /// </summary>
+        /// <param name="tool">The tool that is being configured.</param>
         /// <param name="settings">The settings.</param>
         /// <returns>The configuration key and values to be written to a file.</returns>
-        IDictionary<string, string> GetDictionary(TorSharpSettings settings);
+        IDictionary<string, string> GetDictionary(Tool tool, TorSharpSettings settings);
     }
 }

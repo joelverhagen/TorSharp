@@ -27,6 +27,7 @@ namespace Knapcode.TorSharp.Tools
             HttpClient httpClient,
             Uri baseUrl,
             string fileNamePattern,
+            ZippedToolFormat format,
             CancellationToken token)
         {
             var versionsContent = await httpClient.GetStringAsync(baseUrl, token).ConfigureAwait(false);
@@ -59,7 +60,8 @@ namespace Knapcode.TorSharp.Tools
 
                     return new DownloadableFile(
                         parsedVersion,
-                        downloadUrl);
+                        downloadUrl,
+                        format);
                 }
             }
 
