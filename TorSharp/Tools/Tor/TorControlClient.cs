@@ -43,12 +43,9 @@ namespace Knapcode.TorSharp.Tools.Tor
 
         public void Dispose()
         {
-            if (_tcpClient != null)
-            {
-                _tcpClient.Close();
-                _reader.Dispose();
-                _writer.Dispose();
-            }
+            _tcpClient?.Close();
+            _reader?.Dispose();
+            _writer?.Dispose();
         }
 
         public void Close()
