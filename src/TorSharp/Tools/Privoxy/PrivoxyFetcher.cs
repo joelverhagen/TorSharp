@@ -223,6 +223,10 @@ namespace Knapcode.TorSharp.Tools.Privoxy
             {
                 directory = "Windows";
             }
+            else if (_settings.OSPlatform == TorSharpOSPlatform.Linux)
+            {
+                directory = "Debian";
+            }
 
             if (directory == null)
             {
@@ -238,6 +242,10 @@ namespace Knapcode.TorSharp.Tools.Privoxy
             if (_settings.OSPlatform == TorSharpOSPlatform.Windows)
             {
                 directory = "Win32";
+            }
+            else if (_settings.OSPlatform == TorSharpOSPlatform.Linux)
+            {
+                directory = "Debian";
             }
 
             if (directory == null)
@@ -256,6 +264,19 @@ namespace Knapcode.TorSharp.Tools.Privoxy
             {
                 pattern = @"privoxy[-_](?<Version>[\d\.]+)\.zip$";
                 format = ZippedToolFormat.Zip;
+            }
+            else if (_settings.OSPlatform == TorSharpOSPlatform.Linux)
+            {
+                if (_settings.Architecture == TorSharpArchitecture.X86)
+                {
+                    pattern = @"privoxy[-_](?<Version>[\d\.]+)([-_]\d_)?i386\.deb$";
+                    format = ZippedToolFormat.Deb;
+                }
+                else if (_settings.Architecture == TorSharpArchitecture.X64)
+                {
+                    pattern = @"privoxy[-_](?<Version>[\d\.]+)([-_]\d_)?amd64\.deb$";
+                    format = ZippedToolFormat.Deb;
+                }
             }
 
             if (pattern == null)

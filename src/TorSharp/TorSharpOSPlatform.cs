@@ -7,5 +7,6 @@
     {
         Unknown,
         Windows,
+        Linux,
     }
 }

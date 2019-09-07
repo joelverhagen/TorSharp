@@ -134,6 +134,8 @@ namespace Knapcode.TorSharp
 
             await ExtractToolAsync(tool, _settings.ReloadTools).ConfigureAwait(false);
 
+            PermissionsUtility.MakeExecutable(_settings, tool.ExecutablePath);
+
             return tool;
         }
 

@@ -9,5 +9,15 @@
         /// A ZIP file.
         /// </summary>
         Zip,
+
+        /// <summary>
+        /// A Debian package.
+        /// </summary>
+        Deb,
+
+        /// <summary>
+        /// A tarball file compressed using the XZ compression format.
+        /// </summary>
+        TarXz,
     }
 }

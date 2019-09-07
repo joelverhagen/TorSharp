@@ -47,6 +47,19 @@ namespace Knapcode.TorSharp.Tools.Tor
                 pattern = @"tor-win32-(?<Version>[\d\.]+)\.zip$";
                 format = ZippedToolFormat.Zip;
             }
+            else if (_settings.OSPlatform == TorSharpOSPlatform.Linux)
+            {
+                if (_settings.Architecture == TorSharpArchitecture.X86)
+                {
+                    pattern = @"tor-browser-linux32-(?<Version>[\d\.]+)_en-US\.tar\.xz$";
+                    format = ZippedToolFormat.TarXz;
+                }
+                else if (_settings.Architecture == TorSharpArchitecture.X64)
+                {
+                    pattern = @"tor-browser-linux64-(?<Version>[\d\.]+)_en-US\.tar\.xz$";
+                    format = ZippedToolFormat.TarXz;
+                }
+            }
 
             if (pattern == null)
             {

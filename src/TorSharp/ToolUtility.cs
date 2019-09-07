@@ -40,6 +40,58 @@ namespace Knapcode.TorSharp
                     },
                 };
             }
+            else if (settings.OSPlatform == TorSharpOSPlatform.Linux)
+            {
+                var prefix = default(string);
+                if (settings.Architecture == TorSharpArchitecture.X86)
+                {
+                    prefix = "privoxy-linux32-";
+                }
+                else if (settings.Architecture == TorSharpArchitecture.X64)
+                {
+                    prefix = "privoxy-linux64-";
+                }
+                else
+                {
+                    settings.RejectRuntime("determine Linux Privoxy prefix");
+                }
+
+                return new ToolSettings
+                {
+                    Name = PrivoxyName,
+                    Prefix = prefix,
+                    ExecutablePath = Path.Combine("usr", "sbin", "privoxy"),
+                    WorkingDirectory = Path.Combine("usr", "sbin"),
+                    ConfigurationPath = Path.Combine("usr", "share", "privoxy", "config"),
+                    GetArguments = t => new[] { "--no-daemon", '\"' + t.ConfigurationPath + '\"' },
+                    GetEnvironmentVariables = t => new Dictionary<string, string>(),
+                    ZippedToolFormat = ZippedToolFormat.Deb,
+                    GetEntryPath = e =>
+                    {
+                        if (e.StartsWith("./usr/sbin"))
+                        {
+                            return e;
+                        }
+                        else if (e.StartsWith("./usr/share/privoxy"))
+                        {
+                            return e;
+                        }
+                        else if (e.StartsWith("./etc/privoxy"))
+                        {
+                            if (e.StartsWith("./etc/privoxy/templates"))
+                            {
+                                return null;
+                            }
+
+                            return e;
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    },
+                };
+            }
             else
             {
                 settings.RejectRuntime("run Privoxy");
@@ -63,6 +115,76 @@ namespace Knapcode.TorSharp
                     GetEnvironmentVariables = t => new Dictionary<string, string>(),
                     ZippedToolFormat = ZippedToolFormat.Zip,
                     GetEntryPath = e => e,
+                };
+            }
+            else if (settings.OSPlatform == TorSharpOSPlatform.Linux)
+            {
+                var prefix = default(string);
+                if (settings.Architecture == TorSharpArchitecture.X86)
+                {
+                    prefix = "tor-linux32-";
+                }
+                else if (settings.Architecture == TorSharpArchitecture.X64)
+                {
+                    prefix = "tor-linux64-";
+                }
+                else
+                {
+                    settings.RejectRuntime("determine Linux Tor prefix");
+                }
+
+                return new ToolSettings
+                {
+                    Name = TorName,
+                    Prefix = prefix,
+                    ExecutablePath = Path.Combine(TorName, "tor"),
+                    WorkingDirectory = TorName,
+                    ConfigurationPath = Path.Combine("Data", TorName, "torrc"),
+                    GetArguments = t => new[] { "-f", '\"' + t.ConfigurationPath + '\"' },
+                    GetEnvironmentVariables = t =>
+                    {
+                        var output = new Dictionary<string, string>();
+                        const string ldLibraryPathKey = "LD_LIBRARY_PATH";
+                        var ldLibraryPath = Environment.GetEnvironmentVariable(ldLibraryPathKey);
+                        var addedPath = Path.GetDirectoryName(t.ExecutablePath);
+
+                        if (string.IsNullOrWhiteSpace(ldLibraryPath))
+                        {
+                            ldLibraryPath = addedPath;
+                        }
+                        else
+                        {
+                            ldLibraryPath += ":" + addedPath;
+                        }
+
+                        output[ldLibraryPathKey] = ldLibraryPath;
+
+                        return output;
+                    },
+                    ZippedToolFormat = ZippedToolFormat.TarXz,
+                    GetEntryPath = e =>
+                    {
+                        const string entryPrefix = "tor-browser_en-US/Browser/TorBrowser/";
+                        if (e.StartsWith(entryPrefix + "Data/Tor/"))
+                        {
+                            return e.Substring(entryPrefix.Length);
+                        }
+                        else if (e.StartsWith(entryPrefix + "Tor/"))
+                        {
+                            if (e.StartsWith(entryPrefix + "Tor/PluggableTransports/"))
+                            {
+                                return null;
+                            }
+                            else
+                            {
+                                return e.Substring(entryPrefix.Length);
+                            }
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    },
                 };
             }
             else

@@ -31,6 +31,10 @@ namespace Knapcode.TorSharp
             {
                 OSPlatform = TorSharpOSPlatform.Windows;
             }
+            else if (RuntimeInformation.IsOSPlatform(SystemOSPlatform.Linux))
+            {
+                OSPlatform = TorSharpOSPlatform.Linux;
+            }
             else
             {
                 OSPlatform = TorSharpOSPlatform.Unknown;
