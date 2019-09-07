@@ -6,6 +6,10 @@ All you need is client code that can use a simple HTTP proxy.
 
 [![Build status](https://img.shields.io/appveyor/ci/joelverhagen/torsharp.svg)](https://ci.appveyor.com/project/joelverhagen/torsharp) [![NuGet version](https://img.shields.io/nuget/v/Knapcode.TorSharp.svg)](https://www.nuget.org/packages/Knapcode.TorSharp) ![NuGet downloads](https://img.shields.io/nuget/dt/Knapcode.TorSharp.svg)
 
+## Notice
+
+This product is produced independently from the Tor® anonymity software and carries no guarantee from
+[The Tor Project](https://www.torproject.org/) about quality, suitability or anything else.
 
 ## Details
 
