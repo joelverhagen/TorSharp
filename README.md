@@ -13,6 +13,12 @@ This product is produced independently from the Tor® anonymity software and car
 
 ## Details
 
+- Supports:
+  - **.NET Core** (.NET Standard 2.0 and later)
+  - **.NET Framework** (.NET Framework 4.5 and later)
+  - **Windows** (Windows 10 is tested, some older Windows should work too)
+  - Linux support is not yet complete but in progress.
+  - Mac OS X support is not planned.
 - Uses Privoxy to redirect HTTP proxy traffic to Tor.
 - Uses virtual desktops to manage Tor and Privoxy processes.
 - Optionally downloads the latest version of Tor and Privoxy.
