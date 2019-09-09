@@ -6,7 +6,7 @@
     <AssemblyName>Knapcode.TorSharp.Tests</AssemblyName>
     <RootNamespace>Knapcode.TorSharp.Tests</RootNamespace>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\Knapcode.TorSharp.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\TorSharp.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>

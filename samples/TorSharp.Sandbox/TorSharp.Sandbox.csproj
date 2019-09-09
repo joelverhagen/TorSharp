@@ -6,7 +6,7 @@
     <AssemblyName>Knapcode.TorSharp.Sandbox</AssemblyName>
     <RootNamespace>Knapcode.TorSharp.Sandbox</RootNamespace>
     <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\Knapcode.TorSharp.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\TorSharp.snk</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
   </PropertyGroup>
 

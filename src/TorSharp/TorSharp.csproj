@@ -8,7 +8,7 @@
     <NoWarn>1591</NoWarn>
     <SignAssembly>true</SignAssembly>
     <DelaySign>false</DelaySign>
-    <AssemblyOriginatorKeyFile>..\..\Knapcode.TorSharp.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\..\TorSharp.snk</AssemblyOriginatorKeyFile>
 
     <PackageId>Knapcode.TorSharp</PackageId>
     <Version Condition="'$(TorSharpVersion)' != ''">$(TorSharpVersion)</Version>

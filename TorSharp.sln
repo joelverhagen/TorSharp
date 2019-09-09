@@ -1,48 +1,48 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
-VisualStudioVersion = 16.0.29123.88
+VisualStudioVersion = 16.0.29230.47
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{164BF19B-98C4-49FF-989B-499EB0E71B8A}"
-	ProjectSection(SolutionItems) = preProject
-		.gitignore = .gitignore
-		appveyor.yml = appveyor.yml
-		build.ps1 = build.ps1
-		Directory.Build.props = Directory.Build.props
-		Knapcode.TorSharp.snk = Knapcode.TorSharp.snk
-		LICENSE = LICENSE
-		packages.config = packages.config
-		README.md = README.md
-		test.ps1 = test.ps1
-	EndProjectSection
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{503A5E9E-0307-4126-A2B9-5884115FAE47}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{43D2C9DB-0DE5-4B6C-9A4C-0627B748FC15}"
-	ProjectSection(SolutionItems) = preProject
-		build\common.ps1 = build\common.ps1
-		build\set-version.ps1 = build\set-version.ps1
-		build\version.txt = build\version.txt
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TorSharp.Sandbox", "samples\TorSharp.Sandbox\TorSharp.Sandbox.csproj", "{6B08AC42-6B50-4493-A914-17572BF71A52}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C26DB32A-921F-47A6-B993-307C932D3795}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3DC0B874-A2AB-46AE-B6BC-2D35E32B0647}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TorSharp", "src\TorSharp\TorSharp.csproj", "{B626EA0E-27B1-4930-9E8F-1D4C2FFA0353}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TorSharp", "src\TorSharp\TorSharp.csproj", "{7A1DA58E-60B7-4C4D-B56B-8538572429F8}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{410D1C2D-A6D4-4299-B7DA-8A0CD7A77C9D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{ED4E2334-05F6-4CF4-BAE7-0C11BBD397DB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TorSharp.Tests", "test\TorSharp.Tests\TorSharp.Tests.csproj", "{9C28D7C4-CDF8-47D2-BA86-54A713652D5C}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{2753C9E6-60A1-40F8-9C31-900D970EAE34}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TorSharp.Sandbox", "samples\TorSharp.Sandbox\TorSharp.Sandbox.csproj", "{AD1DB824-C159-4F03-98C2-D61DEECCDA04}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PassThroughProxy", "PassThroughProxy", "{92F56F29-F3EF-4A1E-96DE-71834DAB730A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PassThroughProxy", "PassThroughProxy", "{CF825687-1878-48CC-9A79-02A72E3E07E5}"
 	ProjectSection(SolutionItems) = preProject
 		test\PassThroughProxy\LICENSE = test\PassThroughProxy\LICENSE
 		test\PassThroughProxy\PassThroughProxy.ForTesting.snk = test\PassThroughProxy\PassThroughProxy.ForTesting.snk
 		test\PassThroughProxy\REDISTRIBUTION-NOTE = test\PassThroughProxy\REDISTRIBUTION-NOTE
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PassThroughProxy", "test\PassThroughProxy\PassThroughProxy\PassThroughProxy.csproj", "{43F5F433-0A2F-4134-80F9-13C0E2227CC9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PassThroughProxy", "test\PassThroughProxy\PassThroughProxy\PassThroughProxy.csproj", "{1308B4BF-73CC-469D-A3E2-F8B52786CC7E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TorSharp.Tests", "test\TorSharp.Tests\TorSharp.Tests.csproj", "{D92586EE-E235-4597-A386-FC8A62A0006E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{87FF3FC0-F1BE-4EAE-B2AE-E7F0BE56F049}"
+	ProjectSection(SolutionItems) = preProject
+		build\common.ps1 = build\common.ps1
+		build\set-version.ps1 = build\set-version.ps1
+		build\version.txt = build\version.txt
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6705490B-3ABC-406B-BD3D-73B5A26E08B9}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		appveyor.yml = appveyor.yml
+		build.ps1 = build.ps1
+		Directory.Build.props = Directory.Build.props
+		LICENSE = LICENSE
+		packages.config = packages.config
+		README.md = README.md
+		test.ps1 = test.ps1
+		TorSharp.snk = TorSharp.snk
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,33 +50,32 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B626EA0E-27B1-4930-9E8F-1D4C2FFA0353}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B626EA0E-27B1-4930-9E8F-1D4C2FFA0353}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B626EA0E-27B1-4930-9E8F-1D4C2FFA0353}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B626EA0E-27B1-4930-9E8F-1D4C2FFA0353}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9C28D7C4-CDF8-47D2-BA86-54A713652D5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9C28D7C4-CDF8-47D2-BA86-54A713652D5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9C28D7C4-CDF8-47D2-BA86-54A713652D5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9C28D7C4-CDF8-47D2-BA86-54A713652D5C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AD1DB824-C159-4F03-98C2-D61DEECCDA04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AD1DB824-C159-4F03-98C2-D61DEECCDA04}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AD1DB824-C159-4F03-98C2-D61DEECCDA04}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AD1DB824-C159-4F03-98C2-D61DEECCDA04}.Release|Any CPU.Build.0 = Release|Any CPU
-		{43F5F433-0A2F-4134-80F9-13C0E2227CC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{43F5F433-0A2F-4134-80F9-13C0E2227CC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{43F5F433-0A2F-4134-80F9-13C0E2227CC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{43F5F433-0A2F-4134-80F9-13C0E2227CC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B08AC42-6B50-4493-A914-17572BF71A52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B08AC42-6B50-4493-A914-17572BF71A52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B08AC42-6B50-4493-A914-17572BF71A52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B08AC42-6B50-4493-A914-17572BF71A52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A1DA58E-60B7-4C4D-B56B-8538572429F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A1DA58E-60B7-4C4D-B56B-8538572429F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A1DA58E-60B7-4C4D-B56B-8538572429F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A1DA58E-60B7-4C4D-B56B-8538572429F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1308B4BF-73CC-469D-A3E2-F8B52786CC7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1308B4BF-73CC-469D-A3E2-F8B52786CC7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1308B4BF-73CC-469D-A3E2-F8B52786CC7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1308B4BF-73CC-469D-A3E2-F8B52786CC7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D92586EE-E235-4597-A386-FC8A62A0006E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D92586EE-E235-4597-A386-FC8A62A0006E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D92586EE-E235-4597-A386-FC8A62A0006E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D92586EE-E235-4597-A386-FC8A62A0006E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{43D2C9DB-0DE5-4B6C-9A4C-0627B748FC15} = {164BF19B-98C4-49FF-989B-499EB0E71B8A}
-		{B626EA0E-27B1-4930-9E8F-1D4C2FFA0353} = {C26DB32A-921F-47A6-B993-307C932D3795}
-		{9C28D7C4-CDF8-47D2-BA86-54A713652D5C} = {410D1C2D-A6D4-4299-B7DA-8A0CD7A77C9D}
-		{AD1DB824-C159-4F03-98C2-D61DEECCDA04} = {2753C9E6-60A1-40F8-9C31-900D970EAE34}
-		{92F56F29-F3EF-4A1E-96DE-71834DAB730A} = {410D1C2D-A6D4-4299-B7DA-8A0CD7A77C9D}
-		{43F5F433-0A2F-4134-80F9-13C0E2227CC9} = {92F56F29-F3EF-4A1E-96DE-71834DAB730A}
+		{6B08AC42-6B50-4493-A914-17572BF71A52} = {503A5E9E-0307-4126-A2B9-5884115FAE47}
+		{7A1DA58E-60B7-4C4D-B56B-8538572429F8} = {3DC0B874-A2AB-46AE-B6BC-2D35E32B0647}
+		{CF825687-1878-48CC-9A79-02A72E3E07E5} = {ED4E2334-05F6-4CF4-BAE7-0C11BBD397DB}
+		{1308B4BF-73CC-469D-A3E2-F8B52786CC7E} = {CF825687-1878-48CC-9A79-02A72E3E07E5}
+		{D92586EE-E235-4597-A386-FC8A62A0006E} = {ED4E2334-05F6-4CF4-BAE7-0C11BBD397DB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C9D31863-62E3-48E8-AF13-1E5EE3A20A37}
