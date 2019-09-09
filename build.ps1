@@ -14,7 +14,7 @@ if (!(Test-Path $nuget)) {
 }
 
 Write-Host "[ Restoring solution packages ]" -ForegroundColor DarkGreen
-& $nuget install (Join-Path $repoDir "packages.config") -Output $packagesDir -ExcludeVersion
+Exec { & $nuget install (Join-Path $repoDir "packages.config") -Output $packagesDir -ExcludeVersion }
 if ($LASTEXITCODE -ne 0) {
     throw "Failed to restore solution packages."
 }
@@ -22,4 +22,4 @@ if ($LASTEXITCODE -ne 0) {
 & (Join-Path $repoDir "build\set-version.ps1")
 
 Write-Host "[ Building ]" -ForegroundColor DarkGreen
-dotnet build --configuration Release
+Exec { dotnet build --configuration Release }
