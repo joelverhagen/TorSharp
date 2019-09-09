@@ -5,10 +5,13 @@
     <TargetFrameworks>net45;netcoreapp2.0</TargetFrameworks>
     <AssemblyName>Knapcode.TorSharp.Sandbox</AssemblyName>
     <RootNamespace>Knapcode.TorSharp.Sandbox</RootNamespace>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\Knapcode.TorSharp.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TorSharp\TorSharp.csproj" />
+    <ProjectReference Include="..\..\src\TorSharp\TorSharp.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net45'">

@@ -1,0 +1,13 @@
+As directed by the MIT license of PassThroughProxy, I have included the original license in the same folder as this note.
+
+The code was fetched from GitHub via the following clone URL:
+https://github.com/agabani/PassThroughProxy.git
+
+The commit of HEAD (master branch) was fecfd792ff32dcc090a9361bda1b10af08bc5c66.
+
+The modifications on top of the original were:
+
+  - Added a strong-name key for signing the PassThroughProxy project. This is necessary because the binary distribution
+    available on nuget.org is not strong-named.
+
+  - Removed all code except for the PassThroughProxy.csproj project and its associated source files.
