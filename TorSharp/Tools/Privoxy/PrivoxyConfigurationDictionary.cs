@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace Knapcode.TorSharp.Tools.Privoxy
 {
-    public class PrivoxyConfigurationDictionary : IConfigurationDictionary
+    internal class PrivoxyConfigurationDictionary : IConfigurationDictionary
     {
         public IDictionary<string, string> GetDictionary(Tool tool, TorSharpSettings settings)
         {

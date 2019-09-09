@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Knapcode.TorSharp.Tools
 {
-    public class LineByLineConfigurer
+    internal class LineByLineConfigurer
     {
         private readonly IConfigurationDictionary _configurationDictionary;
         private readonly IConfigurationFormat _format;

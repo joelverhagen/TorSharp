@@ -5,7 +5,7 @@ namespace Knapcode.TorSharp.Tools
     /// <summary>
     /// An interface for building tool configuration.
     /// </summary>
-    public interface IConfigurationDictionary
+    internal interface IConfigurationDictionary
     {
         /// <summary>
         /// Configure a tool given the provided settings.

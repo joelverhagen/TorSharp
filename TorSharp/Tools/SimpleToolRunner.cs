@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Knapcode.TorSharp.Tools
 {
-    public class SimpleToolRunner : IToolRunner, IDisposable
+    internal class SimpleToolRunner : IToolRunner, IDisposable
     {
         private static readonly Task CompletedTask = Task.FromResult(0);
         private bool _disposed;

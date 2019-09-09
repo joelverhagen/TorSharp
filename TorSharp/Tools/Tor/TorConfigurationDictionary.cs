@@ -5,7 +5,7 @@ using System.IO;
 
 namespace Knapcode.TorSharp.Tools.Tor
 {
-    public class TorConfigurationDictionary : IConfigurationDictionary
+    internal class TorConfigurationDictionary : IConfigurationDictionary
     {
         public IDictionary<string, string> GetDictionary(Tool tool, TorSharpSettings settings)
         {

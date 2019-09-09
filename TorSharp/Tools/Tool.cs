@@ -5,7 +5,7 @@ namespace Knapcode.TorSharp.Tools
     /// <summary>
     /// An extracted instance of a tool.
     /// </summary>
-    public class Tool
+    internal class Tool
     {
         /// <summary>
         /// The generic settings of the tool, agnostic of this specific extracted instance.

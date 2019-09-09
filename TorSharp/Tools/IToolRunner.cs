@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 
 namespace Knapcode.TorSharp.Tools
 {
-    public interface IToolRunner
+    internal interface IToolRunner
     {
         Task StartAsync(Tool tool);
         void Stop();

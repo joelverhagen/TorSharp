@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Knapcode.TorSharp.PInvoke
 {
-    public static partial class WindowsApi
+    internal static partial class WindowsApi
     {
         [DllImport("kernel32.dll")]
         public static extern IntPtr CreateJobObject(IntPtr lpJobAttributes, string lpName);

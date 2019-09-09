@@ -9,7 +9,7 @@ namespace Knapcode.TorSharp
     /// <summary>
     /// A support utility for reading the directory containing the tools.
     /// </summary>
-    public static class ToolUtility
+    internal static class ToolUtility
     {
         private const string PrivoxyName = "Privoxy";
         private const string TorName = "Tor";

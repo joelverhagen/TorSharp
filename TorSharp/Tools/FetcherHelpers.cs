@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Knapcode.TorSharp.Tools
 {
-    public static class FetcherHelpers
+    internal static class FetcherHelpers
     {
         public static async Task<string> GetStringAsync(
             this HttpClient httpClient,

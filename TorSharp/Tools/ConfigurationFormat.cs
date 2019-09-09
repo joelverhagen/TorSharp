@@ -3,13 +3,13 @@ using System.Text.RegularExpressions;
 
 namespace Knapcode.TorSharp.Tools
 {
-    public interface IConfigurationFormat
+    internal interface IConfigurationFormat
     {
         string UpdateLine(IDictionary<string, string> dictionary, string originalLine);
         string CreateLine(KeyValuePair<string, string> pair);
     }
 
-    public class ConfigurationFormat : IConfigurationFormat
+    internal class ConfigurationFormat : IConfigurationFormat
     {
         public Regex CommentPattern => new Regex(@"^\s*#+");
 

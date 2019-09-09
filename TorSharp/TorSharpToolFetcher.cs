@@ -24,14 +24,19 @@ namespace Knapcode.TorSharp
         private static bool SecureProtocolsEnabled = false;
 
         private readonly TorSharpSettings _settings;
-        private readonly HttpClient _httpClient;
+        private readonly ISimpleHttpClient _simpleHttpClient;
         private readonly PrivoxyFetcher _privoxyFetcher;
         private readonly TorFetcher _torFetcher;
 
         public TorSharpToolFetcher(TorSharpSettings settings, HttpClient client)
+            : this(settings, client, new SimpleHttpClient(client))
+        {
+        }
+
+        internal TorSharpToolFetcher(TorSharpSettings settings, HttpClient client, ISimpleHttpClient simpleHttpClient)
         {
             _settings = settings;
-            _httpClient = client;
+            _simpleHttpClient = simpleHttpClient;
             _privoxyFetcher = new PrivoxyFetcher(settings, client);
             _torFetcher = new TorFetcher(settings, client);
         }
@@ -154,11 +159,9 @@ namespace Knapcode.TorSharp
 
                 try
                 {
-                    using (var fileStream = new FileStream(update.DestinationPath, FileMode.Create))
-                    using (var contentStream = await _httpClient.GetStreamAsync(update.LatestDownload.Url).ConfigureAwait(false))
-                    {
-                        await contentStream.CopyToAsync(fileStream).ConfigureAwait(false);
-                    }
+                    await _simpleHttpClient.DownloadToFileAsync(
+                        update.LatestDownload.Url,
+                        update.DestinationPath).ConfigureAwait(false);
 
                     try
                     {

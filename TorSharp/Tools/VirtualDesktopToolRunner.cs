@@ -9,7 +9,7 @@ using Knapcode.TorSharp.PInvoke;
 
 namespace Knapcode.TorSharp.Tools
 {
-    public class VirtualDesktopToolRunner : IToolRunner
+    internal class VirtualDesktopToolRunner : IToolRunner
     {
         private const string DesktopName = "TorSharpDesktop";
         private readonly object _jobHandleLock = new object();

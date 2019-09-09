@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Knapcode.TorSharp.PInvoke
 {
-    public static partial class WindowsApi
+    internal static partial class WindowsApi
     {
         public const uint DELETE = 0x00010000;
         public const uint READ_CONTROL = 0x00020000;
@@ -78,7 +78,7 @@ namespace Knapcode.TorSharp.PInvoke
         public static extern bool SwitchDesktop(IntPtr hDesktop);
     }
 
-    public static partial class WindowsUtility
+    internal static partial class WindowsUtility
     {
         public static IntPtr CreateDesktop(string desktopName)
         {

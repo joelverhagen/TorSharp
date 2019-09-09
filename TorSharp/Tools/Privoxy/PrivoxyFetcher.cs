@@ -11,7 +11,7 @@ using System.Xml;
 
 namespace Knapcode.TorSharp.Tools.Privoxy
 {
-    public class PrivoxyFetcher : IFileFetcher
+    internal class PrivoxyFetcher : IFileFetcher
     {
         private static readonly Uri PrivoxyBaseUrl = new Uri("https://www.privoxy.org/feeds/privoxy-releases.xml");
         private static readonly Uri SourceForgeBaseUrl = new Uri("https://sourceforge.net/projects/ijbswa/rss");

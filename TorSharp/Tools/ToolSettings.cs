@@ -6,7 +6,7 @@ namespace Knapcode.TorSharp.Tools
     /// <summary>
     /// Information on how a tool is laid out on disk and how it should be interacted with by TorSharp.
     /// </summary>
-    public class ToolSettings
+    internal class ToolSettings
     {
         /// <summary>
         /// The name of the tool for messages.

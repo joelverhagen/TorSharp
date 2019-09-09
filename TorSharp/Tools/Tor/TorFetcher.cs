@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Knapcode.TorSharp.Tools.Tor
 {
-    public class TorFetcher : IFileFetcher
+    internal class TorFetcher : IFileFetcher
     {
         private static readonly Uri BaseUrl = new Uri("https://dist.torproject.org/torbrowser/");
         private readonly TorSharpSettings _settings;

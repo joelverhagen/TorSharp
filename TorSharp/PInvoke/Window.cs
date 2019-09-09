@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Knapcode.TorSharp.PInvoke
 {
-    public static partial class WindowsApi
+    internal static partial class WindowsApi
     {
         public const int SW_SHOW = 5;
         public const int SW_HIDE = 0;
@@ -40,7 +40,7 @@ namespace Knapcode.TorSharp.PInvoke
         public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
     }
 
-    public static partial class WindowsUtility
+    internal static partial class WindowsUtility
     {
         public static void HideWindow(IntPtr windowHandle)
         {

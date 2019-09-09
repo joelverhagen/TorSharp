@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace Knapcode.TorSharp.PInvoke
 {
-    public static partial class WindowsApi
+    internal static partial class WindowsApi
     {
         public const uint INFINITE = 0xFFFFFFFF;
         public const uint WAIT_ABANDONED = 0x00000080;
@@ -63,7 +63,7 @@ namespace Knapcode.TorSharp.PInvoke
         }
     }
 
-    public static partial class WindowsUtility
+    internal static partial class WindowsUtility
     {
         public static WindowsApi.PROCESS_INFORMATION CreateProcess(ProcessStartInfo startInfo, string desktopName = null, int? millisecondsToWait = 100)
         {

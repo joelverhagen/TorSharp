@@ -2,7 +2,7 @@ using System.Security.Cryptography;
 
 namespace Knapcode.TorSharp.Adapters
 {
-    public class Random : IRandom
+    internal class Random : IRandom
     {
         private readonly RandomNumberGenerator _rng;
 

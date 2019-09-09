@@ -2,7 +2,7 @@
 
 namespace Knapcode.TorSharp.Adapters
 {
-    public interface IRandom : IDisposable
+    internal interface IRandom : IDisposable
     {
         void GetBytes(byte[] bytes);
     }

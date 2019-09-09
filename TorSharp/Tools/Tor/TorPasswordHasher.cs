@@ -6,7 +6,7 @@ using Knapcode.TorSharp.Adapters;
 
 namespace Knapcode.TorSharp.Tools.Tor
 {
-    public class TorPasswordHasher
+    internal class TorPasswordHasher
     {
         private readonly IRandomFactory _randomFactory;
 
