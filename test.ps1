@@ -15,14 +15,14 @@ if (Test-Path $netFrameworkTestAssembly) {
     & $xunit64 $netFrameworkTestAssembly $options
 } else {
 	Write-Host "[ Building .NET Framework tests with .NET CLI ]" -ForegroundColor DarkGreen
-	dotnet build TorSharp.Tests --framework net452
+	dotnet build test\TorSharp.Tests --framework net452
 
 	Write-Host "[ Running .NET Framework tests with .NET CLI ]" -ForegroundColor DarkGreen
-	dotnet test TorSharp.Tests --no-build --framework net452 --verbosity normal
+	dotnet test test\TorSharp.Tests --no-build --framework net452 --verbosity normal
 }
 
 Write-Host "[ Building .NET Core tests with .NET CLI ]" -ForegroundColor DarkGreen
-dotnet build TorSharp.Tests --framework netcoreapp2.0
+dotnet build test\TorSharp.Tests --framework netcoreapp2.0
 
 Write-Host "[ Running .NET Core tests with .NET CLI ]" -ForegroundColor DarkGreen
-dotnet test TorSharp.Tests --no-build --framework netcoreapp2.0 --verbosity normal
+dotnet test test\TorSharp.Tests --no-build --framework netcoreapp2.0 --verbosity normal
