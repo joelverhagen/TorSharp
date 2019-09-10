@@ -86,7 +86,7 @@ namespace Knapcode.TorSharp.Tests.TestSupport
 
                     if (current.State != DownloadProgressState.Complete)
                     {
-                        _previousProgress[current.DownloadId] = previous;
+                        _previousProgress[current.DownloadId] = current;
                     }
                     else
                     {
