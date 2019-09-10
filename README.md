@@ -9,7 +9,7 @@ All you need is client code that can use a simple HTTP proxy.
 CI        | OS      | Status
 --------- | ------- | ------
 AppVeyor  | Windows | [![Build status](https://img.shields.io/appveyor/ci/joelverhagen/torsharp.svg)](https://ci.appveyor.com/project/joelverhagen/torsharp) 
-Travis CI | Linux   | [![Build Status](https://travis-ci.org/joelverhagen/TorSharp.svg?branch=release)](https://travis-ci.org/joelverhagen/TorSharp)
+Travis CI | Linux   | [![Build status](https://img.shields.io/travis/joelverhagen/torsharp.svg)](https://travis-ci.org/joelverhagen/TorSharp) 
 
 ## Notice
 
