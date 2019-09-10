@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Text;
 using Knapcode.TorSharp.Tools;
 
 namespace Knapcode.TorSharp.Tests.TestSupport
@@ -47,9 +49,60 @@ namespace Knapcode.TorSharp.Tests.TestSupport
 
         private class ConsoleProgress : IProgress<DownloadProgress>
         {
-            public void Report(DownloadProgress p)
+            private readonly object _lock = new object();
+            private readonly Dictionary<Guid, DownloadProgress> _previousProgress = new Dictionary<Guid, DownloadProgress>();
+
+            public void Report(DownloadProgress current)
+            { 
+                lock (_lock)
+                {
+                    int? previousPercent;
+                    if (_previousProgress.TryGetValue(current.DownloadId, out var previous))
+                    {
+                        previousPercent = GetPercent(previous);
+                    }
+                    else
+                    {
+                        previousPercent = null;
+                    }
+
+                    var currentPercent = GetPercent(current);
+                    if (!previousPercent.HasValue || currentPercent != previousPercent)
+                    {
+                        var sb = new StringBuilder();
+
+                        sb.AppendFormat(
+                            "{0}: {1} / {2}",
+                            current.RequestUri.AbsoluteUri,
+                            current.TotalRead,
+                            current.ContentLength.HasValue ? current.ContentLength.Value.ToString() : "???");
+                        if (currentPercent.HasValue)
+                        {
+                            sb.AppendFormat(" ({0}%)", currentPercent);
+                        }
+
+                        Console.WriteLine(sb.ToString());
+                    }
+
+                    if (current.State != DownloadProgressState.Complete)
+                    {
+                        _previousProgress[current.DownloadId] = previous;
+                    }
+                    else
+                    {
+                        _previousProgress.Remove(current.DownloadId);
+                    }
+                }
+            }
+
+            private int? GetPercent(DownloadProgress progress)
             {
-                Console.WriteLine($"{p.RequestUri.AbsoluteUri}: {p.Complete} / {(p.Total.HasValue ? p.Total.Value.ToString() : "???")}");
+                if (!progress.ContentLength.HasValue)
+                {
+                    return null;
+                }
+
+                return (int)(100.0 * progress.TotalRead / progress.ContentLength.Value);
             }
         }
     }

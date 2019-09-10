@@ -4,15 +4,26 @@ namespace Knapcode.TorSharp.Tools
 {
     internal struct DownloadProgress
     {
-        public DownloadProgress(Uri requestUri, long complete, long? total)
+        public DownloadProgress(Guid downloadId, DownloadProgressState state, Uri requestUri, long totalRead, long? contentLength)
         {
+            DownloadId = downloadId;
+            State = state;
             RequestUri = requestUri;
-            Complete = complete;
-            Total = total;
+            TotalRead = totalRead;
+            ContentLength = contentLength;
         }
 
+        public Guid DownloadId { get; }
+        public DownloadProgressState State { get; }
         public Uri RequestUri { get; }
-        public long Complete { get; }
-        public long? Total { get; }
+        public long TotalRead { get; }
+        public long? ContentLength { get; }
+    }
+
+    internal enum DownloadProgressState
+    {
+        Starting,
+        Progress,
+        Complete,
     }
 }
