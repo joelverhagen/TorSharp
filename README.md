@@ -78,7 +78,7 @@ recommend:
    [See below](#how-do-i-set-up-the-tools-manually).
 
 1. Investigate the issue yourself. The
-   [TorSharp.Sandbox](https://github.com/joelverhagen/TorSharp/blob/release/TorSharp.Sandbox/Program.cs) project is
+   [TorSharp.Sandbox](https://github.com/joelverhagen/TorSharp/blob/release/samples/TorSharp.Sandbox/Program.cs) project is
    helpful for this. Pull requests accepted 🏆.
 
 ### How do I set up the tools manually?
