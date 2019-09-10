@@ -27,23 +27,23 @@ namespace Knapcode.TorSharp.Tools
                 using (var contentStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                 using (var fileStream = new FileStream(path, FileMode.Create))
                 {
-                    Report(requestUri, progress, response);
+                    var totalRead = 0;
+                    Report(progress, requestUri, totalRead, response);
                     var buffer = new byte[81920];
                     int read;
-                    var totalRead = 0;
                     while ((read = await contentStream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false)) != 0)
                     {
                         totalRead += read;
                         await fileStream.WriteAsync(buffer, 0, read).ConfigureAwait(false);
-                        Report(requestUri, progress, response);
+                        Report(progress, requestUri, totalRead, response);
                     }
                 }
             }
         }
 
-        private static void Report(Uri requestUri, IProgress<DownloadProgress> progress, HttpResponseMessage response)
+        private static void Report(IProgress<DownloadProgress> progress, Uri requestUri, long totalRead, HttpResponseMessage response)
         {
-            progress?.Report(new DownloadProgress(requestUri, 0, response.Content?.Headers.ContentLength));
+            progress?.Report(new DownloadProgress(requestUri, totalRead, response.Content?.Headers.ContentLength));
         }
     }
 }

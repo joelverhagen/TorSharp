@@ -54,6 +54,7 @@ namespace Knapcode.TorSharp.Tests.TestSupport
                     await _httpClient.DownloadToFileAsync(requestUri, cachePath, progress);
                 }
 
+                Console.WriteLine($"Copying {cachePath} to {path}");
                 File.Copy(cachePath, path, overwrite: true);
             }
             finally

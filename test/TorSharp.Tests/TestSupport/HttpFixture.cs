@@ -15,9 +15,9 @@ namespace Knapcode.TorSharp.Tests.TestSupport
                 Path.GetTempPath(),
                 "Knapcode.TorSharp.Tests",
                 "cache",
+                // DateTimeOffset.UtcNow.ToString("yyyy-MM-dd"));
                 Guid.NewGuid().ToString());
             Directory.CreateDirectory(_cacheDirectory);
-
         }
 
         internal ISimpleHttpClient GetSimpleHttpClient(HttpClient httpClient)
