@@ -106,7 +106,7 @@ namespace Knapcode.TorSharp.Tests.TestSupport
 
         public static TestEnvironment Initialize(ITestOutputHelper output)
         {
-            var guid = Guid.NewGuid().ToString();
+            var guid = Guid.NewGuid().ToString("N");
             var baseDirectory = Path.Combine(Path.GetTempPath(), "Knapcode.TorSharp.Tests", guid);
             output.WriteLine($"Initializing test environment in base directory: {baseDirectory}");
 
