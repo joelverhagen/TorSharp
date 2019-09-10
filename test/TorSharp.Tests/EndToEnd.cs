@@ -13,12 +13,15 @@ using Xunit.Abstractions;
 
 namespace Knapcode.TorSharp.Tests
 {
+    [Collection(HttpCollection.Name)]
     public class EndToEnd
     {
+        private readonly HttpFixture _httpFixture;
         private readonly ITestOutputHelper _output;
 
-        public EndToEnd(ITestOutputHelper output)
+        public EndToEnd(HttpFixture httpFixture, ITestOutputHelper output)
         {
+            _httpFixture = httpFixture;
             _output = output;
         }
 
@@ -119,7 +122,8 @@ namespace Knapcode.TorSharp.Tests
                 _output.WriteLine(settings);
 
                 // Act
-                await new TorSharpToolFetcher(settings, httpClient).FetchAsync();
+                var fetcher = _httpFixture.GetTorSharpToolFetcher(settings, httpClient);
+                await fetcher.FetchAsync();
                 _output.WriteLine("The tools have been fetched");
                 await proxy.ConfigureAndStartAsync();
                 _output.WriteLine("The proxy has been started");

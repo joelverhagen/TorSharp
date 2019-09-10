@@ -10,12 +10,15 @@ using Xunit.Abstractions;
 
 namespace Knapcode.TorSharp.Tests
 {
+    [Collection(HttpCollection.Name)]
     public class TorSharpFetcherTests
     {
+        private readonly HttpFixture _httpFixture;
         private readonly ITestOutputHelper _output;
 
-        public TorSharpFetcherTests(ITestOutputHelper output)
+        public TorSharpFetcherTests(HttpFixture httpFixture, ITestOutputHelper output)
         {
+            _httpFixture = httpFixture;
             _output = output;
         }
 
@@ -38,7 +41,7 @@ namespace Knapcode.TorSharp.Tests
                 using (var proxy = new TorSharpProxy(settings))
                 {
                     _output.WriteLine(settings);
-                    var fetcher = new TorSharpToolFetcher(settings, httpClient);
+                    var fetcher = _httpFixture.GetTorSharpToolFetcher(settings, httpClient);
 
                     // Act
                     var updates = await fetcher.CheckForUpdatesAsync();
@@ -69,7 +72,7 @@ namespace Knapcode.TorSharp.Tests
                 using (var proxy = new TorSharpProxy(settings))
                 {
                     _output.WriteLine(settings);
-                    var fetcher = new TorSharpToolFetcher(settings, httpClient);
+                    var fetcher = _httpFixture.GetTorSharpToolFetcher(settings, httpClient);
                     var initial = await fetcher.CheckForUpdatesAsync();
                     await fetcher.FetchAsync(initial);
 
@@ -117,11 +120,13 @@ namespace Knapcode.TorSharp.Tests
                 using (var proxy = new TorSharpProxy(settings))
                 {
                     _output.WriteLine(settings);
-                    await new TorSharpToolFetcher(settings, httpClient).FetchAsync();
+                    var fetcherA = _httpFixture.GetTorSharpToolFetcher(settings, httpClient);
+                    await fetcherA.FetchAsync();
                     var requestCount = requestCountHandler.RequestCount;
 
                     // Act
-                    await new TorSharpToolFetcher(settings, httpClient).FetchAsync();
+                    var fetcherB = _httpFixture.GetTorSharpToolFetcher(settings, httpClient);
+                    await fetcherB.FetchAsync();
 
                     // Assert
                     Assert.True(requestCount > 0, "The should be at least one request.");

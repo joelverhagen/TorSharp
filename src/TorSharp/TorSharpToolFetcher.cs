@@ -25,18 +25,24 @@ namespace Knapcode.TorSharp
 
         private readonly TorSharpSettings _settings;
         private readonly ISimpleHttpClient _simpleHttpClient;
+        private readonly IProgress<DownloadProgress> _progress;
         private readonly PrivoxyFetcher _privoxyFetcher;
         private readonly TorFetcher _torFetcher;
 
         public TorSharpToolFetcher(TorSharpSettings settings, HttpClient client)
-            : this(settings, client, new SimpleHttpClient(client))
+            : this(settings, client, new SimpleHttpClient(client), progress: null)
         {
         }
 
-        internal TorSharpToolFetcher(TorSharpSettings settings, HttpClient client, ISimpleHttpClient simpleHttpClient)
+        internal TorSharpToolFetcher(
+            TorSharpSettings settings,
+            HttpClient client,
+            ISimpleHttpClient simpleHttpClient,
+            IProgress<DownloadProgress> progress)
         {
             _settings = settings;
             _simpleHttpClient = simpleHttpClient;
+            _progress = progress;
             _privoxyFetcher = new PrivoxyFetcher(settings, client);
             _torFetcher = new TorFetcher(settings, client);
         }
@@ -161,7 +167,8 @@ namespace Knapcode.TorSharp
                 {
                     await _simpleHttpClient.DownloadToFileAsync(
                         update.LatestDownload.Url,
-                        update.DestinationPath).ConfigureAwait(false);
+                        update.DestinationPath,
+                        _progress).ConfigureAwait(false);
 
                     try
                     {
