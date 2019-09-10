@@ -86,9 +86,9 @@ to use a specific version of Tor and Privoxy, follow these steps.
    - `{version}` must be parsable as a `System.Version` meaning it is `major.minor[.build[.revision]]`.
    - Example: `tor-win32-0.3.5.8.zip`
    - The ZIP is expected to have `Tor\tor.exe`.
-1. Put a Privoxy Win32 ZIP in that folder with a file name like: `privoxy-{version}.zip`
+1. Put a Privoxy Win32 ZIP in that folder with a file name like: `privoxy-win32-{version}.zip`
    - Again, `{version}` must be parsable as a `System.Version`.
-   - Example: `privoxy-3.0.26.zip`
+   - Example: `privoxy-win32-3.0.26.zip`
    - The ZIP is expected to have `privoxy.exe`.
 1. Initialize a `TorSharpSettings` instance where `ZippedToolsDirectory` is the directory created above.
 1. Pass this settings instance to the `TorSharpProxy` constructor.
