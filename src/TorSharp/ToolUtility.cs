@@ -21,7 +21,7 @@ namespace Knapcode.TorSharp
                 return new ToolSettings
                 {
                     Name = PrivoxyName,
-                    Prefix = "privoxy-win32",
+                    Prefix = "privoxy-win32-",
                     ExecutablePath = "privoxy.exe",
                     WorkingDirectory = ".",
                     ConfigurationPath = "config.txt",
