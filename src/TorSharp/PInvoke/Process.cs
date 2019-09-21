@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -73,10 +73,8 @@ namespace Knapcode.TorSharp.PInvoke
 
             var processInformation = new WindowsApi.PROCESS_INFORMATION();
 
-            string command = startInfo.FileName + " " + startInfo.Arguments;
-
-            bool result = WindowsApi.CreateProcess(null,
-                command,
+            bool result = WindowsApi.CreateProcess(startInfo.FileName,
+                startInfo.Arguments,
                 IntPtr.Zero,
                 IntPtr.Zero,
                 true,
