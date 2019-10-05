@@ -20,6 +20,7 @@
     <RepositoryUrl>https://github.com/joelverhagen/TorSharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>
+* 2.0.1 Fix bug in Windows Privoxy zipped tool prefix (was "win32", should be "win32-").
 * 2.0.0 Add support .NET Core on Linux.
 * 2.0.0-beta1 Add support for .NET Core on Windows.
 * 1.9.1 Fix null reference exception in TorControlClient.Dispose().
