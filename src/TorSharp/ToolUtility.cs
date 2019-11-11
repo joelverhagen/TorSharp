@@ -22,6 +22,7 @@ namespace Knapcode.TorSharp
                 {
                     Name = PrivoxyName,
                     Prefix = "privoxy-win32-",
+                    ExecutablePathOverride = settings.PrivoxySettings.ExecutablePathOverride,
                     ExecutablePath = "privoxy.exe",
                     WorkingDirectory = ".",
                     ConfigurationPath = "config.txt",
@@ -60,6 +61,7 @@ namespace Knapcode.TorSharp
                 {
                     Name = PrivoxyName,
                     Prefix = prefix,
+                    ExecutablePathOverride = settings.PrivoxySettings.ExecutablePathOverride,
                     ExecutablePath = Path.Combine("usr", "sbin", "privoxy"),
                     WorkingDirectory = Path.Combine("usr", "sbin"),
                     ConfigurationPath = Path.Combine("usr", "share", "privoxy", "config"),
@@ -108,6 +110,7 @@ namespace Knapcode.TorSharp
                 {
                     Name = TorName,
                     Prefix = "tor-win32-",
+                    ExecutablePathOverride = settings.TorSettings.ExecutablePathOverride,
                     ExecutablePath = Path.Combine(TorName, "tor.exe"),
                     WorkingDirectory = TorName,
                     ConfigurationPath = Path.Combine("Data", TorName, "torrc"),
@@ -137,6 +140,7 @@ namespace Knapcode.TorSharp
                 {
                     Name = TorName,
                     Prefix = prefix,
+                    ExecutablePathOverride = settings.TorSettings.ExecutablePathOverride,
                     ExecutablePath = Path.Combine(TorName, "tor"),
                     WorkingDirectory = TorName,
                     ConfigurationPath = Path.Combine("Data", TorName, "torrc"),
@@ -144,20 +148,24 @@ namespace Knapcode.TorSharp
                     GetEnvironmentVariables = t =>
                     {
                         var output = new Dictionary<string, string>();
-                        const string ldLibraryPathKey = "LD_LIBRARY_PATH";
-                        var ldLibraryPath = Environment.GetEnvironmentVariable(ldLibraryPathKey);
-                        var addedPath = Path.GetDirectoryName(t.ExecutablePath);
 
-                        if (string.IsNullOrWhiteSpace(ldLibraryPath))
+                        if (settings.TorSettings.ExecutablePathOverride == null)
                         {
-                            ldLibraryPath = addedPath;
-                        }
-                        else
-                        {
-                            ldLibraryPath += ":" + addedPath;
-                        }
+                            const string ldLibraryPathKey = "LD_LIBRARY_PATH";
+                            var ldLibraryPath = Environment.GetEnvironmentVariable(ldLibraryPathKey);
+                            var addedPath = Path.GetDirectoryName(t.ExecutablePath);
 
-                        output[ldLibraryPathKey] = ldLibraryPath;
+                            if (string.IsNullOrWhiteSpace(ldLibraryPath))
+                            {
+                                ldLibraryPath = addedPath;
+                            }
+                            else
+                            {
+                                ldLibraryPath += ":" + addedPath;
+                            }
+
+                            output[ldLibraryPathKey] = ldLibraryPath;
+                        }
 
                         return output;
                     },
@@ -236,7 +244,7 @@ namespace Knapcode.TorSharp
                     ZipPath = zipPath,
                     DirectoryPath = directoryPath,
                     Version = parsedVersion,
-                    ExecutablePath = Path.Combine(directoryPath, toolSettings.ExecutablePath),
+                    ExecutablePath = toolSettings.ExecutablePathOverride ?? Path.Combine(directoryPath, toolSettings.ExecutablePath),
                     WorkingDirectory = Path.Combine(directoryPath, toolSettings.WorkingDirectory),
                     ConfigurationPath = Path.Combine(directoryPath, toolSettings.ConfigurationPath),
                 });

@@ -4,7 +4,7 @@ Use Tor for your C# HTTP clients. Tor + Privoxy = :heart:
 
 All you need is client code that can use a simple HTTP proxy.
 
-[![NuGet version](https://img.shields.io/nuget/v/Knapcode.TorSharp.svg)](https://www.nuget.org/packages/Knapcode.TorSharp) ![NuGet downloads](https://img.shields.io/nuget/dt/Knapcode.TorSharp.svg)
+[![NuGet version](https://img.shields.io/nuget/v/Knapcode.TorSharp.svg)](https://www.nuget.org/packages/Knapcode.TorSharp) [![NuGet downloads](https://img.shields.io/nuget/dt/Knapcode.TorSharp.svg)](https://www.nuget.org/packages/Knapcode.TorSharp)
 
 CI        | OS      | Status
 --------- | ------- | ------
@@ -21,9 +21,15 @@ This product is produced independently from the Tor® anonymity software and car
 - Supports:
   - **.NET Core** (.NET Standard 2.0 and later)
   - **.NET Framework** (.NET Framework 4.5 and later)
-  - **Windows** (Windows 10 is tested, some older Windows should work too)
-  - **Linux** (Ubuntu 16.04 and 18.04 is tested)
-  - Mac OS X support is not planned.
+  - **Windows**
+    - ✔️ Windows 10 version 1903
+    - Older Windows should work too
+  - **Linux**
+    - ✔️ Ubuntu 18.04
+    - ✔️ Ubuntu 16.04
+    - ✔️ Debian 9 ([confirmed by user](https://github.com/joelverhagen/TorSharp/issues/42#issuecomment-539403030))
+    - ⚠️ CentOS 7 supported via `ExecutablePathOverride` ([see below](#centos-7))
+  - ❌ Mac OS X support is not planned.
 - Uses Privoxy to redirect HTTP proxy traffic to Tor.
 - Uses virtual desktops to manage Tor and Privoxy processes.
 - Optionally downloads the latest version of Tor and Privoxy.
@@ -97,3 +103,44 @@ to use a specific version of Tor and Privoxy, follow these steps.
    - The ZIP is expected to have `privoxy.exe`.
 1. Initialize a `TorSharpSettings` instance where `ZippedToolsDirectory` is the directory created above.
 1. Pass this settings instance to the `TorSharpProxy` constructor.
+
+### Privoxy fetched by TorSharp fails to start? Try `ExecutablePathOverride`.
+
+On Linux, the Privoxy binaries fetched seem to be built for Debian and Ubuntu distributions. I can confirm that
+some other distributions don't work. For example, on CentOS 7 the following error appears:
+
+`
+/tmp/TorExtracted/privoxy-linux64-3.0.28/usr/sbin/privoxy: error while loading shared libraries: libpcre.so.3: cannot open shared object file: No such file or directory
+`
+
+I'm no Linux expert but my guess is that the version of PCRE on CentOS 7 vs. Ubuntu is different so at runtime the
+library can't be found on CentOS. The easiest workaround is to install Privoxy to your system and set the
+`TorSharpSettings.PrivoxySetting.ExecutablePathOverride` configuration setting to `"privoxy"` (i.e. use Privoxy
+from PATH).
+
+Note that you may encounter warning or error messages in the output due to new configuration being used with an older
+executable. I haven't ran into any problems with this myself but it's possible things could get weird.
+
+#### CentOS 7
+
+Install Privoxy. It is available on `epel-release`.
+
+```console
+[joel@centos]$ sudo yum install epel-release -y
+...
+[joel@centos]$ sudo yum install privoxy -y
+```
+
+Ensure Privoxy is available in PATH.
+
+```console
+[joel@centos]$ which privoxy
+/usr/sbin/privoxy
+```
+
+Set the Privoxy `ExecutablePathOverride` to `"privoxy"`.
+
+```csharp
+var settings = new TorSharpSettings();
+settings.PrivoxySettings.ExecutablePathOverride = "privoxy";
+```

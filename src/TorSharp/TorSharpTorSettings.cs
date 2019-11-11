@@ -74,5 +74,16 @@
         /// See https://www.torproject.org/docs/tor-manual.html.en#HTTPSProxyAuthenticator for more details.
         /// </summary>
         public string HttpsProxyPassword { get; set; }
+
+        /// <summary>
+        /// Override that path to the Tor executable. The simplest usage is to ensure "tor" is in the PATH
+        /// environment variable and setting this property to "tor". This setting is intended for providing an
+        /// executable already installed to the host machine rather than the one extracted from the tools archive.
+        /// Note that this does not disable the tool fetching or extraction process since the base configuration and
+        /// other peripheral files still are extractied from the <see cref="TorSharpSettings.ZippedToolsDirectory"/>.
+        /// This is helpful when the tool fetched via the <see cref="TorSharpToolFetcher"/> is not compatible with the
+        /// host machine. 
+        /// </summary>
+        public string ExecutablePathOverride { get; set; }
     }
 }

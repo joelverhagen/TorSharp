@@ -2,7 +2,11 @@
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
+#if NETCOREAPP
+using System.Runtime.InteropServices;
+#endif
 
 namespace Knapcode.TorSharp.Sandbox
 {
@@ -31,6 +35,15 @@ namespace Knapcode.TorSharp.Sandbox
                     ControlPassword = "foobar",
                 },
             };
+
+            // output runtime information
+            var message = new StringBuilder();
+            message.Append($"Running the sample on {settings.OSPlatform} OS and {settings.Architecture} architecture.");
+#if NETCOREAPP
+            message.Append($" OS description: {RuntimeInformation.OSDescription}.");
+#endif
+            Console.WriteLine(message.ToString());
+            Console.WriteLine();
 
             // download tools
             using (var httpClient = new HttpClient())

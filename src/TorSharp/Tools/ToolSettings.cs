@@ -54,5 +54,11 @@ namespace Knapcode.TorSharp.Tools
         /// directory to use for the entry. If null is returned, the entry is skipped.
         /// </summary>
         public Func<string, string> GetEntryPath { get; set; }
+
+        /// <summary>
+        /// A verbatim path used to point to the tool executable. This can be an absolute path, a path relative, or an
+        /// executable name present in the PATH variable (e.g. installed to the local machine).
+        /// </summary>
+        public string ExecutablePathOverride { get; set; }
     }
 }
