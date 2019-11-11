@@ -8,6 +8,8 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\TorSharp.snk</AssemblyOriginatorKeyFile>
     <DelaySign>false</DelaySign>
+    <AssemblyVersion>19.11.11.2249</AssemblyVersion>
+    <FileVersion>19.11.11.2249</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
