@@ -27,7 +27,14 @@ namespace Knapcode.TorSharp.Tools
             {
                 var keyMatch = Regex.Match(originalLine, @"^(\s*)(?<Key>" + Regex.Escape(key) + @")(\s+)");
                 dictionary.Remove(key);
-                return CreateLine(new KeyValuePair<string, string>(keyMatch.Groups["Key"].Value, value));
+                if (value == null)
+                {
+                    return null;
+                }
+                else
+                {
+                    return CreateLine(new KeyValuePair<string, string>(keyMatch.Groups["Key"].Value, value));
+                }
             }
 
             return originalLine;

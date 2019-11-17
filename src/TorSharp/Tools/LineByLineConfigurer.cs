@@ -46,14 +46,20 @@ namespace Knapcode.TorSharp.Tools
                     while ((originalLine = await reader.ReadLineAsync().ConfigureAwait(false)) != null)
                     {
                         string newLine = dictionary.Count > 0 ? _format.UpdateLine(dictionary, originalLine) : originalLine;
-                        await writer.WriteLineAsync(newLine).ConfigureAwait(false);
+                        if (newLine != null)
+                        {
+                            await writer.WriteLineAsync(newLine).ConfigureAwait(false);
+                        }
                     }
 
                     // write the remaining lines
                     foreach (var pair in dictionary.OrderBy(p => p.Key))
                     {
-                        string newLine = _format.CreateLine(pair);
-                        await writer.WriteLineAsync(newLine).ConfigureAwait(false);
+                        if (pair.Value != null)
+                        {
+                            string newLine = _format.CreateLine(pair);
+                            await writer.WriteLineAsync(newLine).ConfigureAwait(false);
+                        }
                     }
                 }
 

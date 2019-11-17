@@ -19,6 +19,10 @@ namespace Knapcode.TorSharp.Tools.Tor
             {
                 dictionary["HashedControlPassword"] = settings.TorSettings.HashedControlPassword;
             }
+            else
+            {
+                dictionary["HashedControlPassword"] = null;
+            }
 
             string dataDictionary;
             if (!string.IsNullOrWhiteSpace(settings.TorSettings.DataDirectory))
