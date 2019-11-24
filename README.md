@@ -27,6 +27,7 @@ This product is produced independently from the Tor® anonymity software and car
   - **Linux**
     - ✔️ Ubuntu 18.04
     - ✔️ Ubuntu 16.04
+    - ✔️ Debian 10
     - ✔️ Debian 9 ([confirmed by user](https://github.com/joelverhagen/TorSharp/issues/42#issuecomment-539403030))
     - ⚠️ CentOS 7 supported via `ExecutablePathOverride` ([see below](#centos-7))
   - ❌ Mac OS X support is not planned.
