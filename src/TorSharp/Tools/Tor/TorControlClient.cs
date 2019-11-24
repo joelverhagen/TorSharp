@@ -9,6 +9,7 @@ namespace Knapcode.TorSharp.Tools.Tor
     public class TorControlClient : IDisposable
     {
         private const string SuccessResponse = "250 OK";
+        private const string SuccessTrafficResponse = "250-traffic/";
         private const string ClosingConnectionResponse = "250 closing connection";
         private const int BufferSize = 256;
 
@@ -34,6 +35,16 @@ namespace Knapcode.TorSharp.Tools.Tor
         public async Task CleanCircuitsAsync()
         {
             await SendCommandAsync("SIGNAL NEWNYM", SuccessResponse).ConfigureAwait(false);
+        }
+
+        public async Task<String> TrafficReadAsync()
+        {
+            return await SendTrafficCommandAsync("GETINFO traffic/read", SuccessTrafficResponse).ConfigureAwait(false);
+        }
+
+        public async Task<String> TrafficWrittenAsync()
+        {
+            return await SendTrafficCommandAsync("GETINFO traffic/written", SuccessTrafficResponse).ConfigureAwait(false);
         }
 
         public async Task QuitAsync()
@@ -65,6 +76,25 @@ namespace Knapcode.TorSharp.Tools.Tor
 
             var response = await _reader.ReadLineAsync().ConfigureAwait(false);
             if (response != expectedResponse)
+            {
+                throw new TorControlException($"The command to authenticate failed with error: {response}");
+            }
+
+            return response;
+        }
+
+        private async Task<string> SendTrafficCommandAsync(string command, string expectedResponse)
+        {
+            if (_tcpClient == null)
+            {
+                throw new TorControlException("The Tor control client has not connected.");
+            }
+
+            await _writer.WriteLineAsync(command).ConfigureAwait(false);
+            await _writer.FlushAsync().ConfigureAwait(false);
+
+            var response = await _reader.ReadLineAsync().ConfigureAwait(false);
+            if (response.Contains(expectedResponse) == false)
             {
                 throw new TorControlException($"The command to authenticate failed with error: {response}");
             }

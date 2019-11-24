@@ -109,7 +109,32 @@ namespace Knapcode.TorSharp
                 await client.QuitAsync().ConfigureAwait(false);
             }
         }
-
+        /// <summary>
+        /// Get traffic read data.
+        /// </summary>
+        public async Task<String> GetTrafficReadAsync()
+        {
+            using (var client = new TorControlClient())
+            {
+                await client.ConnectAsync(TorHostName, _settings.TorSettings.ControlPort).ConfigureAwait(false);
+                await client.AuthenticateAsync(_settings.TorSettings.ControlPassword).ConfigureAwait(false);
+                string response = await client.TrafficReadAsync().ConfigureAwait(false);
+                return response;
+            }
+        }
+        /// <summary>
+        /// Get traffic written data.
+        /// </summary>
+        public async Task<String> GetTrafficWrittenAsync()
+        {
+            using (var client = new TorControlClient())
+            {
+                await client.ConnectAsync(TorHostName, _settings.TorSettings.ControlPort).ConfigureAwait(false);
+                await client.AuthenticateAsync(_settings.TorSettings.ControlPassword).ConfigureAwait(false);
+                string response = await client.TrafficWrittenAsync().ConfigureAwait(false);
+                return response;
+            }
+        }
 
         /// <summary>
         /// Stop the tools so that the proxy is no longer listening on the configured port.

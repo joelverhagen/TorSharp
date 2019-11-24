@@ -77,6 +77,9 @@ namespace Knapcode.TorSharp.Sandbox
                     Console.WriteLine(await httpClient.GetStringAsync("http://api.ipify.org"));
                     await proxy.GetNewIdentityAsync();
                     Console.WriteLine(await httpClient.GetStringAsync("http://api.ipify.org"));
+
+                    string infoRead = await proxy.GetTrafficReadAsync();
+                    string infoWrite = await proxy.GetTrafficWrittenAsync();
                 }
 
                 proxy.Stop();
