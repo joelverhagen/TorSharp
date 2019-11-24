@@ -7,8 +7,6 @@
     <RootNamespace>Knapcode.TorSharp.Tests</RootNamespace>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\TorSharp.snk</AssemblyOriginatorKeyFile>
-    <AssemblyVersion>19.11.11.2249</AssemblyVersion>
-    <FileVersion>19.11.11.2249</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

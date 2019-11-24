@@ -89,6 +89,67 @@ namespace Knapcode.TorSharp.Tests
 
         [Fact]
         [DisplayTestMethodName]
+        public async Task TrafficReadAndWritten()
+        {
+            using (var te = TestEnvironment.Initialize(_output))
+            {
+                // Arrange
+                var settings = te.BuildSettings();
+                settings.ToolRunnerType = ToolRunnerType.Simple;
+
+                using (var httpClient = new HttpClient())
+                using (var proxy = new TorSharpProxy(settings))
+                {
+                    _output.WriteLine(settings);
+
+                    var fetcher = _httpFixture.GetTorSharpToolFetcher(settings, httpClient);
+                    await fetcher.FetchAsync();
+                    _output.WriteLine("The tools have been fetched");
+                    await proxy.ConfigureAndStartAsync();
+                    _output.WriteLine("The proxy has been started");
+
+                    await GetCurrentIpAddressAsync(proxy, settings);
+                    _output.WriteLine("The first request has succeeded");
+
+                    // Act
+                    using (var controlClient = await proxy.GetControlClientAsync())
+                    {
+                        var readBefore = await controlClient.GetTrafficReadAsync();
+                        _output.WriteLine($"Read before: {readBefore}");
+                        var writtenBefore = await controlClient.GetTrafficWrittenAsync();
+                        _output.WriteLine($"Written before: {writtenBefore}");
+
+                        // Upload and download some bytes
+                        var bytes = 10000;
+                        await SendProxiedRequestAsync(
+                            proxy,
+                            settings,
+                            $"uploading and downloading {bytes} bytes",
+                            async proxiedHttpClient =>
+                            {
+                                using (var content = new ByteArrayContent(new byte[bytes]))
+                                using (var response = await proxiedHttpClient.PostAsync("https://httpbin.org/anything", content))
+                                {
+                                }
+
+                                return true;
+                            });
+
+                        var readAfter = await controlClient.GetTrafficReadAsync();
+                        _output.WriteLine($"Read after: {readBefore}");
+                        var writtenAfter = await controlClient.GetTrafficWrittenAsync();
+                        _output.WriteLine($"Written after: {writtenBefore}");
+
+                        // Assert
+                        Assert.True(readBefore + bytes <= readAfter, $"At least {bytes} more bytes should have been read.");
+                        Assert.True(writtenBefore + bytes <= writtenAfter, $"At least {bytes} more bytes should have been written.");
+                    }
+                }
+            }
+        }
+
+        [Fact]
+        [DisplayTestMethodName]
         public async Task TorHttpsProxy_EndToEnd()
         {
             var proxyUsername = "proxy-username";
@@ -152,6 +213,24 @@ namespace Knapcode.TorSharp.Tests
 
         private async Task<IPAddress> GetCurrentIpAddressAsync(TorSharpProxy proxy, TorSharpSettings settings)
         {
+            return await SendProxiedRequestAsync(
+                proxy,
+                settings,
+                "fetching an IP",
+                async proxiedHttpClient =>
+                {
+                    var ip = (await proxiedHttpClient.GetStringAsync("https://api.ipify.org")).Trim();
+                    _output.WriteLine($"Get IP succeeded: {ip}");
+                    return IPAddress.Parse(ip);
+                });
+        }
+
+        private async Task<T> SendProxiedRequestAsync<T>(
+            TorSharpProxy proxy,
+            TorSharpSettings settings,
+            string operation,
+            Func<HttpClient, Task<T>> executeAsync)
+        {
             const int maxAttempts = 3;
             for (var attempt = 1; attempt <= maxAttempts; attempt++)
             {
@@ -168,14 +247,12 @@ namespace Knapcode.TorSharp.Tests
                     {
                         httpClient.Timeout = TimeSpan.FromSeconds(60);
 
-                        var ip = (await httpClient.GetStringAsync("https://api.ipify.org")).Trim();
-                        _output.WriteLine($"Get IP succeeded: {ip}");
-                        return IPAddress.Parse(ip);
+                        return await executeAsync(httpClient);
                     }
                 }
                 catch (Exception ex) when (attempt < maxAttempts)
                 {
-                    _output.WriteLine($"[Attempt {attempt}] An exception was thrown while fetching an IP. Retrying." + Environment.NewLine + ex);
+                    _output.WriteLine($"[Attempt {attempt}] An exception was thrown while {operation}. Retrying." + Environment.NewLine + ex);
                     await proxy.GetNewIdentityAsync();
                 }
             }

@@ -101,39 +101,24 @@ namespace Knapcode.TorSharp
         /// <returns>A task.</returns>
         public async Task GetNewIdentityAsync()
         {
-            using (var client = new TorControlClient())
+            using (var client = await GetControlClientAsync().ConfigureAwait(false))
             {
-                await client.ConnectAsync(TorHostName, _settings.TorSettings.ControlPort).ConfigureAwait(false);
-                await client.AuthenticateAsync(_settings.TorSettings.ControlPassword).ConfigureAwait(false);
                 await client.CleanCircuitsAsync().ConfigureAwait(false);
                 await client.QuitAsync().ConfigureAwait(false);
             }
         }
+
         /// <summary>
-        /// Get traffic read data.
+        /// Returns a connected and authenticated a Tor control client for the running Tor process. The caller is
+        /// responsible for disposing of the returned control client.
         /// </summary>
-        public async Task<String> GetTrafficReadAsync()
+        /// <returns>The Tor control client that is already connected and authenticated.</returns>
+        public async Task<TorControlClient> GetControlClientAsync()
         {
-            using (var client = new TorControlClient())
-            {
-                await client.ConnectAsync(TorHostName, _settings.TorSettings.ControlPort).ConfigureAwait(false);
-                await client.AuthenticateAsync(_settings.TorSettings.ControlPassword).ConfigureAwait(false);
-                string response = await client.TrafficReadAsync().ConfigureAwait(false);
-                return response;
-            }
-        }
-        /// <summary>
-        /// Get traffic written data.
-        /// </summary>
-        public async Task<String> GetTrafficWrittenAsync()
-        {
-            using (var client = new TorControlClient())
-            {
-                await client.ConnectAsync(TorHostName, _settings.TorSettings.ControlPort).ConfigureAwait(false);
-                await client.AuthenticateAsync(_settings.TorSettings.ControlPassword).ConfigureAwait(false);
-                string response = await client.TrafficWrittenAsync().ConfigureAwait(false);
-                return response;
-            }
+            var client = new TorControlClient();
+            await client.ConnectAsync(TorHostName, _settings.TorSettings.ControlPort).ConfigureAwait(false);
+            await client.AuthenticateAsync(_settings.TorSettings.ControlPassword).ConfigureAwait(false);
+            return client;
         }
 
         /// <summary>

@@ -11,8 +11,6 @@
     <Description>A forward proxy server supporting HTTP proxy and HTTPS (CONNECT) tunnels.</Description>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\PassThroughProxy.ForTesting.snk</AssemblyOriginatorKeyFile>
-    <AssemblyVersion>19.11.11.2249</AssemblyVersion>
-    <FileVersion>19.11.11.2249</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
