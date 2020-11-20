@@ -9,11 +9,27 @@ namespace Knapcode.TorSharp.Tools.Tor
     {
         public IDictionary<string, string> GetDictionary(Tool tool, TorSharpSettings settings)
         {
+            
             var dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
                 { "SocksPort", settings.TorSettings.SocksPort.ToString(CultureInfo.InvariantCulture) },
                 { "ControlPort", settings.TorSettings.ControlPort.ToString(CultureInfo.InvariantCulture) }
             };
+
+            if (settings.TorSettings.UseBridges.HasValue)
+            {
+                dictionary["UseBridges"] = settings.TorSettings.UseBridges.Value ? "1" : "0";
+            }
+
+            if (!string.IsNullOrWhiteSpace(settings.TorSettings.ClientTransportPlugin))
+            {
+                dictionary["ClientTransportPlugin"] = settings.TorSettings.ClientTransportPlugin;
+            }
+
+            if (!string.IsNullOrWhiteSpace(settings.TorSettings.Bridge))
+            {
+                dictionary["Bridge"] = settings.TorSettings.Bridge;
+            }
 
             if (settings.TorSettings.HashedControlPassword != null)
             {

@@ -85,5 +85,25 @@
         /// host machine. 
         /// </summary>
         public string ExecutablePathOverride { get; set; }
+
+        /// <summary>
+        /// See https://www.torproject.org/docs/tor-manual-dev.html.en#UseBridges for more details.
+        /// </summary>
+        public bool? UseBridges { get; set; }
+
+        /// <summary>
+        /// See https://2019.www.torproject.org/docs/tor-manual-dev.html.en#ClientTransportPlugin for more details.
+        /// Path to client transport plugin such as obfs4proxy, snowflake or other.
+        /// ex. [transport] exec [Path]
+        /// </summary>
+        public string ClientTransportPlugin { get; set; }
+
+        /// <summary>
+        /// See https://2019.www.torproject.org/docs/tor-manual-dev.html.en#Bridge for more details.
+        /// Transport plugin bridge.
+        /// ex. bridge [transport] ip:port [fingerprint] key1=val2 key2=val2 keyN=valN...
+        /// </summary>
+        public string Bridge { get; set; }
+
     }
 }
