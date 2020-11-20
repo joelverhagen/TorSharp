@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net45;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>net45;netcoreapp2.1</TargetFrameworks>
     <AssemblyName>Knapcode.TorSharp.Sandbox</AssemblyName>
     <RootNamespace>Knapcode.TorSharp.Sandbox</RootNamespace>
     <SignAssembly>true</SignAssembly>
