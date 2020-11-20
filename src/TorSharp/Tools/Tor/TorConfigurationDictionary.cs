@@ -9,7 +9,7 @@ namespace Knapcode.TorSharp.Tools.Tor
     {
         public IDictionary<string, string> GetDictionary(Tool tool, TorSharpSettings settings)
         {
-            
+
             var dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
                 { "SocksPort", settings.TorSettings.SocksPort.ToString(CultureInfo.InvariantCulture) },
@@ -19,6 +19,46 @@ namespace Knapcode.TorSharp.Tools.Tor
             if (settings.TorSettings.UseBridges.HasValue)
             {
                 dictionary["UseBridges"] = settings.TorSettings.UseBridges.Value ? "1" : "0";
+            }
+
+            if (settings.TorSettings.BridgeRelay.HasValue)
+            {
+                dictionary["BridgeRelay"] = settings.TorSettings.BridgeRelay.Value ? "1" : "0";
+            }
+
+            if (!string.IsNullOrWhiteSpace(settings.TorSettings.Nickname))
+            {
+                dictionary["Nickname"] = settings.TorSettings.Nickname;
+            }
+
+            if (!string.IsNullOrWhiteSpace(settings.TorSettings.ContactInfo))
+            {
+                dictionary["ContactInfo"] = settings.TorSettings.ContactInfo;
+            }
+
+            if (!string.IsNullOrWhiteSpace(settings.TorSettings.ServerTransportListenAddr))
+            {
+                dictionary["ServerTransportListenAddr"] = settings.TorSettings.ServerTransportListenAddr;
+            }
+
+            if (!string.IsNullOrWhiteSpace(settings.TorSettings.ExitPolicy))
+            {
+                dictionary["ExitPolicy"] = settings.TorSettings.ExitPolicy;
+            }
+
+            if (!string.IsNullOrWhiteSpace(settings.TorSettings.PublishServerDescriptor))
+            {
+                dictionary["PublishServerDescriptor"] = settings.TorSettings.PublishServerDescriptor;
+            }
+
+            if (!string.IsNullOrWhiteSpace(settings.TorSettings.ExtORPort))
+            {
+                dictionary["ExtORPort"] = settings.TorSettings.ExtORPort;
+            }
+
+            if (!string.IsNullOrWhiteSpace(settings.TorSettings.ORPort))
+            {
+                dictionary["ORPort"] = settings.TorSettings.ORPort;
             }
 
             if (!string.IsNullOrWhiteSpace(settings.TorSettings.ClientTransportPlugin))
