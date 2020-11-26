@@ -104,6 +104,37 @@
         /// ex. bridge [transport] ip:port [fingerprint] key1=val2 key2=val2 keyN=valN...
         /// </summary>
         public string Bridge { get; set; }
-
+        /// <summary>
+        /// See https://2019.www.torproject.org/docs/tor-manual-dev.html.en#Nickname for more details.
+        /// </summary>
+        public string Nickname { get; set; }
+        /// <summary>
+        /// See https://2019.www.torproject.org/docs/tor-manual-dev.html.en#ContactInfo for more details.
+        /// </summary>
+        public string ContactInfo { get; set; }
+        /// <summary>
+        /// See https://2019.www.torproject.org/docs/tor-manual-dev.html.en#ServerTransportListenAddr for more details.
+        /// </summary>
+        public string ServerTransportListenAddr { get; set; }
+        /// <summary>
+        /// See https://2019.www.torproject.org/docs/tor-manual-dev.html.en#ExitPolicy for more details.
+        /// </summary>
+        public string ExitPolicy { get; set; }
+        /// <summary>
+        /// See https://2019.www.torproject.org/docs/tor-manual-dev.html.en#PublishServerDescriptor for more details.
+        /// </summary>
+        public string PublishServerDescriptor { get; set; }
+        /// <summary>
+        /// See https://2019.www.torproject.org/docs/tor-manual-dev.html.en#BridgeRelay for more details.
+        /// </summary>
+        public bool? BridgeRelay { get; set; }
+        /// <summary>
+        /// See https://2019.www.torproject.org/docs/tor-manual-dev.html.en#ExtORPort for more details.
+        /// </summary>
+        public string ExtORPort { get; set; }
+        /// <summary>
+        /// See https://2019.www.torproject.org/docs/tor-manual-dev.html.en#ORPort for more details.
+        /// </summary>
+        public string ORPort { get; set; }
     }
 }
