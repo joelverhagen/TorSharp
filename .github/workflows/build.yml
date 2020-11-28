@@ -1,4 +1,4 @@
-name: Build and test
+name: Build
 
 on:
   push:
@@ -19,7 +19,7 @@ jobs:
           - ubuntu-16.04
     env:
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
-      TORSHARP_TEST_CACHE: ${{ github.workspace }}/Knapcode.TorSharp.Tests/cache
+      TORSHARP_TEST_CACHE: ${{ github.workspace }}/tests/cache
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -45,18 +45,18 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.x
-    - name: Restore
+    - name: Restore (Linux)
       run: dotnet restore
       if: runner.os == 'Linux'
-    - name: Build
+    - name: Build (Linux)
       run: dotnet build --configuration Release --no-restore
       if: runner.os == 'Linux'
-    - name: Test
+    - name: Test (Linux)
       run: dotnet test --no-restore --verbosity normal
       if: runner.os == 'Linux'
-    - name: Build
+    - name: Build (Windows)
       run: .\build.ps1
       if: runner.os == 'Windows'
-    - name: Test
+    - name: Test (Windows)
       run: .\test.ps1
       if: runner.os == 'Windows'
