@@ -16,8 +16,7 @@ namespace Knapcode.TorSharp.Tests.TestSupport
             _cacheDirectory = Path.Combine(
                 Path.GetTempPath(),
                 "Knapcode.TorSharp.Tests",
-                "cache",
-                Guid.NewGuid().ToString("N"));
+                "cache");
             Directory.CreateDirectory(_cacheDirectory);
         }
 

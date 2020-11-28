@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace Knapcode.TorSharp.Tests.TestSupport
 {
@@ -39,17 +40,19 @@ namespace Knapcode.TorSharp.Tests.TestSupport
             {
                 port++;
                 
-                if (!IsPortFree(port))
-                {
-                    continue;
-                }
-                
                 lock (Lock)
                 {
                     if (ReservedPorts.Contains(port))
                     {
                         continue;
                     }
+
+                    if (!IsPortFree(port))
+                    {
+                        continue;
+                    }
+
+                    Thread.Sleep(100);
 
                     ReservedPorts.Add(port);
                     return new ReservedPort(port);
