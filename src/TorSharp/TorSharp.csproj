@@ -20,6 +20,7 @@
     <RepositoryUrl>https://github.com/joelverhagen/TorSharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>
+* 2.4.0 Add support for custom Tor bridges, allow configurable max Privoxy connections.
 * 2.3.0 Add support for Tor bridges (e.g. obfs4).
 * 2.2.0 Add Tor control methods to get traffic read and written, fix config bug.
 * 2.1.0 Allow override of executable paths (enables using tools from PATH).
@@ -50,7 +51,7 @@
 * 1.1.0 Target .NET 4.5 instead of .NET 4.5.2.
 * 1.0.0 Initial release.
     </PackageReleaseNotes>
-    <Copyright>Copyright © 2019 Joel Verhagen</Copyright>
+    <Copyright>Copyright © 2020 Joel Verhagen</Copyright>
     <PackageTags>tor proxy privoxy http socks5 onion router https anonymize anonymous</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
