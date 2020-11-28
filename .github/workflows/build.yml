@@ -41,15 +41,9 @@ jobs:
     - name: Build (Linux)
       if: runner.os == 'Linux'
       run: dotnet build --configuration Release --no-restore
-    - name: Test (Linux)
-      if: runner.os == 'Linux'
-      run: dotnet test --no-restore --verbosity normal
     - name: Build (Windows)
       if: runner.os == 'Windows'
       run: .\build.ps1
-    - name: Test (Windows)
-      if: runner.os == 'Windows'
-      run: .\test.ps1
     - name: Upload artifacts
       if: matrix.os == 'windows-2019'
       uses: actions/upload-artifact@v2
@@ -60,7 +54,4 @@ jobs:
           artifacts/TorSharp/TorSharp/bin/Release/*.snupkg
     - name: Push artifacts
       if: matrix.os == 'windows-2019' && github.event_name == 'pull_request'
-      run: dotnet nuget push \
-        artifacts/TorSharp/TorSharp/bin/Release/*.nupkg \
-        -s https://nuget.pkg.github.com/joelverhagen/index.json \
-        -k ${{ secrets.GITHUB_TOKEN }}
+      run: dotnet nuget push artifacts/TorSharp/TorSharp/bin/Release/*.nupkg -s https://nuget.pkg.github.com/joelverhagen/index.json -k ${{ secrets.GITHUB_TOKEN }}
