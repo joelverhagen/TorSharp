@@ -50,3 +50,10 @@ jobs:
     - name: Test (Windows)
       run: .\test.ps1
       if: runner.os == 'Windows'
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: packages
+        path: |
+          artifacts/**/*.nupkg
+          artifacts/**/*.snupkg
