@@ -7,7 +7,7 @@ using Knapcode.TorSharp.Tools;
 
 namespace Knapcode.TorSharp.Tests.TestSupport
 {
-    public class HttpFixture : IDisposable
+    public class HttpFixture
     {
         private readonly string _cacheDirectory;
 
@@ -38,18 +38,6 @@ namespace Knapcode.TorSharp.Tests.TestSupport
                 httpClient,
                 GetSimpleHttpClient(httpClient),
                 new ConsoleProgress());
-        }
-
-        public void Dispose()
-        {
-            try
-            {
-                Directory.Delete(_cacheDirectory, recursive: true);
-            }
-            catch
-            {
-                // Not much we can do here.
-            }
         }
 
         private class ConsoleProgress : IProgress<DownloadProgress>
