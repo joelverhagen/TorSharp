@@ -13,10 +13,16 @@ namespace Knapcode.TorSharp.Tests.TestSupport
 
         public HttpFixture()
         {
-            _cacheDirectory = Path.Combine(
-                Path.GetTempPath(),
-                "Knapcode.TorSharp.Tests",
-                "cache");
+            var cacheDirectory = Environment.GetEnvironmentVariable("TORSHARP_TEST_CACHE");
+            if (string.IsNullOrWhiteSpace(cacheDirectory))
+            {
+                cacheDirectory = Path.Combine(
+                    Path.GetTempPath(),
+                    "Knapcode.TorSharp.Tests",
+                    "cache");
+            }
+
+            _cacheDirectory = Path.GetFullPath(cacheDirectory).TrimEnd(Path.DirectorySeparatorChar);
             Directory.CreateDirectory(_cacheDirectory);
         }
 
