@@ -29,5 +29,11 @@
         /// host machine. 
         /// </summary>
         public string ExecutablePathOverride { get; set; }
+
+        /// <summary>
+        /// Maximum number of client connections that will be served.
+        /// See https://www.privoxy.org/user-manual/config.html#MAX-CLIENT-CONNECTIONS for more details.
+        /// </summary>
+        public int? MaxClientConnections { get; set; }
     }
 }
