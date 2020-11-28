@@ -1,0 +1,54 @@
+name: Build
+
+on:
+  push:
+    branches: [ release ]
+  pull_request:
+    branches: [ release ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - windows-2019
+          - windows-2016
+          - ubuntu-20.04
+          - ubuntu-18.04
+          - ubuntu-16.04
+    env:
+      TORSHARP_TEST_CACHE: ${{ github.workspace }}/tests/cache
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Cache test downloads
+      uses: actions/cache@v2
+      with:
+        path: ${{ env.TORSHARP_TEST_CACHE }}
+        key: ${{ matrix.os }}-torsharp-test
+        restore-keys: |
+          ${{ matrix.os }}-torsharp-test
+    - name: Setup .NET Core 2.1
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.1.x
+    - name: Setup .NET Core 3.1
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.x
+    - name: Restore (Linux)
+      run: dotnet restore
+      if: runner.os == 'Linux'
+    - name: Build (Linux)
+      run: dotnet build --configuration Release --no-restore
+      if: runner.os == 'Linux'
+    - name: Test (Linux)
+      run: dotnet test --no-restore --verbosity normal
+      if: runner.os == 'Linux'
+    - name: Build (Windows)
+      run: .\build.ps1
+      if: runner.os == 'Windows'
+    - name: Test (Windows)
+      run: .\test.ps1
+      if: runner.os == 'Windows'

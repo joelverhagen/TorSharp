@@ -34,8 +34,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6705490B-3ABC-406B-BD3D-73B5A26E08B9}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
-		.travis.yml = .travis.yml
-		appveyor.yml = appveyor.yml
 		build.ps1 = build.ps1
 		Directory.Build.props = Directory.Build.props
 		LICENSE = LICENSE
@@ -43,6 +41,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 		test.ps1 = test.ps1
 		TorSharp.snk = TorSharp.snk
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{4424E6A7-F2A7-4FC9-9999-79998A4B2C07}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{79E56234-67B0-49EA-B0C8-689121579061}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build-and-test.yml = .github\workflows\build-and-test.yml
 	EndProjectSection
 EndProject
 Global
@@ -77,6 +82,8 @@ Global
 		{CF825687-1878-48CC-9A79-02A72E3E07E5} = {ED4E2334-05F6-4CF4-BAE7-0C11BBD397DB}
 		{1308B4BF-73CC-469D-A3E2-F8B52786CC7E} = {CF825687-1878-48CC-9A79-02A72E3E07E5}
 		{D92586EE-E235-4597-A386-FC8A62A0006E} = {ED4E2334-05F6-4CF4-BAE7-0C11BBD397DB}
+		{4424E6A7-F2A7-4FC9-9999-79998A4B2C07} = {6705490B-3ABC-406B-BD3D-73B5A26E08B9}
+		{79E56234-67B0-49EA-B0C8-689121579061} = {4424E6A7-F2A7-4FC9-9999-79998A4B2C07}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C9D31863-62E3-48E8-AF13-1E5EE3A20A37}

@@ -7,17 +7,22 @@ using Knapcode.TorSharp.Tools;
 
 namespace Knapcode.TorSharp.Tests.TestSupport
 {
-    public class HttpFixture : IDisposable
+    public class HttpFixture
     {
         private readonly string _cacheDirectory;
 
         public HttpFixture()
         {
-            _cacheDirectory = Path.Combine(
-                Path.GetTempPath(),
-                "Knapcode.TorSharp.Tests",
-                "cache",
-                Guid.NewGuid().ToString("N"));
+            var cacheDirectory = Environment.GetEnvironmentVariable("TORSHARP_TEST_CACHE");
+            if (string.IsNullOrWhiteSpace(cacheDirectory))
+            {
+                cacheDirectory = Path.Combine(
+                    Path.GetTempPath(),
+                    "Knapcode.TorSharp.Tests",
+                    "cache");
+            }
+
+            _cacheDirectory = Path.GetFullPath(cacheDirectory).TrimEnd(Path.DirectorySeparatorChar);
             Directory.CreateDirectory(_cacheDirectory);
         }
 
@@ -33,18 +38,6 @@ namespace Knapcode.TorSharp.Tests.TestSupport
                 httpClient,
                 GetSimpleHttpClient(httpClient),
                 new ConsoleProgress());
-        }
-
-        public void Dispose()
-        {
-            try
-            {
-                Directory.Delete(_cacheDirectory, recursive: true);
-            }
-            catch
-            {
-                // Not much we can do here.
-            }
         }
 
         private class ConsoleProgress : IProgress<DownloadProgress>

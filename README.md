@@ -6,10 +6,7 @@ All you need is client code that can use a simple HTTP proxy.
 
 [![NuGet version](https://img.shields.io/nuget/v/Knapcode.TorSharp.svg)](https://www.nuget.org/packages/Knapcode.TorSharp) [![NuGet downloads](https://img.shields.io/nuget/dt/Knapcode.TorSharp.svg)](https://www.nuget.org/packages/Knapcode.TorSharp)
 
-CI        | OS      | Status
---------- | ------- | ------
-AppVeyor  | Windows | [![Build status](https://img.shields.io/appveyor/ci/joelverhagen/torsharp.svg)](https://ci.appveyor.com/project/joelverhagen/torsharp) 
-Travis CI | Linux   | [![Build status](https://img.shields.io/travis/joelverhagen/torsharp.svg)](https://travis-ci.org/joelverhagen/TorSharp) 
+![Build](https://github.com/joelverhagen/TorSharp/workflows/Build/badge.svg)
 
 ## Notice
 
