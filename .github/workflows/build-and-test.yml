@@ -9,7 +9,15 @@ on:
 jobs:
   build:
 
-    runs-on: [ ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - windows-2019
+          - windows-2016
+          - ubuntu-20.04
+          - ubuntu-18.04
+          - ubuntu-16.04
 
     steps:
     - uses: actions/checkout@v2
