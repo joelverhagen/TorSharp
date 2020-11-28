@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 
 namespace Knapcode.TorSharp.Tools.Privoxy
@@ -24,6 +25,12 @@ namespace Knapcode.TorSharp.Tools.Privoxy
             {
                 output["confdir"] = Path.Combine(tool.DirectoryPath, "etc", "privoxy");
                 output["logdir"] = Path.Combine(tool.DirectoryPath, "var", "log", "privoxy");
+            }
+
+            if (settings.PrivoxySettings.MaxClientConnections.HasValue)
+            {
+                output["max-client-connections"] =
+                    settings.PrivoxySettings.MaxClientConnections.Value.ToString(CultureInfo.InvariantCulture);
             }
 
             return output;
