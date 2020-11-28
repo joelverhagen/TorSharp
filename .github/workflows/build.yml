@@ -36,17 +36,28 @@ jobs:
       with:
         dotnet-version: 3.1.x
     - name: Restore (Linux)
+      if: runner.os == 'Linux'
       run: dotnet restore
-      if: runner.os == 'Linux'
     - name: Build (Linux)
+      if: runner.os == 'Linux'
       run: dotnet build --configuration Release --no-restore
-      if: runner.os == 'Linux'
     - name: Test (Linux)
-      run: dotnet test --no-restore --verbosity normal
       if: runner.os == 'Linux'
+      run: dotnet test --no-restore --verbosity normal
     - name: Build (Windows)
+      if: runner.os == 'Windows'
       run: .\build.ps1
-      if: runner.os == 'Windows'
     - name: Test (Windows)
-      run: .\test.ps1
       if: runner.os == 'Windows'
+      run: .\test.ps1
+    - name: Upload artifacts
+      if: matrix.os == 'windows-2019'
+      uses: actions/upload-artifact@v2
+      with:
+        name: packages
+        path: |
+          artifacts/TorSharp/TorSharp/bin/Release/*.nupkg
+          artifacts/TorSharp/TorSharp/bin/Release/*.snupkg
+    - name: Push artifacts
+      if: matrix.os == 'windows-2019' && github.event_name == 'push'
+      run: dotnet nuget push artifacts\TorSharp\TorSharp\bin\Release\*.nupkg -s https://nuget.pkg.github.com/joelverhagen/index.json -k ${{ secrets.GITHUB_TOKEN }}
