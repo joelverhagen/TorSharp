@@ -10,4 +10,7 @@
     <BaseOutputPath>$(_ProjectArtifactsDirectory)bin\</BaseOutputPath>
     <OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
   </PropertyGroup>
+  <PropertyGroup>
+    <CoreOnly Condition="'$(CoreOnly)' == '' and !$([MSBuild]::IsOSPlatform('Windows'))">true</CoreOnly>
+  </PropertyGroup>
 </Project>

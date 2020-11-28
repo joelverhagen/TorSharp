@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net452;netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks Condition="'$(CoreOnly)' != 'true'">net452;netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks Condition="'$(CoreOnly)' == 'true'">netcoreapp2.1</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <AssemblyName>Knapcode.TorSharp.Tests</AssemblyName>
     <RootNamespace>Knapcode.TorSharp.Tests</RootNamespace>
