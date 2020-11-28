@@ -25,10 +25,8 @@ jobs:
     - name: Cache test downloads
       uses: actions/cache@v2
       with:
-        path: ${{ env.TORSHARP_TEST_CACHE }}
+        path: tests/cache
         key: ${{ matrix.os }}-torsharp-test
-        restore-keys: |
-          ${{ matrix.os }}-torsharp-test
     - name: Setup .NET Core 2.1
       uses: actions/setup-dotnet@v1
       with:

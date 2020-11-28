@@ -44,12 +44,15 @@ Install-Package Knapcode.TorSharp
 // configure
 var settings = new TorSharpSettings
 {
-    ZippedToolsDirectory = Path.Combine(Path.GetTempPath(), "TorZipped"),
-    ExtractedToolsDirectory = Path.Combine(Path.GetTempPath(), "TorExtracted"),
-    PrivoxyPort = 1337,
-    TorSocksPort = 1338,
-    TorControlPort = 1339,
-    TorControlPassword = "foobar"
+   ZippedToolsDirectory = Path.Combine(Path.GetTempPath(), "TorZipped"),
+   ExtractedToolsDirectory = Path.Combine(Path.GetTempPath(), "TorExtracted"),
+   PrivoxySettings = { Port = 1337 },
+   TorSettings =
+   {
+      SocksPort = 1338,
+      ControlPort = 1339,
+      ControlPassword = "foobar",
+   },
 };
 
 // download tools
@@ -59,7 +62,7 @@ await new TorSharpToolFetcher(settings, new HttpClient()).FetchAsync();
 var proxy = new TorSharpProxy(settings);
 var handler = new HttpClientHandler
 {
-    Proxy = new WebProxy(new Uri("http://localhost:" + settings.PrivoxyPort))
+    Proxy = new WebProxy(new Uri("http://localhost:" + settings.PrivoxySettings.Port))
 };
 var httpClient = new HttpClient(handler);
 await proxy.ConfigureAndStartAsync();
