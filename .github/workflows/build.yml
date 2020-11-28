@@ -2,7 +2,7 @@ name: Build
 
 on:
   push:
-    branches: [ release, github-actions ]
+    branches: [ release ]
   pull_request:
     branches: [ release ]
 
