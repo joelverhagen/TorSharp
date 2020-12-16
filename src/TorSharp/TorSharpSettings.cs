@@ -86,7 +86,8 @@ namespace Knapcode.TorSharp
                 var toolRunnerType = _toolRunnerType;
                 if (toolRunnerType == null)
                 {
-                    if (OSPlatform == TorSharpOSPlatform.Windows)
+                    if (OSPlatform == TorSharpOSPlatform.Windows
+                        && Environment.OSVersion.Version >= new Version(6, 2))
                     {
                         return ToolRunnerType.VirtualDesktop;
                     }

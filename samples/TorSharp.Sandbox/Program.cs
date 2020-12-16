@@ -26,12 +26,12 @@ namespace Knapcode.TorSharp.Sandbox
                 ExtractedToolsDirectory = Path.Combine(Path.GetTempPath(), "TorExtracted"),
                 PrivoxySettings =
                 {
-                    Port = 1337,
+                    Port = 18118,
                 },
                 TorSettings =
                 {
-                    SocksPort = 1338,
-                    ControlPort = 1339,
+                    SocksPort = 19050,
+                    ControlPort = 19051,
                     ControlPassword = "foobar",
                 },
             };

@@ -21,6 +21,7 @@
     <RepositoryUrl>https://github.com/joelverhagen/TorSharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>
+* 2.5.0 Don't try to use virtual desktops on Windows 7 or earlier.
 * 2.4.0 Add support for custom Tor bridges, allow configurable max Privoxy connections.
 * 2.3.0 Add support for Tor bridges (e.g. obfs4).
 * 2.2.0 Add Tor control methods to get traffic read and written, fix config bug.
