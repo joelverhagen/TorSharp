@@ -27,7 +27,7 @@ This product is produced independently from the Tor® anonymity software and car
     - ✔️ Debian 10
     - ✔️ Debian 9 ([confirmed by user](https://github.com/joelverhagen/TorSharp/issues/42#issuecomment-539403030))
     - ⚠️ CentOS 7 supported via `ExecutablePathOverride` ([see below](#centos-7))
-  - ❌ Mac OS X support is not planned.
+  - ❌ Mac OS X support is not planned. I don't have a Mac 😕
 - Uses Privoxy to redirect HTTP proxy traffic to Tor.
 - Uses virtual desktops to manage Tor and Privoxy processes.
 - Optionally downloads the latest version of Tor and Privoxy.
