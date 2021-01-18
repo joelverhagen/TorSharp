@@ -43,7 +43,10 @@ namespace Knapcode.TorSharp
             _settings = settings;
             _simpleHttpClient = simpleHttpClient;
             _progress = progress;
-            _privoxyFetcher = new PrivoxyFetcher(settings, client);
+            if (!_settings.PrivoxySettings.Disable)
+            {
+                _privoxyFetcher = new PrivoxyFetcher(settings, client);
+            }
             _torFetcher = new TorFetcher(settings, client);
         }
 
@@ -62,10 +65,18 @@ namespace Knapcode.TorSharp
 
         private async Task<PartialToolUpdates> CheckForUpdatesAsync(bool allowExistingTools)
         {
-            var privoxy = await CheckForUpdateAsync(
-                ToolUtility.GetPrivoxyToolSettings(_settings),
-                _privoxyFetcher,
-                allowExistingTools).ConfigureAwait(false);
+            ToolUpdate privoxy;
+            if (!_settings.PrivoxySettings.Disable)
+            {
+                privoxy = await CheckForUpdateAsync(
+                    ToolUtility.GetPrivoxyToolSettings(_settings),
+                    _privoxyFetcher,
+                    allowExistingTools).ConfigureAwait(false);
+            }
+            else
+            {
+                privoxy = new ToolUpdate(ToolUpdateStatus.NoUpdateAvailable, new Version(), "", new DownloadableFile(new Version(), new Uri("noupdate:///"), ZippedToolFormat.Zip));
+            }
 
             var tor = await CheckForUpdateAsync(
                 ToolUtility.GetTorToolSettings(_settings),
