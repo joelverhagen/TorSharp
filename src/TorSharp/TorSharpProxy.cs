@@ -81,7 +81,10 @@ namespace Knapcode.TorSharp
             var privoxyToolSettings = ToolUtility.GetPrivoxyToolSettings(_settings);
 
             _tor = await ExtractAsync(torToolSettings).ConfigureAwait(false);
-            _privoxy = await ExtractAsync(privoxyToolSettings).ConfigureAwait(false);
+            if (!_settings.PrivoxySettings.Disable)
+            {
+                _privoxy = await ExtractAsync(privoxyToolSettings).ConfigureAwait(false);
+            }
 
             if (_settings.TorSettings.ControlPassword != null && _settings.TorSettings.HashedControlPassword == null)
             {
@@ -89,10 +92,17 @@ namespace Knapcode.TorSharp
             }
 
             await ConfigureAndStartAsync(_tor, new TorConfigurationDictionary()).ConfigureAwait(false);
-            await ConfigureAndStartAsync(_privoxy, new PrivoxyConfigurationDictionary()).ConfigureAwait(false);
+            if (!_settings.PrivoxySettings.Disable)
+            {
+                await ConfigureAndStartAsync(_privoxy, new PrivoxyConfigurationDictionary()).ConfigureAwait(false);
+            }
 
             WaitForConnect(TorHostName, _settings.TorSettings.SocksPort);
-            WaitForConnect(_settings.PrivoxySettings.ListenAddress, _settings.PrivoxySettings.Port);
+
+            if (!_settings.PrivoxySettings.Disable)
+            {
+                WaitForConnect(_settings.PrivoxySettings.ListenAddress, _settings.PrivoxySettings.Port);
+            }
         }
 
         /// <summary>

@@ -10,6 +10,11 @@
         }
 
         /// <summary>
+        /// This defaults to false.
+        /// </summary>
+        public bool Disable { get; set; }
+
+        /// <summary>
         /// The port that Privoxy listens to. This is the port of the HTTP proxy. This defaults to 18118.
         /// </summary>
         public int Port { get; set; }
