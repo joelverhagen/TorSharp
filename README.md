@@ -25,7 +25,7 @@ This product is produced independently from the Tor® anonymity software and car
     - ✔️ Ubuntu 18.04
     - ✔️ Ubuntu 16.04
     - ✔️ Debian 10
-    - ✔️ Debian 9 ([confirmed by user](https://github.com/joelverhagen/TorSharp/issues/42#issuecomment-539403030))
+    - ⚠️ Debian 9 ([confirmed by a user](https://github.com/joelverhagen/TorSharp/issues/42#issuecomment-539403030) but [may have issues](https://github.com/joelverhagen/TorSharp/issues/64#issuecomment-774825257))
     - ⚠️ CentOS 7 supported via `ExecutablePathOverride` ([see below](#centos-7))
   - ❌ Mac OS X support is not planned. I don't have a Mac 😕
 - Uses Privoxy to redirect HTTP proxy traffic to Tor.
@@ -105,26 +105,68 @@ to use a specific version of Tor and Privoxy, follow these steps.
 1. Initialize a `TorSharpSettings` instance where `ZippedToolsDirectory` is the directory created above.
 1. Pass this settings instance to the `TorSharpProxy` constructor.
 
+### Privoxy fetched by TorSharp fails to start? Try installing missing dependencies.
+
+It's possible some expected shared libraries aren't there. Try to look at the error message and judge which library
+needs to be installed from your distro's package repository.
+
+#### Debian 10
+
+This includes Microsoft's .NET Core 3.1 runtime image `mcr.microsoft.com/dotnet/core/runtime:3.1` and Microsoft's
+.NET 5.0 runtime image `mcr.microsoft.com/dotnet/runtime:5.0`.
+
+**Problem:** On Debian 10 the following errors may appear:
+
+`
+ /tmp/TorExtracted/privoxy-linux64-3.0.29/usr/sbin/privoxy: error while loading shared libraries: libbrotlidec.so.1: cannot open shared object file: No such file or directory
+`
+
+`
+ /tmp/TorExtracted/privoxy-linux64-3.0.29/usr/sbin/privoxy: error while loading shared libraries: libmbedtls.so.12: cannot open shared object file: No such file or directory
+`
+
+**Solution:** install two missing dependencies. Thanks for [the heads up](https://github.com/joelverhagen/TorSharp/issues/64#issuecomment-774701302), [@cod3rshotout](https://github.com/cod3rshotout)!
+
+```console
+[joel@debian10]$ sudo apt-get install -y libbrotli1 libmbedtls-dev
+```
+
 ### Privoxy fetched by TorSharp fails to start? Try `ExecutablePathOverride`.
 
-On Linux, the Privoxy binaries fetched seem to be built for Debian and Ubuntu distributions. I can confirm that
-some other distributions don't work. For example, on CentOS 7 the following error appears:
+On Linux, the Privoxy binaries fetched seem to be built for the latest Debian and Ubuntu distributions. I can confirm that
+some other distributions don't work.
 
-`
-/tmp/TorExtracted/privoxy-linux64-3.0.28/usr/sbin/privoxy: error while loading shared libraries: libpcre.so.3: cannot open shared object file: No such file or directory
-`
+I'm no Linux expert but my guess is that there are missing shared libraries that are different on the running
+platform than the Debian platform that Privoxy was compiled for. The easiest workaround is to install Privoxy to your
+system and set the `TorSharpSettings.PrivoxySetting.ExecutablePathOverride` configuration setting to `"privoxy"` (i.e.
+use Privoxy from PATH).
 
-I'm no Linux expert but my guess is that the version of PCRE on CentOS 7 vs. Ubuntu is different so at runtime the
-library can't be found on CentOS. The easiest workaround is to install Privoxy to your system and set the
-`TorSharpSettings.PrivoxySetting.ExecutablePathOverride` configuration setting to `"privoxy"` (i.e. use Privoxy
-from PATH).
+After you install it, make sure `privoxy` is in the PATH.
+
+```console
+[joel@linux]$ which privoxy
+/usr/sbin/privoxy
+```
+
+After this is done, just configure TorSharp to use the system Privoxy with the `ExecutablePathOverride` setting:
+
+```csharp
+var settings = new TorSharpSettings();
+settings.PrivoxySettings.ExecutablePathOverride = "privoxy";
+```
 
 Note that you may encounter warning or error messages in the output due to new configuration being used with an older
 executable. I haven't ran into any problems with this myself but it's possible things could get weird.
 
 #### CentOS 7
 
-Install Privoxy. It is available on `epel-release`.
+**Problem:** the following error appears:
+
+`
+/tmp/TorExtracted/privoxy-linux64-3.0.28/usr/sbin/privoxy: error while loading shared libraries: libpcre.so.3: cannot open shared object file: No such file or directory
+`
+
+**Solution:** install Privoxy. It is available on `epel-release`.
 
 ```console
 [joel@centos]$ sudo yum install epel-release -y
@@ -132,16 +174,22 @@ Install Privoxy. It is available on `epel-release`.
 [joel@centos]$ sudo yum install privoxy -y
 ```
 
-Ensure Privoxy is available in PATH.
+#### Debian 9
+
+This includes Microsoft's .NET Core 2.1 runtime image: `mcr.microsoft.com/dotnet/core/runtime:2.1`.
+
+**Problem:** the following errors may appear:
+
+`
+/tmp/TorExtracted/privoxy-linux64-3.0.29/usr/sbin/privoxy: error while loading shared libraries: libbrotlidec.so.1: cannot open shared object file: No such file or directory
+`
+
+`
+/tmp/TorExtracted/privoxy-linux64-3.0.29/usr/sbin/privoxy: error while loading shared libraries: libmbedtls.so.12: cannot open shared object file: No such file or directory
+`
+
+**Solution:** install Privoxy. It is available in the default source lists.
 
 ```console
-[joel@centos]$ which privoxy
-/usr/sbin/privoxy
-```
-
-Set the Privoxy `ExecutablePathOverride` to `"privoxy"`.
-
-```csharp
-var settings = new TorSharpSettings();
-settings.PrivoxySettings.ExecutablePathOverride = "privoxy";
+[joel@debian9]$ sudo apt-get install privoxy -y
 ```
