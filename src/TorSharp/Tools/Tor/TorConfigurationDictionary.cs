@@ -2,17 +2,29 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 
 namespace Knapcode.TorSharp.Tools.Tor
 {
     internal class TorConfigurationDictionary : IConfigurationDictionary
     {
-        public IDictionary<string, string> GetDictionary(Tool tool, TorSharpSettings settings)
+        public IDictionary<string, List<string>> GetDictionary(Tool tool, TorSharpSettings settings)
         {
+            var output = new List<KeyValuePair<string, string>>();
+
+            // Add listening, SOCKS ports.
+            var addedPorts = new HashSet<int>();
+            var ports = new[] { settings.TorSettings.SocksPort }.Concat(settings.TorSettings.AdditionalSockPorts ?? Enumerable.Empty<int>());
+            foreach (var port in ports)
+            {
+                if (addedPorts.Add(port))
+                {
+                    output.Add(new KeyValuePair<string, string>("SocksPort", port.ToString(CultureInfo.InvariantCulture)));
+                }
+            }
 
             var dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
-                { "SocksPort", settings.TorSettings.SocksPort.ToString(CultureInfo.InvariantCulture) },
                 { "ControlPort", settings.TorSettings.ControlPort.ToString(CultureInfo.InvariantCulture) }
             };
 
@@ -122,7 +134,11 @@ namespace Knapcode.TorSharp.Tools.Tor
                     $"{settings.TorSettings.HttpsProxyUsername}:{settings.TorSettings.HttpsProxyPassword}";
             }
 
-            return dictionary;
+            output.AddRange(dictionary);
+
+            return output
+                .GroupBy(x => x.Key, x => x.Value)
+                .ToDictionary(x => x.Key, x => x.ToList());
         }
     }
 }

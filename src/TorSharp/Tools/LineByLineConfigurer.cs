@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -55,10 +56,13 @@ namespace Knapcode.TorSharp.Tools
                     // write the remaining lines
                     foreach (var pair in dictionary.OrderBy(p => p.Key))
                     {
-                        if (pair.Value != null)
+                        if (pair.Value != null && pair.Value.Any())
                         {
-                            string newLine = _format.CreateLine(pair);
-                            await writer.WriteLineAsync(newLine).ConfigureAwait(false);
+                            foreach (var value in pair.Value)
+                            {
+                                string newLine = _format.CreateLine(new KeyValuePair<string, string>(pair.Key, value));
+                                await writer.WriteLineAsync(newLine).ConfigureAwait(false);
+                            }
                         }
                     }
                 }

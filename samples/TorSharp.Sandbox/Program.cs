@@ -31,6 +31,7 @@ namespace Knapcode.TorSharp.Sandbox
                 TorSettings =
                 {
                     SocksPort = 19050,
+                    AdditionalSockPorts = { 19052 },
                     ControlPort = 19051,
                     ControlPassword = "foobar",
                 },
