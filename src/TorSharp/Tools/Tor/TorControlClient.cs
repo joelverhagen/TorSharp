@@ -115,7 +115,7 @@ namespace Knapcode.TorSharp.Tools.Tor
             return long.Parse(value);
         }
 
-        private async Task<string> SendCommandAsync(string command, string expectedResponse)
+        public async Task<string> SendCommandAsync(string command, string expectedResponse)
         {
             if (_tcpClient == null)
             {
