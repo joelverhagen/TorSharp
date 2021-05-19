@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -36,7 +37,8 @@ namespace Knapcode.TorSharp.Tools
                 }
                 else
                 {
-                    reader = new StringReader(string.Empty);
+                    // Append a link to a configuration sample at the top.
+                    reader = new StringReader("# Full sample at https://github.com/torproject/tor/blob/master/src/config/torrc.sample.in");
                 }
 
                 using (reader)
