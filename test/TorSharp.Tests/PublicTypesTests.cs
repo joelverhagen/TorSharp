@@ -28,6 +28,7 @@ namespace UnsharedNamespace
                 typeof(Knapcode.TorSharp.TorSharpOSPlatform),
                 typeof(Knapcode.TorSharp.TorSharpPrivoxySettings),
                 typeof(Knapcode.TorSharp.TorSharpProxy),
+                typeof(Knapcode.TorSharp.TorSharpProxyExtensions),
                 typeof(Knapcode.TorSharp.TorSharpSettings),
                 typeof(Knapcode.TorSharp.TorSharpToolFetcher),
                 typeof(Knapcode.TorSharp.TorSharpTorSettings),
