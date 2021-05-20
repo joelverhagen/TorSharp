@@ -21,6 +21,7 @@
     <RepositoryUrl>https://github.com/joelverhagen/TorSharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>
+* 2.7.0 Separate proxy Configure and Start steps, support old behavior with extension method.
 * 2.6.0 Make SendCommandAsync public and add AdditionalSocksPorts.
 * 2.5.0 Don't try to use virtual desktops on Windows 7 or earlier.
 * 2.4.0 Add support for custom Tor bridges, allow configurable max Privoxy connections.
