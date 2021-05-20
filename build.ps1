@@ -22,4 +22,4 @@ if ($LASTEXITCODE -ne 0) {
 & (Join-Path $repoDir "build\set-version.ps1")
 
 Write-Host "[ Building ]" -ForegroundColor DarkGreen
-Exec { dotnet build --configuration Release }
+Exec { dotnet build --configuration Release /p:ContinuousIntegrationBuild=true }

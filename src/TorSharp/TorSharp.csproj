@@ -18,7 +18,6 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>Use Tor for your C# HTTP clients. Tor + Privoxy = ❤</Description>
     <PackageProjectUrl>https://github.com/joelverhagen/TorSharp</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/joelverhagen/TorSharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>
 * 2.7.0 Separate proxy Configure and Start steps, support old behavior with extension method.
@@ -59,7 +58,13 @@
     <PackageTags>tor proxy privoxy http socks5 onion router https anonymize anonymous</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
   <ItemGroup>
