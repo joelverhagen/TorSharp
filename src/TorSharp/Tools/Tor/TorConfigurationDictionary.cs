@@ -27,6 +27,11 @@ namespace Knapcode.TorSharp.Tools.Tor
             {
                 { "ControlPort", settings.TorSettings.ControlPort.ToString(CultureInfo.InvariantCulture) }
             };
+            
+            if (settings.TorSettings.HttpTunnelPort != 0)
+            {
+                dictionary["HTTPTunnelPort"] = settings.TorSettings.HttpTunnelPort.ToString(CultureInfo.InvariantCulture);
+            }
 
             if (settings.TorSettings.UseBridges.HasValue)
             {
