@@ -65,4 +65,4 @@ jobs:
           artifacts/TorSharp/TorSharp/bin/Release/*.snupkg
     - name: Push artifacts
       if: matrix.os == 'windows-2019' && github.event_name == 'push'
-      run: dotnet nuget push artifacts\TorSharp\TorSharp\bin\Release\*.nupkg -s https://nuget.pkg.github.com/joelverhagen/index.json -k ${{ secrets.GITHUB_TOKEN }}
+      run: dotnet nuget push artifacts\TorSharp\TorSharp\bin\Release\*.nupkg -s https://nuget.pkg.github.com/joelverhagen/index.json -k ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
