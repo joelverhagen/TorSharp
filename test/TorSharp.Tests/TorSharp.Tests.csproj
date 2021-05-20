@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks Condition="'$(CoreOnly)' != 'true'">net452;netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks Condition="'$(CoreOnly)' != 'true'">net45;net472;netcoreapp2.1</TargetFrameworks>
     <TargetFrameworks Condition="'$(CoreOnly)' == 'true'">netcoreapp2.1</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <AssemblyName>Knapcode.TorSharp.Tests</AssemblyName>
@@ -25,7 +25,7 @@
     <ProjectReference Include="..\PassThroughProxy\PassThroughProxy\PassThroughProxy.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net45' or '$(TargetFramework)' == 'net472'">
     <Reference Include="System.Net.Http" />
   </ItemGroup>
 
