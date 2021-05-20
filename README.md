@@ -4,14 +4,11 @@ Use Tor for your C# HTTP clients. Tor + Privoxy = :heart:
 
 All you need is client code that can use a simple HTTP proxy.
 
-[![NuGet version](https://img.shields.io/nuget/v/Knapcode.TorSharp.svg)](https://www.nuget.org/packages/Knapcode.TorSharp) [![NuGet downloads](https://img.shields.io/nuget/dt/Knapcode.TorSharp.svg)](https://www.nuget.org/packages/Knapcode.TorSharp)
-
-![Build](https://github.com/joelverhagen/TorSharp/workflows/Build/badge.svg)
+[![NuGet version](https://img.shields.io/nuget/v/Knapcode.TorSharp.svg)](https://www.nuget.org/packages/Knapcode.TorSharp) [![NuGet downloads](https://img.shields.io/nuget/dt/Knapcode.TorSharp.svg)](https://www.nuget.org/packages/Knapcode.TorSharp) ![Build](https://github.com/joelverhagen/TorSharp/workflows/Build/badge.svg)
 
 ## Notice
 
-This product is produced independently from the Tor® anonymity software and carries no guarantee from
-[The Tor Project](https://www.torproject.org/) about quality, suitability or anything else.
+This product is produced independently from the Tor® anonymity software and carries no guarantee from [The Tor Project](https://www.torproject.org/) about quality, suitability or anything else.
 
 ## Details
 
@@ -76,22 +73,17 @@ proxy.Stop();
 
 ### The tool fetcher is throwing an exception. What do I do?
 
-This most likely is happening because the URLs where we fetch Tor or Privoxy from are down or have changed. I would
-recommend:
+This most likely is happening because the URLs where we fetch Tor or Privoxy from are down or have changed. I would recommend:
 
 1. [Open an issue](https://github.com/joelverhagen/TorSharp/issues/new) so I can look into it.
 
-1. Work around the issue by setting up the tools manually and not using `TorSharpToolFetcher`.
-   [See below](#how-do-i-set-up-the-tools-manually).
+1. Work around the issue by setting up the tools manually and not using `TorSharpToolFetcher`. [See below](#how-do-i-set-up-the-tools-manually).
 
-1. Investigate the issue yourself. The
-   [TorSharp.Sandbox](https://github.com/joelverhagen/TorSharp/blob/release/samples/TorSharp.Sandbox/Program.cs) project is
-   helpful for this. Pull requests accepted 🏆.
+1. Investigate the issue yourself. The [TorSharp.Sandbox](https://github.com/joelverhagen/TorSharp/blob/release/samples/TorSharp.Sandbox/Program.cs) project is helpful for this. Pull requests accepted 🏆.
 
 ### How do I set up the tools manually?
 
-If you don't want to use the `TorSharpToolFetcher` to download the latest version of the tools for you or if you want
-to use a specific version of Tor and Privoxy, follow these steps.
+If you don't want to use the `TorSharpToolFetcher` to download the latest version of the tools for you or if you want to use a specific version of Tor and Privoxy, follow these steps.
 
 1. Make a directory that will hold the zipped Tor and Privoxy binaries.
 1. Put a Tor Win32 ZIP in that folder with the file name like: `tor-win32-{version}.zip`
@@ -107,13 +99,11 @@ to use a specific version of Tor and Privoxy, follow these steps.
 
 ### Privoxy fetched by TorSharp fails to start? Try installing missing dependencies.
 
-It's possible some expected shared libraries aren't there. Try to look at the error message and judge which library
-needs to be installed from your distro's package repository.
+It's possible some expected shared libraries aren't there. Try to look at the error message and judge which library needs to be installed from your distro's package repository.
 
 #### Debian 10
 
-This includes Microsoft's .NET Core 3.1 runtime image `mcr.microsoft.com/dotnet/core/runtime:3.1` and Microsoft's
-.NET 5.0 runtime image `mcr.microsoft.com/dotnet/runtime:5.0`.
+This includes Microsoft's .NET Core 3.1 runtime image `mcr.microsoft.com/dotnet/core/runtime:3.1` and Microsoft's .NET 5.0 runtime image `mcr.microsoft.com/dotnet/runtime:5.0`.
 
 **Problem:** On Debian 10 the following errors may appear:
 
@@ -133,13 +123,9 @@ This includes Microsoft's .NET Core 3.1 runtime image `mcr.microsoft.com/dotnet/
 
 ### Privoxy fetched by TorSharp fails to start? Try `ExecutablePathOverride`.
 
-On Linux, the Privoxy binaries fetched seem to be built for the latest Debian and Ubuntu distributions. I can confirm that
-some other distributions don't work.
+On Linux, the Privoxy binaries fetched seem to be built for the latest Debian and Ubuntu distributions. I can confirm that some other distributions don't work.
 
-I'm no Linux expert but my guess is that there are missing shared libraries that are different on the running
-platform than the Debian platform that Privoxy was compiled for. The easiest workaround is to install Privoxy to your
-system and set the `TorSharpSettings.PrivoxySetting.ExecutablePathOverride` configuration setting to `"privoxy"` (i.e.
-use Privoxy from PATH).
+I'm no Linux expert but my guess is that there are missing shared libraries that are different on the running platform than the Debian platform that Privoxy was compiled for. The easiest workaround is to install Privoxy to your system and set the `TorSharpSettings.PrivoxySetting.ExecutablePathOverride` configuration setting to `"privoxy"` (i.e. use Privoxy from PATH).
 
 After you install it, make sure `privoxy` is in the PATH.
 
@@ -155,8 +141,7 @@ var settings = new TorSharpSettings();
 settings.PrivoxySettings.ExecutablePathOverride = "privoxy";
 ```
 
-Note that you may encounter warning or error messages in the output due to new configuration being used with an older
-executable. I haven't ran into any problems with this myself but it's possible things could get weird.
+Note that you may encounter warning or error messages in the output due to new configuration being used with an older executable. I haven't ran into any problems with this myself but it's possible things could get weird.
 
 #### CentOS 7
 
