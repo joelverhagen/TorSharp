@@ -109,7 +109,7 @@ namespace Knapcode.TorSharp
                 return new ToolSettings
                 {
                     Name = TorName,
-                    Prefix = "tor-win32-",
+                    Prefix = settings.Architecture == TorSharpArchitecture.X64 ? "tor-win64-" : "tor-win32-",
                     ExecutablePathOverride = settings.TorSettings.ExecutablePathOverride,
                     ExecutablePath = Path.Combine(TorName, "tor.exe"),
                     WorkingDirectory = TorName,

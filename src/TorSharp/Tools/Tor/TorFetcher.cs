@@ -44,7 +44,14 @@ namespace Knapcode.TorSharp.Tools.Tor
             var format = default(ZippedToolFormat);
             if (_settings.OSPlatform == TorSharpOSPlatform.Windows)
             {
-                pattern = @"tor-win32-(?<Version>[\d\.]+)\.zip$";
+                if (_settings.Architecture == TorSharpArchitecture.X64)
+                {
+                    pattern = @"tor-win64-(?<Version>[\d\.]+)\.zip$";
+                }
+                else
+                {
+                    pattern = @"tor-win32-(?<Version>[\d\.]+)\.zip$";
+                }
                 format = ZippedToolFormat.Zip;
             }
             else if (_settings.OSPlatform == TorSharpOSPlatform.Linux)
