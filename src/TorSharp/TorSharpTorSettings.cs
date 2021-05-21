@@ -27,6 +27,12 @@ namespace Knapcode.TorSharp
         public int SocksPort { get; set; }
 
         /// <summary>
+        /// The port that Tor listens to for HTTP, to use Tor directly as an HTTP proxy, instead of using Privoxy.
+        /// See https://2019.www.torproject.org/docs/tor-manual.html.en#HTTPTunnelPort for details.
+        /// </summary>
+        public int HttpTunnelPort { get; set; }
+
+        /// <summary>
         /// Additional ports that Tor listens to for SOCKS. These ports are not used by Privoxy but can be used for
         /// other purposes. Defaults to an empty list.
         /// See https://www.torproject.org/docs/tor-manual.html.en#SocksPort for details.
