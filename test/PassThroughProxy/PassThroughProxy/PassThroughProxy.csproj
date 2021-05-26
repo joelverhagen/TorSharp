@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks Condition="'$(CoreOnly)' != 'true'">netstandard1.3;net45</TargetFrameworks>
+    <TargetFrameworks Condition="'$(CoreOnly)' != 'true'">netstandard1.3;net45;net472</TargetFrameworks>
     <TargetFrameworks Condition="'$(CoreOnly)' == 'true'">netstandard1.3</TargetFrameworks>
     <RootNamespace>Proxy</RootNamespace>
     <PackageId>PassThroughProxy</PackageId>
