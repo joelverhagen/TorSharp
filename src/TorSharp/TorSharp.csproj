@@ -20,6 +20,7 @@
     <PackageProjectUrl>https://github.com/joelverhagen/TorSharp</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>
+* 2.8.1 Fix potential deadlock in UI apps due to unnecessary Task.Yield.
 * 2.8.0 Add HttpTunnelPort Tor setting, use tor-win64, add .NET Framework 4.7.2 target.
 * 2.7.0 Separate proxy Configure and Start steps, support old behavior with extension method.
 * 2.6.0 Make SendCommandAsync public and add AdditionalSocksPorts.
