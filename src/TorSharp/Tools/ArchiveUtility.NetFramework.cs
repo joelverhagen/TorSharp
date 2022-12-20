@@ -35,6 +35,21 @@ namespace Knapcode.TorSharp.Tools
             throw new NotImplementedException(
                 $"Extracting {GetFileExtension(ZippedToolFormat.TarXz)} files .NET Framework is not supported.");
         }
+        
+        public static Task TestTarGzAsync(string tarGzPath)
+        {
+            throw new NotImplementedException(
+                $"Testing {GetFileExtension(ZippedToolFormat.TarGz)} files .NET Framework is not supported.");
+        }
+
+        public static Task ExtractTarGzAsync(
+            string tarGzPath,
+            string outputDir,
+            Func<string, string> getEntryPath)
+        {
+            throw new NotImplementedException(
+                $"Extracting {GetFileExtension(ZippedToolFormat.TarGz)} files .NET Framework is not supported.");
+        }
     }
 }
 #endif

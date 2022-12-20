@@ -46,26 +46,25 @@ namespace Knapcode.TorSharp.Tools.Tor
             {
                 if (_settings.Architecture == TorSharpArchitecture.X64)
                 {
-                    pattern = @"tor-win64-(?<Version>[\d\.]+)\.zip$";
+                    pattern = @"tor-expert-bundle-(?<Version>[\d\.]+)-windows-x86_64\.tar\.gz$";
                 }
                 else
                 {
-                    pattern = @"tor-win32-(?<Version>[\d\.]+)\.zip$";
+                    pattern = @"tor-expert-bundle-(?<Version>[\d\.]+)-windows-i686\.tar\.gz$";
                 }
-                format = ZippedToolFormat.Zip;
+                format = ZippedToolFormat.TarGz;
             }
             else if (_settings.OSPlatform == TorSharpOSPlatform.Linux)
             {
                 if (_settings.Architecture == TorSharpArchitecture.X86)
                 {
-                    pattern = @"tor-browser-linux32-(?<Version>[\d\.]+)_en-US\.tar\.xz$";
-                    format = ZippedToolFormat.TarXz;
+                    pattern = @"tor-browser-linux32-(?<Version>[\d\.]+)_ALL\.tar\.xz$";
                 }
                 else if (_settings.Architecture == TorSharpArchitecture.X64)
                 {
-                    pattern = @"tor-browser-linux64-(?<Version>[\d\.]+)_en-US\.tar\.xz$";
-                    format = ZippedToolFormat.TarXz;
+                    pattern = @"tor-browser-linux64-(?<Version>[\d\.]+)_ALL\.tar\.xz$";
                 }
+                format = ZippedToolFormat.TarXz;
             }
 
             if (pattern == null)

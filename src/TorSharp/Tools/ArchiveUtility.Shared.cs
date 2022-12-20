@@ -21,6 +21,9 @@ namespace Knapcode.TorSharp.Tools
                 case ZippedToolFormat.TarXz:
                     await TestTarXzAsync(path).ConfigureAwait(false);
                     break;
+                case ZippedToolFormat.TarGz:
+                    await TestTarGzAsync(path).ConfigureAwait(false);
+                    break;
                 default:
                     throw new NotImplementedException(
                         $"Testing the zipped tool format {format} is not supported.");
@@ -44,6 +47,9 @@ namespace Knapcode.TorSharp.Tools
                 case ZippedToolFormat.TarXz:
                     await ExtractTarXzAsync(path, outputDir, getEntryPath).ConfigureAwait(false);
                     break;
+                case ZippedToolFormat.TarGz:
+                    await ExtractTarGzAsync(path, outputDir, getEntryPath).ConfigureAwait(false);
+                    break;
                 default:
                     throw new NotImplementedException(
                         $"Extracting the zipped tool format {format} is not supported.");
@@ -60,6 +66,8 @@ namespace Knapcode.TorSharp.Tools
                     return ".deb";
                 case ZippedToolFormat.TarXz:
                     return ".tar.xz";
+                case ZippedToolFormat.TarGz:
+                    return ".tar.gz";
                 default:
                     throw new NotImplementedException($"The zipped tool format {format} does not have a known extension.");
             }

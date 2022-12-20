@@ -19,5 +19,10 @@
         /// A tarball file compressed using the XZ compression format.
         /// </summary>
         TarXz,
+        
+        /// <summary>
+        /// A tarball file compressed using the Gzip compression format.
+        /// </summary>
+        TarGz
     }
 }

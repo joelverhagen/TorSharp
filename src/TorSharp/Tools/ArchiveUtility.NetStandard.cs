@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Text;
 using System.Threading.Tasks;
 using SharpCompress.Compressors.Xz;
@@ -158,6 +159,27 @@ namespace Knapcode.TorSharp.Tools
                 getEntryPath,
                 shouldExtract: true).ConfigureAwait(false);
         }
+        
+        public static async Task TestTarGzAsync(string tarGzPath)
+        {
+            await ReadTarGzAsync(
+                tarGzPath,
+                outputDir: null,
+                getEntryPath: null,
+                shouldExtract: false).ConfigureAwait(false);
+        }
+
+        public static async Task ExtractTarGzAsync(
+            string tarGzPath,
+            string outputDir,
+            Func<string, string> getEntryPath)
+        {
+            await ReadTarGzAsync(
+                tarGzPath,
+                outputDir,
+                getEntryPath,
+                shouldExtract: true).ConfigureAwait(false);
+        }
 
         private static async Task ReadTarXzAsync(
             string tarXzPath,
@@ -181,8 +203,45 @@ namespace Knapcode.TorSharp.Tools
             Func<string, string> getEntryPath,
             bool shouldExtract)
         {
-            using (var xzStream = new XZStream(fileStream))
-            using (var tarReader = TarReader.Open(xzStream))
+            using (var xzStream = new XZStream(fileStream)) {
+                await ReadTarAsync(xzStream, outputDir, getEntryPath, shouldExtract).ConfigureAwait(false);
+            }
+        }
+
+        private static async Task ReadTarGzAsync(
+            string tarGzPath,
+            string outputDir,
+            Func<string, string> getEntryPath,
+            bool shouldExtract)
+        {
+            using (var fileStream = new FileStream(tarGzPath, FileMode.Open))
+            {
+                await ReadTarGzAsync(
+                    fileStream,
+                    outputDir,
+                    getEntryPath,
+                    shouldExtract).ConfigureAwait(false);
+            }
+        }
+
+        private static async Task ReadTarGzAsync(
+            FileStream fileStream,
+            string outputDir,
+            Func<string, string> getEntryPath,
+            bool shouldExtract)
+        {
+            using (var gzipStream = new GZipStream(fileStream, CompressionMode.Decompress)) {
+                await ReadTarAsync(gzipStream, outputDir, getEntryPath, shouldExtract).ConfigureAwait(false);
+            }
+        }
+        
+        private static async Task ReadTarAsync(
+            Stream tarStream,
+            string outputDir,
+            Func<string, string> getEntryPath,
+            bool shouldExtract)
+        {
+            using (var tarReader = TarReader.Open(tarStream))
             {
                 var createdDirs = new HashSet<string>();
 

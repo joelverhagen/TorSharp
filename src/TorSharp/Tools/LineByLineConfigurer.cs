@@ -83,6 +83,12 @@ namespace Knapcode.TorSharp.Tools
                     // Backup the last config.
                     File.Move(tool.ConfigurationPath, backupPath);
                 }
+                
+                // create configuration directory if it's missing
+                string configurationDirectory = Path.GetDirectoryName(tool.ConfigurationPath);
+                if (configurationDirectory != null && !Directory.Exists(configurationDirectory)) {
+                    Directory.CreateDirectory(configurationDirectory);
+                }
 
                 File.Move(temporaryPath, tool.ConfigurationPath);
             }

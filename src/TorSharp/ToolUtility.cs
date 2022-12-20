@@ -116,7 +116,7 @@ namespace Knapcode.TorSharp
                     ConfigurationPath = Path.Combine("Data", TorName, "torrc"),
                     GetArguments = t => new[] { "-f", '\"' + t.ConfigurationPath + '\"' },
                     GetEnvironmentVariables = t => new Dictionary<string, string>(),
-                    ZippedToolFormat = ZippedToolFormat.Zip,
+                    ZippedToolFormat = ZippedToolFormat.TarGz,
                     GetEntryPath = e => e,
                 };
             }
@@ -172,7 +172,7 @@ namespace Knapcode.TorSharp
                     ZippedToolFormat = ZippedToolFormat.TarXz,
                     GetEntryPath = e =>
                     {
-                        const string entryPrefix = "tor-browser_en-US/Browser/TorBrowser/";
+                        const string entryPrefix = "tor-browser/Browser/TorBrowser/";
                         if (e.StartsWith(entryPrefix + "Data/Tor/"))
                         {
                             return e.Substring(entryPrefix.Length);
