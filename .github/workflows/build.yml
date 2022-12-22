@@ -39,6 +39,9 @@ jobs:
     - name: Build (Linux)
       if: runner.os == 'Linux'
       run: dotnet build --configuration Release --no-restore
+    - name: Setup tmate session
+      if: runner.os == 'Linux'
+      uses: mxschmitt/action-tmate@v3
     - name: Test (Linux)
       if: runner.os == 'Linux'
       run: dotnet test --no-restore --verbosity normal
