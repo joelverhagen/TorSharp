@@ -112,7 +112,7 @@ namespace Knapcode.TorSharp
                     Prefix = settings.Architecture == TorSharpArchitecture.X64 ? "tor-win64-" : "tor-win32-",
                     ExecutablePathOverride = settings.TorSettings.ExecutablePathOverride,
                     ExecutablePath = Path.Combine("tor", "tor.exe"),
-                    WorkingDirectory = TorName,
+                    WorkingDirectory = "tor",
                     ConfigurationPath = Path.Combine("data", "tor", "torrc"),
                     GetArguments = t => new[] { "-f", '\"' + t.ConfigurationPath + '\"' },
                     GetEnvironmentVariables = t => new Dictionary<string, string>(),
@@ -142,7 +142,7 @@ namespace Knapcode.TorSharp
                     Prefix = prefix,
                     ExecutablePathOverride = settings.TorSettings.ExecutablePathOverride,
                     ExecutablePath = Path.Combine("tor", "tor"),
-                    WorkingDirectory = TorName,
+                    WorkingDirectory = "tor",
                     ConfigurationPath = Path.Combine("data", "tor", "torrc"),
                     GetArguments = t => new[] { "-f", '\"' + t.ConfigurationPath + '\"' },
                     GetEnvironmentVariables = t =>
