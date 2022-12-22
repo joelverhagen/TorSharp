@@ -54,9 +54,9 @@ jobs:
         sha256sum -c SHA256SUMS || { echo "Checksum failed. Aborting."; exit 1; }
         sudo apt-get install -y --allow-downgrades ./*.deb
 
-    - name: Setup tmate session
-      if: runner.os == 'Linux'
-      uses: mxschmitt/action-tmate@v3
+    # - name: Setup tmate session
+    #   if: runner.os == 'Linux'
+    #   uses: mxschmitt/action-tmate@v3
 
     - name: Run sample
       run: |
