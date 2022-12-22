@@ -22,28 +22,47 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+
     - name: Setup .NET 6.0
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 6.0.x
+
     - name: Restore (Linux)
       if: runner.os == 'Linux'
       run: dotnet restore
+
     - name: Build (Linux)
       if: runner.os == 'Linux'
       run: dotnet build --configuration Release --no-restore
-    - name: Setup tmate session
-      if: runner.os == 'Linux'
-      uses: mxschmitt/action-tmate@v3
-    - name: Test (Linux)
-      if: runner.os == 'Linux'
-      run: dotnet test --no-restore --verbosity normal
+
     - name: Build (Windows)
       if: runner.os == 'Windows'
       run: .\build.ps1
+
+    - name: Install Privoxy dependencies (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        wget http://ftp.us.debian.org/debian/pool/main/m/mbedtls/libmbedcrypto3_2.16.0-1_amd64.deb
+        wget http://ftp.us.debian.org/debian/pool/main/m/mbedtls/libmbedx509-0_2.16.0-1_amd64.deb
+        wget http://ftp.us.debian.org/debian/pool/main/m/mbedtls/libmbedtls12_2.16.0-1_amd64.deb
+        echo "eb6751c98adfdf0e7a5a52fbd1b5a284ffd429e73abb4f0a4497374dd9f142c8 libmbedcrypto3_2.16.0-1_amd64.deb" > SHA256SUMS
+        echo "e8ea5dd71b27591c0f55c1d49f597d3d3b5c747bde25d3b3c3b03ca281fc3045 libmbedx509-0_2.16.0-1_amd64.deb" >> SHA256SUMS
+        echo "786c7e7805a51f3eccd449dd44936f735afa97fc5f3702411090d8b40f0e9eda libmbedtls12_2.16.0-1_amd64.deb" >> SHA256SUMS
+        sha256sum -c SHA256SUMS || { echo "Checksum failed. Aborting."; exit 1; }
+        sudo apt install ./*.deb
+
+    - name: Run sample
+      run: dotnet run --project samples/TorSharp.Sandbox --framework net6.0
+
+    - name: Test (Linux)
+      if: runner.os == 'Linux'
+      run: dotnet test --no-restore --verbosity normal
+
     - name: Test (Windows)
       if: runner.os == 'Windows'
       run: .\test.ps1
+
     - name: Upload artifacts
       if: matrix.os == 'windows-2022'
       uses: actions/upload-artifact@v2
@@ -52,6 +71,7 @@ jobs:
         path: |
           artifacts/TorSharp/TorSharp/bin/Release/*.nupkg
           artifacts/TorSharp/TorSharp/bin/Release/*.snupkg
+
     - name: Push artifacts
       if: matrix.os == 'windows-2022' && github.event_name == 'push'
       run: dotnet nuget push artifacts\TorSharp\TorSharp\bin\Release\*.nupkg -s https://nuget.pkg.github.com/joelverhagen/index.json -k ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
