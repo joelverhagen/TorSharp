@@ -14,11 +14,9 @@ jobs:
         os:
           - windows-2022
           - windows-2019
-          - windows-2016
           - ubuntu-22.04
           - ubuntu-20.04
           - ubuntu-18.04
-          - ubuntu-16.04
     steps:
     - name: Checkout
       uses: actions/checkout@v2
