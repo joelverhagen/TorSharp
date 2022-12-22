@@ -169,30 +169,8 @@ namespace Knapcode.TorSharp
 
                         return output;
                     },
-                    ZippedToolFormat = ZippedToolFormat.TarXz,
-                    GetEntryPath = e =>
-                    {
-                        const string entryPrefix = "tor-browser/Browser/TorBrowser/";
-                        if (e.StartsWith(entryPrefix + "Data/Tor/"))
-                        {
-                            return e.Substring(entryPrefix.Length);
-                        }
-                        else if (e.StartsWith(entryPrefix + "Tor/"))
-                        {
-                            if (e.StartsWith(entryPrefix + "Tor/PluggableTransports/"))
-                            {
-                                return null;
-                            }
-                            else
-                            {
-                                return e.Substring(entryPrefix.Length);
-                            }
-                        }
-                        else
-                        {
-                            return null;
-                        }
-                    },
+                    ZippedToolFormat = ZippedToolFormat.TarGz,
+                    GetEntryPath = e => e,
                 };
             }
             else
