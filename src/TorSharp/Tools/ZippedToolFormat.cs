@@ -23,6 +23,6 @@
         /// <summary>
         /// A tarball file compressed using the Gzip compression format.
         /// </summary>
-        TarGz
+        TarGz,
     }
 }
