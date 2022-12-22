@@ -43,6 +43,8 @@ jobs:
     - name: Install Privoxy dependencies (Linux)
       if: runner.os == 'Linux'
       run: |
+        sudo apt install -y libbrotli-dev libmbedtls-dev
+
         curl -O http://ftp.us.debian.org/debian/pool/main/m/mbedtls/libmbedcrypto3_2.16.0-1_amd64.deb
         curl -O http://ftp.us.debian.org/debian/pool/main/m/mbedtls/libmbedx509-0_2.16.0-1_amd64.deb
         curl -O http://ftp.us.debian.org/debian/pool/main/m/mbedtls/libmbedtls12_2.16.0-1_amd64.deb
@@ -50,7 +52,7 @@ jobs:
         echo "e8ea5dd71b27591c0f55c1d49f597d3d3b5c747bde25d3b3c3b03ca281fc3045 libmbedx509-0_2.16.0-1_amd64.deb" >> SHA256SUMS
         echo "786c7e7805a51f3eccd449dd44936f735afa97fc5f3702411090d8b40f0e9eda libmbedtls12_2.16.0-1_amd64.deb" >> SHA256SUMS
         sha256sum -c SHA256SUMS || { echo "Checksum failed. Aborting."; exit 1; }
-        sudo apt install ./*.deb
+        sudo apt install -y ./*.deb
 
     - name: Run sample
       run: dotnet run --project samples/TorSharp.Sandbox --framework net6.0
