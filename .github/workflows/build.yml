@@ -58,10 +58,10 @@ jobs:
     #   if: runner.os == 'Linux'
     #   uses: mxschmitt/action-tmate@v3
 
-    - name: Run sample
-      run: |
-        date
-        dotnet run --project samples/TorSharp.Sandbox --framework net6.0
+    # - name: Run sample
+    #   run: |
+    #     date
+    #     dotnet run --project samples/TorSharp.Sandbox --framework net6.0
 
     - name: Test (Linux)
       if: runner.os == 'Linux'
