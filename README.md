@@ -14,9 +14,10 @@ This product is produced independently from the Tor® anonymity software and car
 
 - Supports:
   - **.NET Core** (.NET Standard 2.0 and later)
-  - **.NET Framework** (.NET Framework 4.5 and later)
+  - **.NET Framework** (.NET Framework 4.6.2 and later)
   - **Windows**
     - ✔️ Windows 10 version 1903
+    - ✔️ Windows 11 version 21H2
     - Older Windows should work too
   - **Linux**
     - ✔️ Ubuntu 20.04
