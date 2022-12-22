@@ -44,13 +44,13 @@ namespace Knapcode.TorSharp.Tools.Tor
             var format = default(ZippedToolFormat);
             if (_settings.OSPlatform == TorSharpOSPlatform.Windows)
             {
-                if (_settings.Architecture == TorSharpArchitecture.X64)
-                {
-                    pattern = @"tor-expert-bundle-(?<Version>[\d\.]+)-windows-x86_64\.tar\.gz$";
-                }
-                else
+                if (_settings.Architecture == TorSharpArchitecture.X86)
                 {
                     pattern = @"tor-expert-bundle-(?<Version>[\d\.]+)-windows-i686\.tar\.gz$";
+                }
+                else if(_settings.Architecture == TorSharpArchitecture.X64)
+                {
+                    pattern = @"tor-expert-bundle-(?<Version>[\d\.]+)-windows-x86_64\.tar\.gz$";
                 }
                 format = ZippedToolFormat.TarGz;
             }
@@ -58,13 +58,13 @@ namespace Knapcode.TorSharp.Tools.Tor
             {
                 if (_settings.Architecture == TorSharpArchitecture.X86)
                 {
-                    pattern = @"tor-browser-linux32-(?<Version>[\d\.]+)_ALL\.tar\.xz$";
+                    pattern = @"tor-expert-bundle-(?<Version>[\d\.]+)-linux-i686\.tar\.gz$";
                 }
                 else if (_settings.Architecture == TorSharpArchitecture.X64)
                 {
-                    pattern = @"tor-browser-linux64-(?<Version>[\d\.]+)_ALL\.tar\.xz$";
+                    pattern = @"tor-expert-bundle-(?<Version>[\d\.]+)-linux-x86_64\.tar\.gz$";
                 }
-                format = ZippedToolFormat.TarXz;
+                format = ZippedToolFormat.TarGz;
             }
 
             if (pattern == null)
