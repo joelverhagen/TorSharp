@@ -19,6 +19,7 @@ This product is produced independently from the Tor® anonymity software and car
     - ✔️ Windows 10 version 1903
     - Older Windows should work too
   - **Linux**
+    - ✔️ Ubuntu 20.04
     - ✔️ Ubuntu 18.04
     - ✔️ Ubuntu 16.04
     - ✔️ Debian 10
@@ -100,6 +101,20 @@ If you don't want to use the `TorSharpToolFetcher` to download the latest versio
 ### Privoxy fetched by TorSharp fails to start? Try installing missing dependencies.
 
 It's possible some expected shared libraries aren't there. Try to look at the error message and judge which library needs to be installed from your distro's package repository.
+
+#### Ubuntu 20.04
+
+**Problem:** On Ubuntu 20.04 the following errors may appear:
+
+`
+/tmp/TorExtracted/privoxy-linux64-3.0.29/usr/sbin/privoxy: error while loading shared libraries: libmbedtls.so.12: cannot open shared object file: No such file or directory
+`
+
+**Solution:** install a missing dependency.
+
+```console
+[joel@ubuntu]$ sudo apt install -y libmbedtls-dev
+```
 
 #### Debian 10
 
