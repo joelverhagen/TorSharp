@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks Condition="'$(CoreOnly)' != 'true'">net45;net472;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(CoreOnly)' != 'true'">net462;net472;netstandard2.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(CoreOnly)' == 'true'">netstandard2.0</TargetFrameworks>
     <AssemblyName>Knapcode.TorSharp</AssemblyName>
     <RootNamespace>Knapcode.TorSharp</RootNamespace>
@@ -84,7 +84,7 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net45' or '$(TargetFramework)' == 'net472'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net462' or '$(TargetFramework)' == 'net472'">
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.ServiceModel" />

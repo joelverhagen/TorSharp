@@ -12,8 +12,10 @@ jobs:
     strategy:
       matrix:
         os:
+          - windows-2022
           - windows-2019
           - windows-2016
+          - ubuntu-22.04
           - ubuntu-20.04
           - ubuntu-18.04
           - ubuntu-16.04
@@ -27,18 +29,10 @@ jobs:
       with:
         path: tests/cache
         key: ${{ matrix.os }}-torsharp-test
-    - name: Setup .NET Core 2.1
+    - name: Setup .NET 6.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 2.1.x
-    - name: Setup .NET Core 3.1
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.x
-    - name: Setup .NET 5.0
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 5.0.x
+        dotnet-version: 6.0.x
     - name: Restore (Linux)
       if: runner.os == 'Linux'
       run: dotnet restore
@@ -56,7 +50,7 @@ jobs:
       if: runner.os == 'Windows'
       run: .\test.ps1
     - name: Upload artifacts
-      if: matrix.os == 'windows-2019'
+      if: matrix.os == 'windows-2022'
       uses: actions/upload-artifact@v2
       with:
         name: packages
@@ -64,5 +58,5 @@ jobs:
           artifacts/TorSharp/TorSharp/bin/Release/*.nupkg
           artifacts/TorSharp/TorSharp/bin/Release/*.snupkg
     - name: Push artifacts
-      if: matrix.os == 'windows-2019' && github.event_name == 'push'
+      if: matrix.os == 'windows-2022' && github.event_name == 'push'
       run: dotnet nuget push artifacts\TorSharp\TorSharp\bin\Release\*.nupkg -s https://nuget.pkg.github.com/joelverhagen/index.json -k ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
