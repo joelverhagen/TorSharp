@@ -263,12 +263,12 @@ namespace Knapcode.TorSharp.Tools.Privoxy
             {
                 if (_settings.Architecture == TorSharpArchitecture.X86)
                 {
-                    pattern = @"privoxy[-_](?<Version>[\d\.]+)([-_]\d(~pp+)?_)?i386\.deb$";
+                    pattern = @"privoxy[-_](?<Version>[\d\.]+)([-_]\d(~pp\+\d)?_)?i386\.deb$";
                     format = ZippedToolFormat.Deb;
                 }
                 else if (_settings.Architecture == TorSharpArchitecture.X64)
                 {
-                    pattern = @"privoxy[-_](?<Version>[\d\.]+)([-_]\d(~pp+)?_)?amd64\.deb$";
+                    pattern = @"privoxy[-_](?<Version>[\d\.]+)([-_]\d(~pp\+\d)?_)?amd64\.deb$";
                     format = ZippedToolFormat.Deb;
                 }
             }
