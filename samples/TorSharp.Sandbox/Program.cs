@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Polly;
 #if NETCOREAPP
 using System.Runtime.InteropServices;
 #endif
@@ -74,10 +75,12 @@ namespace Knapcode.TorSharp.Sandbox
                 using (handler)
                 using (var httpClient = new HttpClient(handler))
                 {
+                    var policy = Policy.Handle<HttpRequestException>().WaitAndRetryAsync(5, _ => TimeSpan.FromSeconds(5));
+
                     await proxy.ConfigureAndStartAsync();
-                    Console.WriteLine(await httpClient.GetStringAsync("http://api.ipify.org"));
+                    Console.WriteLine(await policy.ExecuteAsync(() => httpClient.GetStringAsync("http://api.ipify.org")));
                     await proxy.GetNewIdentityAsync();
-                    Console.WriteLine(await httpClient.GetStringAsync("http://api.ipify.org"));
+                    Console.WriteLine(await policy.ExecuteAsync(() => httpClient.GetStringAsync("http://api.ipify.org")));
 
                     using (var controlClient = await proxy.GetControlClientAsync())
                     {
