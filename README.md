@@ -1,4 +1,4 @@
-# TorSharp 
+# TorSharp
 
 Use Tor for your C# HTTP clients. Use Privoxy or .NET 6+ SOCKS support to proxy HTTP traffic.
 
