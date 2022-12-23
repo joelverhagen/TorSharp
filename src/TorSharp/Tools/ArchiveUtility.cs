@@ -103,7 +103,7 @@ namespace Knapcode.TorSharp.Tools
             Func<string, string> getEntryPath,
             bool shouldExtract)
         {
-            using (var fileStream = new FileStream(zipPath, FileMode.Open))
+            using (var fileStream = OpenForRead(zipPath))
             using (var zipArchive = new ZipArchive(fileStream, ZipArchiveMode.Read))
             {
                 var entries = zipArchive.Entries;
@@ -192,7 +192,7 @@ namespace Knapcode.TorSharp.Tools
             const int signatureLength = 8;
             const int headerLength = 16 + 12 + 6 + 6 + 8 + 10 + 2;
             var buffer = new byte[headerLength];
-            using (var fileStream = new FileStream(debPath, FileMode.Open))
+            using (var fileStream = OpenForRead(debPath))
             {
                 var read = fileStream.Read(buffer, 0, signatureLength);
                 if (read != signatureLength || Encoding.ASCII.GetString(buffer, 0, read) != "!<arch>\n")
@@ -318,7 +318,7 @@ namespace Knapcode.TorSharp.Tools
             Func<string, string> getEntryPath,
             bool shouldExtract)
         {
-            using (var fileStream = new FileStream(tarXzPath, FileMode.Open))
+            using (var fileStream = OpenForRead(tarXzPath))
             {
                 await ReadTarXzAsync(
                     fileStream,
@@ -346,7 +346,7 @@ namespace Knapcode.TorSharp.Tools
             Func<string, string> getEntryPath,
             bool shouldExtract)
         {
-            using (var fileStream = new FileStream(tarGzPath, FileMode.Open))
+            using (var fileStream = OpenForRead(tarGzPath))
             {
                 await ReadTarGzAsync(
                     fileStream,
@@ -410,6 +410,11 @@ namespace Knapcode.TorSharp.Tools
                     }
                 }
             }
+        }
+
+        private static FileStream OpenForRead(string path)
+        {
+            return new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
         }
     }
 }

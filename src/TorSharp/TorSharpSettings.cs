@@ -151,6 +151,14 @@ namespace Knapcode.TorSharp
         public TimeSpan WaitForConnect { get; set; }
 
         /// <summary>
+        /// When using the <see cref="ToolRunnerType"/> of <see cref="ToolRunnerType.VirtualDesktop"/>, this will be the
+        /// name of the Windows virtual desktop. It must not contain backslash ("\") characters. The name is case sensitive.
+        /// The name defaults to a "TorSharpDesktop-{hash of extracted tools directory}". It should not be shared with any
+        /// other parallel instances of <see cref="TorSharpProxy"/>.
+        /// </summary>
+        public string VirtualDesktopName { get; set; }
+
+        /// <summary>
         /// Settings specific to Privoxy.
         /// </summary>
         public TorSharpPrivoxySettings PrivoxySettings { get; set; }
