@@ -99,6 +99,32 @@ If you don't want to use the `TorSharpToolFetcher` to download the latest versio
 1. Initialize a `TorSharpSettings` instance where `ZippedToolsDirectory` is the directory created above.
 1. Pass this settings instance to the `TorSharpProxy` constructor.
 
+### Can I run multiple instances in parallel?
+
+Yes, you can. See this sample: [`samples/MultipleInstances/Program.cs`](https://github.com/joelverhagen/TorSharp/tree/release/samples/MultipleInstances/Program.cs).
+
+However, you need to adhere to the following guidance.
+
+None of the types in this library should be considered thread safe. Use separate instances for each parallel task/thread.
+- `TorSharpProxy`: this is stateful and should not be shared.
+- `TorSharpSettings`: the values held in the settings class need to be different for parallel threads, so it doesn't make sense to share instances.
+- `TorSharpToolFetcher`: this is stateless so it may be safe, but I would keep this a singleton since you shouldn't have multiple copies of the zipped tools (just multiple copies of the *extracted tools*).
+
+Parallel threads must have different values for these settings. The defaults will not work.
+
+- **Must be made unique by you:**
+  - `TorSharpSettings.ExtractedToolsDirectory`: this is the parent directory of the tool working directories. Specify a different value for each thread. In the sample above, I see each parallel task to be a sibling directory, e.g. `{some_root}/a`, `{some_root}/b`, etc.
+  - `TorSharpSettings.PrivoxySettings.Port`: this is the Privoxy listen port. Each Privoxy process needs its own port. Can be ignored if `TorSharpSettings.PrivoxySettings.Disable` is `true`.
+  - `TorSharpSettings.TorSettings.SocksPort`: this is the Tor SOCKS listen port. Each Tor process needs its own port.
+- **Must be unique, but only if you set them:**
+  - `TorSharpSettings.VirtualDesktopName`: this is automatically generated based on `ExtractedToolsDirectory`, but if you manually set it, it must be unique.
+  - `TorSharpSettings.TorSettings.ControlPort`: this is the Tor SOCKS listen port. Each Tor process needs its own port.
+  - `TorSharpSettings.TorSettings.AdditionalSockPorts`: if used, it must have unique values.
+  - `TorSharpSettings.TorSettings.HttpTunnelPort`: if used, it must have a unique value.
+  - `TorSharpSettings.TorSettings.DataDirectory`: the default is based `ExtractedToolsDirectory`, but if you manually set it, it must be unique.
+
+In general, directory configuration values must be different from all of the other directories, except `TorSharpSettings.ZippedToolsDirectory` which should not be downloaded to in parallel by `TorSharpToolFetcher` but can be read from in parallel with multiple `TorSharpProxy` instances. Port configuration values need to all be unique.
+
 ### Privoxy fetched by TorSharp fails to start? Try installing missing dependencies.
 
 It's possible some expected shared libraries aren't there. Try to look at the error message and judge which library needs to be installed from your distro's package repository.
