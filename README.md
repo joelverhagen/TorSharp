@@ -13,12 +13,14 @@ This product is produced independently from the Tor® anonymity software and car
 ## Details
 
 - Supports:
-  - **.NET Core** (.NET Standard 2.0 and later)
-  - **.NET Framework** (.NET Framework 4.5 and later)
+  - **.NET Core** (.NET Standard 2.0 and later, including .NET 5+)
+  - **.NET Framework** (.NET Framework 4.6.2 and later)
   - **Windows**
     - ✔️ Windows 10 version 1903
+    - ✔️ Windows 11 version 21H2
     - Older Windows should work too
   - **Linux**
+    - ✔️ Ubuntu 20.04
     - ✔️ Ubuntu 18.04
     - ✔️ Ubuntu 16.04
     - ✔️ Debian 10
@@ -32,7 +34,7 @@ This product is produced independently from the Tor® anonymity software and car
 ## Install
 
 ```
-Install-Package Knapcode.TorSharp
+dotnet add package Knapcode.TorSharp
 ```
 
 ## Example
@@ -101,9 +103,30 @@ If you don't want to use the `TorSharpToolFetcher` to download the latest versio
 
 It's possible some expected shared libraries aren't there. Try to look at the error message and judge which library needs to be installed from your distro's package repository.
 
-#### Debian 10
+#### Ubuntu 20.04
 
-This includes Microsoft's .NET Core 3.1 runtime image `mcr.microsoft.com/dotnet/core/runtime:3.1` and Microsoft's .NET 5.0 runtime image `mcr.microsoft.com/dotnet/runtime:5.0`.
+**Problem:** On Ubuntu 20.04 the following errors may appear:
+
+`
+/tmp/TorExtracted/privoxy-linux64-3.0.29/usr/sbin/privoxy: error while loading shared libraries: libmbedtls.so.12: cannot open shared object file: No such file or directory
+`
+
+**Solution:** install the missing dependencies. Note that these steps **install packages from the Debian repository**. This is very much not recommended by official guidance. For my own testing, it works well enough. I use this trick in the GitHub Action workflow. ⚠️ Do this at your own risk!
+
+```console
+[joel@ubuntu]$ curl -O http://ftp.us.debian.org/debian/pool/main/m/mbedtls/libmbedcrypto3_2.16.0-1_amd64.deb
+[joel@ubuntu]$ curl -O http://ftp.us.debian.org/debian/pool/main/m/mbedtls/libmbedx509-0_2.16.0-1_amd64.deb
+[joel@ubuntu]$ curl -O http://ftp.us.debian.org/debian/pool/main/m/mbedtls/libmbedtls12_2.16.0-1_amd64.deb
+[joel@ubuntu]$ echo "eb6751c98adfdf0e7a5a52fbd1b5a284ffd429e73abb4f0a4497374dd9f142c7 libmbedcrypto3_2.16.0-1_amd64.deb" > SHA256SUMS
+[joel@ubuntu]$ echo "e8ea5dd71b27591c0f55c1d49f597d3d3b5c747bde25d3b3c3b03ca281fc3045 libmbedx509-0_2.16.0-1_amd64.deb" >> SHA256SUMS
+[joel@ubuntu]$ echo "786c7e7805a51f3eccd449dd44936f735afa97fc5f3702411090d8b40f0e9eda libmbedtls12_2.16.0-1_amd64.deb" >> SHA256SUMS
+[joel@ubuntu]$ sha256sum -c SHA256SUMS || { echo "Checksum failed. Aborting."; exit 1; }
+[joel@ubuntu]$ sudo apt-get install -y --allow-downgrades ./*.deb
+```
+
+I have the checksum verification in there because these pages have SSL problems and the advertised URL is HTTP not HTTPS (by design I think).
+
+#### Debian 10
 
 **Problem:** On Debian 10 the following errors may appear:
 
@@ -160,8 +183,6 @@ Note that you may encounter warning or error messages in the output due to new c
 ```
 
 #### Debian 9
-
-This includes Microsoft's .NET Core 2.1 runtime image: `mcr.microsoft.com/dotnet/core/runtime:2.1`.
 
 **Problem:** the following errors may appear:
 

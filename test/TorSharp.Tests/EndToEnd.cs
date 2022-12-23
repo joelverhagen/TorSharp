@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Knapcode.TorSharp.Tests.TestSupport;
 using Proxy;
 using Proxy.Configurations;
+using xRetry;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -41,7 +42,7 @@ namespace Knapcode.TorSharp.Tests
             }
         }
 
-        [Fact]
+        [RetryFact]
         [DisplayTestMethodName]
         public async Task SimpleToolRunner_ConfigurationPathsWithSpaces()
         {
@@ -72,7 +73,7 @@ namespace Knapcode.TorSharp.Tests
             }
         }
 
-        [Fact]
+        [RetryFact]
         [DisplayTestMethodName]
         public async Task SimpleToolRunner_EndToEnd()
         {
@@ -87,7 +88,7 @@ namespace Knapcode.TorSharp.Tests
             }
         }
 
-        [Fact]
+        [RetryFact]
         [DisplayTestMethodName]
         public async Task TrafficReadAndWritten()
         {
@@ -148,7 +149,7 @@ namespace Knapcode.TorSharp.Tests
             }
         }
 
-        [Fact]
+        [RetryFact]
         [DisplayTestMethodName]
         public async Task TorHttpsProxy_EndToEnd()
         {

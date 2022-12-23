@@ -5,6 +5,18 @@ on:
     branches: [ release ]
   pull_request:
     branches: [ release ]
+  workflow_dispatch:
+    inputs:
+      run_sample:
+        type: boolean
+        description: 'Run the sample app'
+        required: false
+        default: false
+      debug_enabled:
+        type: boolean
+        description: 'Run the build with tmate debugging enabled'
+        required: false
+        default: false
 
 jobs:
   build:
@@ -12,57 +24,81 @@ jobs:
     strategy:
       matrix:
         os:
+          - windows-2022
           - windows-2019
-          - windows-2016
+          - ubuntu-22.04
           - ubuntu-20.04
           - ubuntu-18.04
-          - ubuntu-16.04
     env:
       TORSHARP_TEST_CACHE: ${{ github.workspace }}/tests/cache
+
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+
     - name: Cache test downloads
       uses: actions/cache@v2
       with:
         path: tests/cache
         key: ${{ matrix.os }}-torsharp-test
-    - name: Setup .NET Core 2.1
+
+    - name: Setup .NET 6.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 2.1.x
-    - name: Setup .NET Core 3.1
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.x
-    - name: Setup .NET 5.0
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 5.0.x
+        dotnet-version: 6.0.x
+
     - name: Restore (Linux)
       if: runner.os == 'Linux'
       run: dotnet restore
+
     - name: Build (Linux)
       if: runner.os == 'Linux'
       run: dotnet build --configuration Release --no-restore
-    - name: Test (Linux)
-      if: runner.os == 'Linux'
-      run: dotnet test --no-restore --verbosity normal
-      continue-on-error: true
+
     - name: Build (Windows)
       if: runner.os == 'Windows'
       run: .\build.ps1
+
+    - name: Install Privoxy dependencies (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get install -y libbrotli1
+        curl -O http://ftp.us.debian.org/debian/pool/main/m/mbedtls/libmbedcrypto3_2.16.0-1_amd64.deb
+        curl -O http://ftp.us.debian.org/debian/pool/main/m/mbedtls/libmbedx509-0_2.16.0-1_amd64.deb
+        curl -O http://ftp.us.debian.org/debian/pool/main/m/mbedtls/libmbedtls12_2.16.0-1_amd64.deb
+        echo "eb6751c98adfdf0e7a5a52fbd1b5a284ffd429e73abb4f0a4497374dd9f142c7 libmbedcrypto3_2.16.0-1_amd64.deb" > SHA256SUMS
+        echo "e8ea5dd71b27591c0f55c1d49f597d3d3b5c747bde25d3b3c3b03ca281fc3045 libmbedx509-0_2.16.0-1_amd64.deb" >> SHA256SUMS
+        echo "786c7e7805a51f3eccd449dd44936f735afa97fc5f3702411090d8b40f0e9eda libmbedtls12_2.16.0-1_amd64.deb" >> SHA256SUMS
+        sha256sum -c SHA256SUMS || { echo "Checksum failed. Aborting."; exit 1; }
+        sudo apt-get install -y --allow-downgrades ./*.deb
+
+    - name: Run sample
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_sample }}
+      run: |
+        date
+        dotnet run --project samples/TorSharp.Sandbox --framework net6.0
+
+    - name: Setup tmate session
+      if: ${{ runner.os == 'Linux' && github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+      uses: mxschmitt/action-tmate@v3
+
+    - name: Test (Linux)
+      if: runner.os == 'Linux'
+      run: dotnet test --no-restore --verbosity normal
+
     - name: Test (Windows)
       if: runner.os == 'Windows'
       run: .\test.ps1
+
     - name: Upload artifacts
-      if: matrix.os == 'windows-2019'
+      if: matrix.os == 'windows-2022'
       uses: actions/upload-artifact@v2
       with:
         name: packages
         path: |
           artifacts/TorSharp/TorSharp/bin/Release/*.nupkg
           artifacts/TorSharp/TorSharp/bin/Release/*.snupkg
+
     - name: Push artifacts
-      if: matrix.os == 'windows-2019' && github.event_name == 'push'
+      if: matrix.os == 'windows-2022' && github.event_name == 'push'
       run: dotnet nuget push artifacts\TorSharp\TorSharp\bin\Release\*.nupkg -s https://nuget.pkg.github.com/joelverhagen/index.json -k ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
