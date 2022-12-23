@@ -6,8 +6,6 @@
     <IsPackable>false</IsPackable>
     <AssemblyName>Knapcode.TorSharp.Tests</AssemblyName>
     <RootNamespace>Knapcode.TorSharp.Tests</RootNamespace>
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\..\TorSharp.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>
