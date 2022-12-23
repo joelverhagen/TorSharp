@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
+using System.Threading;
 using System.Threading.Tasks;
 using Knapcode.TorSharp.Tests.TestSupport;
 using Proxy;
@@ -85,6 +86,64 @@ namespace Knapcode.TorSharp.Tests
 
                 // Act & Assert
                 await ExecuteEndToEndTestAsync(settings);
+            }
+        }
+
+        [PlatformFact(osPlatform: nameof(TorSharpOSPlatform.Windows))]
+        [DisplayTestMethodName]
+        public async Task VirtualDesktopToolRunner_EndToEnd_Parallel()
+        {
+            using (var te1 = TestEnvironment.Initialize(_output))
+            using (var te2 = TestEnvironment.Initialize(_output))
+            using (var te3 = TestEnvironment.Initialize(_output))
+            {
+                // Arrange
+                var settings1 = te1.BuildSettings();
+                var settings2 = te2.BuildSettings();
+                var settings3 = te3.BuildSettings();
+                settings1.ToolRunnerType = ToolRunnerType.VirtualDesktop;
+                settings2.ToolRunnerType = ToolRunnerType.VirtualDesktop;
+                settings3.ToolRunnerType = ToolRunnerType.VirtualDesktop;
+                var barrier = new Barrier(3);
+
+                // Act & Assert
+                var tasks = new[]
+                {
+                    ExecuteEndToEndTestAsync(settings1, barrier),
+                    ExecuteEndToEndTestAsync(settings2, barrier),
+                    ExecuteEndToEndTestAsync(settings3, barrier),
+                };
+                await Task.WhenAny(tasks); // fail fast
+                await Task.WhenAll(tasks);
+            }
+        }
+
+        [RetryFact]
+        [DisplayTestMethodName]
+        public async Task SimpleToolRunner_EndToEnd_Parallel()
+        {
+            using (var te1 = TestEnvironment.Initialize(_output))
+            using (var te2 = TestEnvironment.Initialize(_output))
+            using (var te3 = TestEnvironment.Initialize(_output))
+            {
+                // Arrange
+                var settings1 = te1.BuildSettings();
+                var settings2 = te2.BuildSettings();
+                var settings3 = te3.BuildSettings();
+                settings1.ToolRunnerType = ToolRunnerType.Simple;
+                settings2.ToolRunnerType = ToolRunnerType.Simple;
+                settings3.ToolRunnerType = ToolRunnerType.Simple;
+                var barrier = new Barrier(3);
+
+                // Act & Assert
+                var tasks = new[]
+                {
+                    ExecuteEndToEndTestAsync(settings1, barrier),
+                    ExecuteEndToEndTestAsync(settings2, barrier),
+                    ExecuteEndToEndTestAsync(settings3, barrier),
+                };
+                await Task.WhenAny(tasks); // fail fast
+                await Task.WhenAll(tasks);
             }
         }
 
@@ -177,6 +236,11 @@ namespace Knapcode.TorSharp.Tests
 
         private async Task ExecuteEndToEndTestAsync(TorSharpSettings settings)
         {
+            await ExecuteEndToEndTestAsync(settings, barrier: null);
+        }
+
+        private async Task ExecuteEndToEndTestAsync(TorSharpSettings settings, Barrier barrier)
+        {
             // Arrange
             using (var httpClient = new HttpClient())
             using (var proxy = new TorSharpProxy(settings))
@@ -192,10 +256,16 @@ namespace Knapcode.TorSharp.Tests
 
                 // get the first identity
                 var ipA = await GetCurrentIpAddressAsync(proxy, settings);
+                
+                if (barrier != null)
+                {
+                    barrier.SignalAndWait();
+                }
+
                 await proxy.GetNewIdentityAsync();
                 _output.WriteLine("Get new identity succeeded");
                 var ipB = await GetCurrentIpAddressAsync(proxy, settings);
-                
+
                 // Assert
                 Assert.Equal(AddressFamily.InterNetwork, ipA.AddressFamily);
                 Assert.Equal(AddressFamily.InterNetwork, ipB.AddressFamily);

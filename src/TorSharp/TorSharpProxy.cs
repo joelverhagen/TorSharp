@@ -63,7 +63,7 @@ namespace Knapcode.TorSharp
                     {
                         settings.RejectRuntime($"use the {nameof(ToolRunnerType.VirtualDesktop)} tool runner");
                     }
-                    _toolRunner = new VirtualDesktopToolRunner();
+                    _toolRunner = new VirtualDesktopToolRunner(settings);
                     break;
                 default:
                     throw new NotImplementedException($"The '{settings.ToolRunnerType}' tool runner is not supported.");
@@ -241,8 +241,7 @@ namespace Knapcode.TorSharp
             catch (Exception ex)
             {
                 throw new TorSharpException(
-                    $"Failed to extract tool '{tool.Settings.Name}'. Verify that the .zip at path '{tool.ZipPath}' " +
-                    $"is valid.",
+                    $"Failed to extract tool '{tool.Settings.Name}'. Verify that the archive at path '{tool.ZipPath}' is valid.",
                     ex);
             }
 
