@@ -15,7 +15,7 @@
     <Version Condition="'$(TorSharpVersion)' == ''">1.0.0-local</Version>
     <Authors>Joel Verhagen</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Description>Use Tor for your C# HTTP clients. Tor + Privoxy = ❤</Description>
+    <Description>Use Tor for your C# HTTP clients. Use Privoxy or .NET 6+ SOCKS support to proxy HTTP traffic.</Description>
     <PackageProjectUrl>https://github.com/joelverhagen/TorSharp</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>
@@ -58,7 +58,7 @@
     </PackageReleaseNotes>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Copyright>Copyright © 2021 Joel Verhagen</Copyright>
-    <PackageTags>tor proxy privoxy http socks5 onion router https anonymize anonymous</PackageTags>
+    <PackageTags>tor proxy privoxy http socks socks5 onion router https anonymize anonymous</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <DebugType>embedded</DebugType>

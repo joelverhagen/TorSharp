@@ -22,7 +22,7 @@ using (var proxy = new TorSharpProxy(settings))
 
     var handler = new HttpClientHandler
     {
-        Proxy = new WebProxy(new Uri("socks5://127.0.0.1:" + settings.TorSettings.SocksPort))
+        Proxy = new WebProxy(new Uri("socks5://localhost:" + settings.TorSettings.SocksPort))
     };
 
     using (handler)
