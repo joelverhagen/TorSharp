@@ -8,12 +8,13 @@ if (Test-Path $netFrameworkTestAssembly) {
 
     Write-Host "[ Running .NET Framework tests in 64-bit ]" -ForegroundColor DarkGreen
     Exec { & $xunit64 $netFrameworkTestAssembly }
-} else {
-	Write-Host "[ Building .NET Framework tests with .NET CLI ]" -ForegroundColor DarkGreen
-	Exec { dotnet build test\TorSharp.Tests --framework net472 }
+}
+else {
+    Write-Host "[ Building .NET Framework tests with .NET CLI ]" -ForegroundColor DarkGreen
+    Exec { dotnet build test\TorSharp.Tests --framework net472 }
 
-	Write-Host "[ Running .NET Framework tests with .NET CLI ]" -ForegroundColor DarkGreen
-	Exec { dotnet test test\TorSharp.Tests --no-build --framework net472 --verbosity normal }
+    Write-Host "[ Running .NET Framework tests with .NET CLI ]" -ForegroundColor DarkGreen
+    Exec { dotnet test test\TorSharp.Tests --no-build --framework net472 --verbosity normal }
 }
 
 Write-Host "[ Building .NET Core tests with .NET CLI ]" -ForegroundColor DarkGreen

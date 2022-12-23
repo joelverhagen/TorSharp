@@ -1,7 +1,7 @@
 Write-Host "[ Determining release version ]" -ForegroundColor DarkGreen
 $version = (Get-Content (Join-Path $PSScriptRoot "version.txt")).Trim()
 
-if ($env:BUILD_STABLE_VERSION -ne "true") {
+if ($env:BUILD_STABLE_VERSION -eq "true") {
     Write-Host "Using stable version due to BUILD_STABLE_VERSION = true environment variable."
 }
 else {
