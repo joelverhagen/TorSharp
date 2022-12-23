@@ -5,10 +5,9 @@
     <TargetFrameworks Condition="'$(CoreOnly)' == 'true'">netstandard2.0</TargetFrameworks>
     <AssemblyName>Knapcode.TorSharp</AssemblyName>
     <RootNamespace>Knapcode.TorSharp</RootNamespace>
-    <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>1591</NoWarn>
     <SignAssembly>true</SignAssembly>
-    <DelaySign>false</DelaySign>
     <AssemblyOriginatorKeyFile>..\..\TorSharp.snk</AssemblyOriginatorKeyFile>
 
     <PackageId>Knapcode.TorSharp</PackageId>
