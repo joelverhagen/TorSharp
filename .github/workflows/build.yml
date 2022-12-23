@@ -5,6 +5,18 @@ on:
     branches: [ release ]
   pull_request:
     branches: [ release ]
+  workflow_dispatch:
+    inputs:
+      run_sample:
+        type: boolean
+        description: 'Run the sample app'
+        required: false
+        default: false
+      debug_enabled:
+        type: boolean
+        description: 'Run the build with tmate debugging enabled'
+        required: false
+        default: false
 
 jobs:
   build:
@@ -60,14 +72,15 @@ jobs:
         sha256sum -c SHA256SUMS || { echo "Checksum failed. Aborting."; exit 1; }
         sudo apt-get install -y --allow-downgrades ./*.deb
 
-    # - name: Setup tmate session
-    #   if: runner.os == 'Linux'
-    #   uses: mxschmitt/action-tmate@v3
+    - name: Run sample
+      if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_sample }}
+      run: |
+        date
+        dotnet run --project samples/TorSharp.Sandbox --framework net6.0
 
-    # - name: Run sample
-    #   run: |
-    #     date
-    #     dotnet run --project samples/TorSharp.Sandbox --framework net6.0
+    - name: Setup tmate session
+      if: ${{ runner.os == 'Linux' && github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+      uses: mxschmitt/action-tmate@v3
 
     - name: Test (Linux)
       if: runner.os == 'Linux'
