@@ -7,7 +7,7 @@ if (!(Test-Path $buildDir)) {
 if (!(Test-Path $nuget)) {
     Write-Host "Downloading nuget.exe..." -ForegroundColor DarkGreen
     $ProgressPreference = 'SilentlyContinue'
-    Invoke-WebRequest "https://dist.nuget.org/win-x86-commandline/v5.8.0/nuget.exe" -OutFile $nuget
+    Invoke-WebRequest "https://dist.nuget.org/win-x86-commandline/v6.4.0/nuget.exe" -OutFile $nuget
     $ProgressPreference = 'Continue'
 
     Write-Host "Downloaded nuget.exe to $nuget"
