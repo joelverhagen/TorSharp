@@ -2,7 +2,7 @@ name: Build
 
 on:
   push:
-    branches: "**"
+    branches: [ release ]
   pull_request:
     branches: [ release ]
 
@@ -17,9 +17,18 @@ jobs:
           - ubuntu-22.04
           - ubuntu-20.04
           - ubuntu-18.04
+    env:
+      TORSHARP_TEST_CACHE: ${{ github.workspace }}/tests/cache
+
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+
+    - name: Cache test downloads
+      uses: actions/cache@v2
+      with:
+        path: tests/cache
+        key: ${{ matrix.os }}-torsharp-test
 
     - name: Setup .NET 6.0
       uses: actions/setup-dotnet@v1
