@@ -43,10 +43,7 @@ namespace Knapcode.TorSharp
             _settings = settings;
             _simpleHttpClient = simpleHttpClient;
             _progress = progress;
-            if (!_settings.PrivoxySettings.Disable)
-            {
-                _privoxyFetcher = new PrivoxyFetcher(settings, client);
-            }
+            _privoxyFetcher = new PrivoxyFetcher(settings, client);
             _torFetcher = new TorFetcher(settings, client);
         }
 
@@ -65,17 +62,13 @@ namespace Knapcode.TorSharp
 
         private async Task<PartialToolUpdates> CheckForUpdatesAsync(bool allowExistingTools)
         {
-            ToolUpdate privoxy;
+            ToolUpdate privoxy = null;
             if (!_settings.PrivoxySettings.Disable)
             {
                 privoxy = await CheckForUpdateAsync(
                     ToolUtility.GetPrivoxyToolSettings(_settings),
                     _privoxyFetcher,
                     allowExistingTools).ConfigureAwait(false);
-            }
-            else
-            {
-                privoxy = new ToolUpdate(ToolUpdateStatus.NoUpdateAvailable, new Version(), "", new DownloadableFile(new Version(), new Uri("noupdate:///"), ZippedToolFormat.Zip));
             }
 
             var tor = await CheckForUpdateAsync(
@@ -143,7 +136,11 @@ namespace Knapcode.TorSharp
                 throw new ArgumentNullException(nameof(updates));
             }
 
-            await DownloadFileAsync(updates.Privoxy).ConfigureAwait(false);
+            if (updates.Privoxy != null)
+            {
+                await DownloadFileAsync(updates.Privoxy).ConfigureAwait(false);
+            }
+
             await DownloadFileAsync(updates.Tor).ConfigureAwait(false);
         }
 
@@ -222,7 +219,7 @@ namespace Knapcode.TorSharp
                     SecurityProtocolType.Ssl3,
                     SecurityProtocolType.Tls,
                     SecurityProtocolType.Tls11,
-                    SecurityProtocolType.Tls12
+                    SecurityProtocolType.Tls12,
                 };
 
                 foreach (var protocol in protocols)

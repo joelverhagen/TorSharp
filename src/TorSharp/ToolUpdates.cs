@@ -9,14 +9,14 @@ namespace Knapcode.TorSharp
     {
         public ToolUpdates(ToolUpdate privoxy, ToolUpdate tor)
         {
-            Privoxy = privoxy ?? throw new ArgumentNullException(nameof(privoxy));
+            Privoxy = privoxy;
             Tor = tor ?? throw new ArgumentNullException(nameof(tor));
         }
 
         /// <summary>
         /// Whether or not there is an update available for one or more tools.
         /// </summary>
-        public bool HasUpdate => Privoxy.HasUpdate || Tor.HasUpdate;
+        public bool HasUpdate => (Privoxy != null && Privoxy.HasUpdate) || Tor.HasUpdate;
 
         /// <summary>
         /// Update information for Privoxy.
