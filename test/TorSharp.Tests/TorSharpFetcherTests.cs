@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Knapcode.TorSharp.Tests.TestSupport;
+using xRetry;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -22,7 +23,7 @@ namespace Knapcode.TorSharp.Tests
             _output = output;
         }
 
-        [Theory]
+        [RetryTheory]
         [MemberData(nameof(Platforms))]
         [DisplayTestMethodName]
         public async Task TorSharpToolFetch_AllResultsAreWorking(TorSharpOSPlatform osPlatform, TorSharpArchitecture architecture)
