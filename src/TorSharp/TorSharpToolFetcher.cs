@@ -62,10 +62,14 @@ namespace Knapcode.TorSharp
 
         private async Task<PartialToolUpdates> CheckForUpdatesAsync(bool allowExistingTools)
         {
-            var privoxy = await CheckForUpdateAsync(
-                ToolUtility.GetPrivoxyToolSettings(_settings),
-                _privoxyFetcher,
-                allowExistingTools).ConfigureAwait(false);
+            ToolUpdate privoxy = null;
+            if (!_settings.PrivoxySettings.Disable)
+            {
+                privoxy = await CheckForUpdateAsync(
+                    ToolUtility.GetPrivoxyToolSettings(_settings),
+                    _privoxyFetcher,
+                    allowExistingTools).ConfigureAwait(false);
+            }
 
             var tor = await CheckForUpdateAsync(
                 ToolUtility.GetTorToolSettings(_settings),
@@ -132,7 +136,11 @@ namespace Knapcode.TorSharp
                 throw new ArgumentNullException(nameof(updates));
             }
 
-            await DownloadFileAsync(updates.Privoxy).ConfigureAwait(false);
+            if (updates.Privoxy != null)
+            {
+                await DownloadFileAsync(updates.Privoxy).ConfigureAwait(false);
+            }
+
             await DownloadFileAsync(updates.Tor).ConfigureAwait(false);
         }
 
@@ -211,7 +219,7 @@ namespace Knapcode.TorSharp
                     SecurityProtocolType.Ssl3,
                     SecurityProtocolType.Tls,
                     SecurityProtocolType.Tls11,
-                    SecurityProtocolType.Tls12
+                    SecurityProtocolType.Tls12,
                 };
 
                 foreach (var protocol in protocols)

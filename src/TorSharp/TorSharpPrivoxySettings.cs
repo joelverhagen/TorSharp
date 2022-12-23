@@ -10,6 +10,13 @@
         }
 
         /// <summary>
+        /// This defaults to false. Disables the fetching and starting of the Privoxy tool. This should only be enabled
+        /// if you have an alternate way to proxy HTTP traffic to Tor (e.g. an independent Privoxy instance or the
+        /// built-in SOCKS5 support added to .NET 6: https://devblogs.microsoft.com/dotnet/dotnet-6-networking-improvements/#socks-proxy-support).
+        /// </summary>
+        public bool Disable { get; set; }
+
+        /// <summary>
         /// The port that Privoxy listens to. This is the port of the HTTP proxy. This defaults to 18118.
         /// </summary>
         public int Port { get; set; }
