@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks Condition="'$(CoreOnly)' != 'true'">net45;netcoreapp2.1</TargetFrameworks>
-    <TargetFrameworks Condition="'$(CoreOnly)' == 'true'">netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks Condition="'$(CoreOnly)' != 'true'">net462;net472;net6.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(CoreOnly)' == 'true'">net6.0</TargetFrameworks>
     <AssemblyName>Knapcode.TorSharp.Sandbox</AssemblyName>
     <RootNamespace>Knapcode.TorSharp.Sandbox</RootNamespace>
     <SignAssembly>true</SignAssembly>
@@ -15,7 +15,7 @@
     <ProjectReference Include="..\..\src\TorSharp\TorSharp.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net462' or '$(TargetFramework)' == 'net472'">
     <Reference Include="System.Net.Http" />
   </ItemGroup>
 

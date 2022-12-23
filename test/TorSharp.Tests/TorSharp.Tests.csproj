@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks Condition="'$(CoreOnly)' != 'true'">net452;netcoreapp2.1</TargetFrameworks>
-    <TargetFrameworks Condition="'$(CoreOnly)' == 'true'">netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks Condition="'$(CoreOnly)' != 'true'">net462;net472;net6.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(CoreOnly)' == 'true'">net6.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <AssemblyName>Knapcode.TorSharp.Tests</AssemblyName>
     <RootNamespace>Knapcode.TorSharp.Tests</RootNamespace>
@@ -11,10 +11,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.8.0" />
-    <PackageReference Include="Moq" Version="4.15.2" />
-    <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
+    <PackageReference Include="Moq" Version="4.18.3" />
+    <PackageReference Include="xRetry" Version="1.9.0-alpha1" />
+    <PackageReference Include="xunit" Version="2.4.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -25,7 +26,7 @@
     <ProjectReference Include="..\PassThroughProxy\PassThroughProxy\PassThroughProxy.csproj" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net462' or '$(TargetFramework)' == 'net472'">
     <Reference Include="System.Net.Http" />
   </ItemGroup>
 

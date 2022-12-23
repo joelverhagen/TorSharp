@@ -5,7 +5,7 @@ namespace Knapcode.TorSharp.Tools
 {
     internal interface IConfigurationFormat
     {
-        string UpdateLine(IDictionary<string, string> dictionary, string originalLine);
+        string UpdateLine(IDictionary<string, List<string>> dictionary, string originalLine);
         string CreateLine(KeyValuePair<string, string> pair);
     }
 
@@ -13,7 +13,7 @@ namespace Knapcode.TorSharp.Tools
     {
         public Regex CommentPattern => new Regex(@"^\s*#+");
 
-        public string UpdateLine(IDictionary<string, string> dictionary, string originalLine)
+        public string UpdateLine(IDictionary<string, List<string>> dictionary, string originalLine)
         {
             // try to match the key
             var pieces = Regex.Split(originalLine.Trim(), @"\s+");
@@ -23,17 +23,31 @@ namespace Knapcode.TorSharp.Tools
             }
 
             string key = pieces[0];
-            if (dictionary.TryGetValue(key, out var value))
+            if (dictionary.TryGetValue(key, out var values))
             {
-                var keyMatch = Regex.Match(originalLine, @"^(\s*)(?<Key>" + Regex.Escape(key) + @")(\s+)");
-                dictionary.Remove(key);
-                if (value == null)
+                if (values == null || values.Count == 0)
                 {
-                    return null;
+                    dictionary.Remove(key);
                 }
                 else
                 {
-                    return CreateLine(new KeyValuePair<string, string>(keyMatch.Groups["Key"].Value, value));
+                    var keyMatch = Regex.Match(originalLine, @"^(\s*)(?<Key>" + Regex.Escape(key) + @")(\s+)");
+                    var value = values[0];
+
+                    values.RemoveAt(0);
+                    if (values.Count == 0)
+                    {
+                        dictionary.Remove(key);
+                    }
+
+                    if (value == null)
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        return CreateLine(new KeyValuePair<string, string>(keyMatch.Groups["Key"].Value, value));
+                    }
                 }
             }
 

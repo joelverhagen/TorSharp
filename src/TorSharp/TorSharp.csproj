@@ -1,14 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks Condition="'$(CoreOnly)' != 'true'">net45;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(CoreOnly)' != 'true'">net462;net472;netstandard2.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(CoreOnly)' == 'true'">netstandard2.0</TargetFrameworks>
     <AssemblyName>Knapcode.TorSharp</AssemblyName>
     <RootNamespace>Knapcode.TorSharp</RootNamespace>
-    <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>1591</NoWarn>
     <SignAssembly>true</SignAssembly>
-    <DelaySign>false</DelaySign>
     <AssemblyOriginatorKeyFile>..\..\TorSharp.snk</AssemblyOriginatorKeyFile>
 
     <PackageId>Knapcode.TorSharp</PackageId>
@@ -18,9 +17,13 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>Use Tor for your C# HTTP clients. Tor + Privoxy = ❤</Description>
     <PackageProjectUrl>https://github.com/joelverhagen/TorSharp</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/joelverhagen/TorSharp</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>
+* 2.9.0 Update to new Tor URLs, fixing tool fetcher, drop .NET 4.5 and add .NET 4.6.2.
+* 2.8.1 Fix potential deadlock in UI apps due to unnecessary Task.Yield.
+* 2.8.0 Add HttpTunnelPort Tor setting, use tor-win64, add .NET Framework 4.7.2 target.
+* 2.7.0 Separate proxy Configure and Start steps, support old behavior with extension method.
+* 2.6.0 Make SendCommandAsync public and add AdditionalSocksPorts.
 * 2.5.0 Don't try to use virtual desktops on Windows 7 or earlier.
 * 2.4.0 Add support for custom Tor bridges, allow configurable max Privoxy connections.
 * 2.3.0 Add support for Tor bridges (e.g. obfs4).
@@ -53,33 +56,43 @@
 * 1.1.0 Target .NET 4.5 instead of .NET 4.5.2.
 * 1.0.0 Initial release.
     </PackageReleaseNotes>
-    <Copyright>Copyright © 2020 Joel Verhagen</Copyright>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Copyright>Copyright © 2021 Joel Verhagen</Copyright>
     <PackageTags>tor proxy privoxy http socks5 onion router https anonymize anonymous</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <IncludeSymbols>true</IncludeSymbols>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <DebugType>embedded</DebugType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ConfigureAwaitChecker.Analyzer" Version="4.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-19367-01">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <None Include="..\..\README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net45'">
+  <ItemGroup>
+    <PackageReference Include="ConfigureAwaitChecker.Analyzer" Version="5.0.0.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="SharpCompress" Version="0.32.2" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net462' or '$(TargetFramework)' == 'net472'">
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.ServiceModel" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="System.ServiceModel.Syndication" Version="4.5.0" />
-    <PackageReference Include="sharpcompress" Version="0.24.0" />
+    <PackageReference Include="System.ServiceModel.Syndication" Version="6.0.0" />
   </ItemGroup>
 
 </Project>

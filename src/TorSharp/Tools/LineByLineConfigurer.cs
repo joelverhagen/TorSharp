@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -35,7 +36,8 @@ namespace Knapcode.TorSharp.Tools
                 }
                 else
                 {
-                    reader = new StringReader(string.Empty);
+                    // Append a link to a configuration sample at the top.
+                    reader = new StringReader("# Full sample at https://github.com/torproject/tor/blob/master/src/config/torrc.sample.in");
                 }
 
                 using (reader)
@@ -55,10 +57,13 @@ namespace Knapcode.TorSharp.Tools
                     // write the remaining lines
                     foreach (var pair in dictionary.OrderBy(p => p.Key))
                     {
-                        if (pair.Value != null)
+                        if (pair.Value != null && pair.Value.Any())
                         {
-                            string newLine = _format.CreateLine(pair);
-                            await writer.WriteLineAsync(newLine).ConfigureAwait(false);
+                            foreach (var value in pair.Value)
+                            {
+                                string newLine = _format.CreateLine(new KeyValuePair<string, string>(pair.Key, value));
+                                await writer.WriteLineAsync(newLine).ConfigureAwait(false);
+                            }
                         }
                     }
                 }
@@ -76,6 +81,13 @@ namespace Knapcode.TorSharp.Tools
 
                     // Backup the last config.
                     File.Move(tool.ConfigurationPath, backupPath);
+                }
+                
+                // create configuration directory if it's missing
+                string configurationDirectory = Path.GetDirectoryName(tool.ConfigurationPath);
+                if (configurationDirectory != null && !Directory.Exists(configurationDirectory))
+                {
+                    Directory.CreateDirectory(configurationDirectory);
                 }
 
                 File.Move(temporaryPath, tool.ConfigurationPath);

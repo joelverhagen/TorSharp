@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 
 namespace Knapcode.TorSharp.Tools.Privoxy
 {
     internal class PrivoxyConfigurationDictionary : IConfigurationDictionary
     {
-        public IDictionary<string, string> GetDictionary(Tool tool, TorSharpSettings settings)
+        public IDictionary<string, List<string>> GetDictionary(Tool tool, TorSharpSettings settings)
         {
             var output = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
@@ -33,7 +34,7 @@ namespace Knapcode.TorSharp.Tools.Privoxy
                     settings.PrivoxySettings.MaxClientConnections.Value.ToString(CultureInfo.InvariantCulture);
             }
 
-            return output;
+            return output.ToDictionary(x => x.Key, x => new List<string> { x.Value });
         }
     }
 }

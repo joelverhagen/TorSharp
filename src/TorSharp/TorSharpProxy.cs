@@ -11,9 +11,19 @@ using Knapcode.TorSharp.Tools.Tor;
 
 namespace Knapcode.TorSharp
 {
+    public static class TorSharpProxyExtensions
+    {
+        public static async Task ConfigureAndStartAsync(this ITorSharpProxy proxy)
+        {
+            await proxy.ConfigureAsync().ConfigureAwait(false);
+            await proxy.StartAsync().ConfigureAwait(false);
+        }
+    }
+
     public interface ITorSharpProxy : IDisposable
     {
-        Task ConfigureAndStartAsync();
+        Task ConfigureAsync();
+        Task StartAsync();
         Task GetNewIdentityAsync();
         void Stop();
     }
@@ -26,7 +36,8 @@ namespace Knapcode.TorSharp
     {
         private const string TorHostName = "localhost";
 
-        private bool _initialized;
+        private bool _configured;
+        private bool _started;
         private readonly TorSharpSettings _settings;
         private readonly IToolRunner _toolRunner;
         private readonly TorPasswordHasher _torPasswordHasher;
@@ -65,43 +76,72 @@ namespace Knapcode.TorSharp
         /// <returns>A task.</returns>
         public async Task ConfigureAndStartAsync()
         {
-            if (!_initialized)
+            if (!_configured)
             {
-                await InitializeAsync().ConfigureAwait(false);
-                _initialized = true;
+                await ConfigureAsync().ConfigureAwait(false);
+                _configured = true;
+            }
+
+            if (!_started)
+            {
+                await StartAsync().ConfigureAwait(false);
+                _started = true;
             }
         }
 
-        private async Task InitializeAsync()
+        /// <summary>
+        /// Configure the tools.
+        /// </summary>
+        /// <returns>A task.</returns>
+        public async Task ConfigureAsync()
         {
-            _settings.ZippedToolsDirectory = GetAbsoluteCreate(_settings.ZippedToolsDirectory);
-            _settings.ExtractedToolsDirectory = GetAbsoluteCreate(_settings.ExtractedToolsDirectory);
-
-            var torToolSettings = ToolUtility.GetTorToolSettings(_settings);
-            var privoxyToolSettings = ToolUtility.GetPrivoxyToolSettings(_settings);
-
-            _tor = await ExtractAsync(torToolSettings).ConfigureAwait(false);
-            if (!_settings.PrivoxySettings.Disable)
+            if (!_configured)
             {
-                _privoxy = await ExtractAsync(privoxyToolSettings).ConfigureAwait(false);
+                _settings.ZippedToolsDirectory = GetAbsoluteCreate(_settings.ZippedToolsDirectory);
+                _settings.ExtractedToolsDirectory = GetAbsoluteCreate(_settings.ExtractedToolsDirectory);
+
+                var torToolSettings = ToolUtility.GetTorToolSettings(_settings);
+                var privoxyToolSettings = ToolUtility.GetPrivoxyToolSettings(_settings);
+
+                _tor = await ExtractAsync(torToolSettings).ConfigureAwait(false);
+                if (!_settings.PrivoxySettings.Disable)
+                {
+                    _privoxy = await ExtractAsync(privoxyToolSettings).ConfigureAwait(false);
+                }
+
+                if (_settings.TorSettings.ControlPassword != null && _settings.TorSettings.HashedControlPassword == null)
+                {
+                    _settings.TorSettings.HashedControlPassword = _torPasswordHasher.HashPassword(_settings.TorSettings.ControlPassword);
+                }
+
+                await ConfigureAsync(_tor, new TorConfigurationDictionary()).ConfigureAwait(false);
+                if (!_settings.PrivoxySettings.Disable)
+                {
+                    await ConfigureAndStartAsync(_privoxy, new PrivoxyConfigurationDictionary()).ConfigureAwait(false);
+                }
+
+                _configured = true;
             }
+        }
 
-            if (_settings.TorSettings.ControlPassword != null && _settings.TorSettings.HashedControlPassword == null)
+        /// <summary>
+        /// Starts the tools.
+        /// </summary>
+        /// <returns>A task.</returns>
+        public async Task StartAsync()
+        {
+            if (!_started)
             {
-                _settings.TorSettings.HashedControlPassword = _torPasswordHasher.HashPassword(_settings.TorSettings.ControlPassword);
-            }
+                await StartAsync(_tor).ConfigureAwait(false);
+                await StartAsync(_privoxy).ConfigureAwait(false);
 
-            await ConfigureAndStartAsync(_tor, new TorConfigurationDictionary()).ConfigureAwait(false);
-            if (!_settings.PrivoxySettings.Disable)
-            {
-                await ConfigureAndStartAsync(_privoxy, new PrivoxyConfigurationDictionary()).ConfigureAwait(false);
-            }
+                WaitForConnect(TorHostName, _settings.TorSettings.SocksPort);
+                if (!_settings.PrivoxySettings.Disable)
+                {
+                    WaitForConnect(_settings.PrivoxySettings.ListenAddress, _settings.PrivoxySettings.Port);
+                }
 
-            WaitForConnect(TorHostName, _settings.TorSettings.SocksPort);
-
-            if (!_settings.PrivoxySettings.Disable)
-            {
-                WaitForConnect(_settings.PrivoxySettings.ListenAddress, _settings.PrivoxySettings.Port);
+                _started = true;
             }
         }
 
@@ -136,10 +176,10 @@ namespace Knapcode.TorSharp
         /// </summary>
         public void Stop()
         {
-            if (_initialized)
+            if (_started)
             {
                 _toolRunner.Stop();
-                _initialized = false;
+                _started = false;
             }
         }
 
@@ -162,13 +202,14 @@ namespace Knapcode.TorSharp
             return tool;
         }
 
-        private async Task<Tool> ConfigureAndStartAsync(Tool tool, IConfigurationDictionary configurationDictionary)
+        private async Task<Tool> ConfigureAsync(Tool tool, IConfigurationDictionary configurationDictionary)
         {
             var configurer = new LineByLineConfigurer(configurationDictionary, new ConfigurationFormat());
             await configurer.ApplySettings(tool, _settings).ConfigureAwait(false);
-            await _toolRunner.StartAsync(tool).ConfigureAwait(false);
             return tool;
         }
+
+        private async Task StartAsync(Tool tool) => await _toolRunner.StartAsync(tool).ConfigureAwait(false);
 
         private string GetAbsoluteCreate(string directory)
         {

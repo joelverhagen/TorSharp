@@ -2,19 +2,36 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 
 namespace Knapcode.TorSharp.Tools.Tor
 {
     internal class TorConfigurationDictionary : IConfigurationDictionary
     {
-        public IDictionary<string, string> GetDictionary(Tool tool, TorSharpSettings settings)
+        public IDictionary<string, List<string>> GetDictionary(Tool tool, TorSharpSettings settings)
         {
+            var output = new List<KeyValuePair<string, string>>();
+
+            // Add listening, SOCKS ports.
+            var addedPorts = new HashSet<int>();
+            var ports = new[] { settings.TorSettings.SocksPort }.Concat(settings.TorSettings.AdditionalSockPorts ?? Enumerable.Empty<int>());
+            foreach (var port in ports)
+            {
+                if (addedPorts.Add(port))
+                {
+                    output.Add(new KeyValuePair<string, string>("SocksPort", port.ToString(CultureInfo.InvariantCulture)));
+                }
+            }
 
             var dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
-                { "SocksPort", settings.TorSettings.SocksPort.ToString(CultureInfo.InvariantCulture) },
                 { "ControlPort", settings.TorSettings.ControlPort.ToString(CultureInfo.InvariantCulture) }
             };
+            
+            if (settings.TorSettings.HttpTunnelPort != 0)
+            {
+                dictionary["HTTPTunnelPort"] = settings.TorSettings.HttpTunnelPort.ToString(CultureInfo.InvariantCulture);
+            }
 
             if (settings.TorSettings.UseBridges.HasValue)
             {
@@ -87,7 +104,7 @@ namespace Knapcode.TorSharp.Tools.Tor
             }
             else
             {
-                dataDictionary = Path.Combine(tool.DirectoryPath, "Data", "Tor");
+                dataDictionary = Path.Combine(tool.DirectoryPath, "data", "tor");
             }
 
             dictionary["DataDirectory"] = dataDictionary;
@@ -95,8 +112,8 @@ namespace Knapcode.TorSharp.Tools.Tor
             if (!string.IsNullOrWhiteSpace(settings.TorSettings.ExitNodes))
             {
                 dictionary["ExitNodes"] = settings.TorSettings.ExitNodes;
-                dictionary["GeoIPFile"] = Path.Combine(tool.DirectoryPath, "Data", "Tor", "geoip");
-                dictionary["GeoIPv6File"] = Path.Combine(tool.DirectoryPath, "Data", "Tor", "geoip6");
+                dictionary["GeoIPFile"] = Path.Combine(tool.DirectoryPath, "data", "tor", "geoip");
+                dictionary["GeoIPv6File"] = Path.Combine(tool.DirectoryPath, "data", "tor", "geoip6");
             }
 
             if (settings.TorSettings.StrictNodes.HasValue)
@@ -122,7 +139,11 @@ namespace Knapcode.TorSharp.Tools.Tor
                     $"{settings.TorSettings.HttpsProxyUsername}:{settings.TorSettings.HttpsProxyPassword}";
             }
 
-            return dictionary;
+            output.AddRange(dictionary);
+
+            return output
+                .GroupBy(x => x.Key, x => x.Value)
+                .ToDictionary(x => x.Key, x => x.ToList());
         }
     }
 }

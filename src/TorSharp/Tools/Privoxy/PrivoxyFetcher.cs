@@ -99,15 +99,11 @@ namespace Knapcode.TorSharp.Tools.Privoxy
 
         private async Task<DownloadableFile> GetLatestOrNullFromPrivoxyRssAsync(CancellationToken token)
         {
-            await Task.Yield();
-
             return await GetLatestOrNullFromRssAsync(PrivoxyBaseUrl, token).ConfigureAwait(false);
         }
 
         private async Task<DownloadableFile> GetLatestOrNullFromSourceForgeRssAsync(CancellationToken token)
         {
-            await Task.Yield();
-
             var directory = GetRssDirectory(SourceForgeBaseUrl);
             var osBaseUrl = new Uri(SourceForgeBaseUrl.AbsoluteUri + $"?path=/{directory}");
 
@@ -143,8 +139,6 @@ namespace Knapcode.TorSharp.Tools.Privoxy
             Uri baseUrl,
             CancellationToken token)
         {
-            await Task.Yield();
-
             var directory = GetRssDirectory(baseUrl);
             var fileNamePatternAndFormat = GetFileNamePatternAndFormat(baseUrl);
 
@@ -269,12 +263,12 @@ namespace Knapcode.TorSharp.Tools.Privoxy
             {
                 if (_settings.Architecture == TorSharpArchitecture.X86)
                 {
-                    pattern = @"privoxy[-_](?<Version>[\d\.]+)([-_]\d_)?i386\.deb$";
+                    pattern = @"privoxy[-_](?<Version>[\d\.]+)([-_]\d(~pp\+\d)?_)?i386\.deb$";
                     format = ZippedToolFormat.Deb;
                 }
                 else if (_settings.Architecture == TorSharpArchitecture.X64)
                 {
-                    pattern = @"privoxy[-_](?<Version>[\d\.]+)([-_]\d_)?amd64\.deb$";
+                    pattern = @"privoxy[-_](?<Version>[\d\.]+)([-_]\d(~pp\+\d)?_)?amd64\.deb$";
                     format = ZippedToolFormat.Deb;
                 }
             }

@@ -109,14 +109,14 @@ namespace Knapcode.TorSharp
                 return new ToolSettings
                 {
                     Name = TorName,
-                    Prefix = "tor-win32-",
+                    Prefix = settings.Architecture == TorSharpArchitecture.X64 ? "tor-win64-" : "tor-win32-",
                     ExecutablePathOverride = settings.TorSettings.ExecutablePathOverride,
-                    ExecutablePath = Path.Combine(TorName, "tor.exe"),
-                    WorkingDirectory = TorName,
-                    ConfigurationPath = Path.Combine("Data", TorName, "torrc"),
+                    ExecutablePath = Path.Combine("tor", "tor.exe"),
+                    WorkingDirectory = "tor",
+                    ConfigurationPath = Path.Combine("data", "tor", "torrc"),
                     GetArguments = t => new[] { "-f", '\"' + t.ConfigurationPath + '\"' },
                     GetEnvironmentVariables = t => new Dictionary<string, string>(),
-                    ZippedToolFormat = ZippedToolFormat.Zip,
+                    ZippedToolFormat = ZippedToolFormat.TarGz,
                     GetEntryPath = e => e,
                 };
             }
@@ -141,9 +141,9 @@ namespace Knapcode.TorSharp
                     Name = TorName,
                     Prefix = prefix,
                     ExecutablePathOverride = settings.TorSettings.ExecutablePathOverride,
-                    ExecutablePath = Path.Combine(TorName, "tor"),
-                    WorkingDirectory = TorName,
-                    ConfigurationPath = Path.Combine("Data", TorName, "torrc"),
+                    ExecutablePath = Path.Combine("tor", "tor"),
+                    WorkingDirectory = "tor",
+                    ConfigurationPath = Path.Combine("data", "tor", "torrc"),
                     GetArguments = t => new[] { "-f", '\"' + t.ConfigurationPath + '\"' },
                     GetEnvironmentVariables = t =>
                     {
@@ -169,30 +169,8 @@ namespace Knapcode.TorSharp
 
                         return output;
                     },
-                    ZippedToolFormat = ZippedToolFormat.TarXz,
-                    GetEntryPath = e =>
-                    {
-                        const string entryPrefix = "tor-browser_en-US/Browser/TorBrowser/";
-                        if (e.StartsWith(entryPrefix + "Data/Tor/"))
-                        {
-                            return e.Substring(entryPrefix.Length);
-                        }
-                        else if (e.StartsWith(entryPrefix + "Tor/"))
-                        {
-                            if (e.StartsWith(entryPrefix + "Tor/PluggableTransports/"))
-                            {
-                                return null;
-                            }
-                            else
-                            {
-                                return e.Substring(entryPrefix.Length);
-                            }
-                        }
-                        else
-                        {
-                            return null;
-                        }
-                    },
+                    ZippedToolFormat = ZippedToolFormat.TarGz,
+                    GetEntryPath = e => e,
                 };
             }
             else

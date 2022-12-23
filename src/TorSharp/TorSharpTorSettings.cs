@@ -1,4 +1,6 @@
-﻿namespace Knapcode.TorSharp
+﻿using System.Collections.Generic;
+
+namespace Knapcode.TorSharp
 {
     /// <summary>
     /// Settings specific to Tor.
@@ -15,6 +17,7 @@
         {
             SocksPort = DefaultSocksPort;
             ControlPort = DefaultControlPort;
+            AdditionalSockPorts = new List<int>();
         }
 
         /// <summary>
@@ -22,6 +25,19 @@
         /// See https://www.torproject.org/docs/tor-manual.html.en#SocksPort for details.
         /// </summary>
         public int SocksPort { get; set; }
+
+        /// <summary>
+        /// The port that Tor listens to for HTTP, to use Tor directly as an HTTP proxy, instead of using Privoxy.
+        /// See https://2019.www.torproject.org/docs/tor-manual.html.en#HTTPTunnelPort for details.
+        /// </summary>
+        public int HttpTunnelPort { get; set; }
+
+        /// <summary>
+        /// Additional ports that Tor listens to for SOCKS. These ports are not used by Privoxy but can be used for
+        /// other purposes. Defaults to an empty list.
+        /// See https://www.torproject.org/docs/tor-manual.html.en#SocksPort for details.
+        /// </summary>
+        public List<int> AdditionalSockPorts { get; set; }
 
         /// <summary>
         /// The port that Tor listens to for control and administrative commands. This defaults to 19051.
