@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29230.47
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33209.295
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{503A5E9E-0307-4126-A2B9-5884115FAE47}"
 EndProject
@@ -51,6 +51,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\build-and-test.yml = .github\workflows\build-and-test.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NativeSocksProxy", "samples\NativeSocksProxy\NativeSocksProxy.csproj", "{B83B3E72-C9BA-4802-B6B0-44F341FE4FEB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,10 @@ Global
 		{D92586EE-E235-4597-A386-FC8A62A0006E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D92586EE-E235-4597-A386-FC8A62A0006E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D92586EE-E235-4597-A386-FC8A62A0006E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B83B3E72-C9BA-4802-B6B0-44F341FE4FEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B83B3E72-C9BA-4802-B6B0-44F341FE4FEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B83B3E72-C9BA-4802-B6B0-44F341FE4FEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B83B3E72-C9BA-4802-B6B0-44F341FE4FEB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -85,6 +91,7 @@ Global
 		{D92586EE-E235-4597-A386-FC8A62A0006E} = {ED4E2334-05F6-4CF4-BAE7-0C11BBD397DB}
 		{4424E6A7-F2A7-4FC9-9999-79998A4B2C07} = {6705490B-3ABC-406B-BD3D-73B5A26E08B9}
 		{79E56234-67B0-49EA-B0C8-689121579061} = {4424E6A7-F2A7-4FC9-9999-79998A4B2C07}
+		{B83B3E72-C9BA-4802-B6B0-44F341FE4FEB} = {503A5E9E-0307-4126-A2B9-5884115FAE47}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C9D31863-62E3-48E8-AF13-1E5EE3A20A37}
