@@ -51,5 +51,22 @@ namespace Knapcode.TorSharp.Tests.Tools.Tor
             Assert.Contains("HashedControlPassword NOT_A_REAL_HASH", configurationBefore);
             Assert.DoesNotContain("HashedControlPassword", configurationAfter);
         }
+
+        [Fact]
+        public async Task DoesNotAddEmptyHashedControlPassword()
+        {
+            // Arrange
+            var format = new ConfigurationFormat();
+            var configurer = new LineByLineConfigurer(Target, format);
+            var settings = Environment.BuildSettings();
+            settings.TorSettings.HashedControlPassword = null;
+
+            // Act
+            await configurer.ApplySettings(Tool, settings);
+
+            // Assert
+            var configurationAfter = File.ReadAllText(Tool.ConfigurationPath);
+            Assert.DoesNotContain("HashedControlPassword", configurationAfter);
+        }
     }
 }

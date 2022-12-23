@@ -101,10 +101,13 @@ namespace Knapcode.TorSharp
                 _settings.ExtractedToolsDirectory = GetAbsoluteCreate(_settings.ExtractedToolsDirectory);
 
                 var torToolSettings = ToolUtility.GetTorToolSettings(_settings);
-                var privoxyToolSettings = ToolUtility.GetPrivoxyToolSettings(_settings);
-
                 _tor = await ExtractAsync(torToolSettings).ConfigureAwait(false);
-                _privoxy = await ExtractAsync(privoxyToolSettings).ConfigureAwait(false);
+
+                if (!_settings.PrivoxySettings.Disable)
+                {
+                    var privoxyToolSettings = ToolUtility.GetPrivoxyToolSettings(_settings);
+                    _privoxy = await ExtractAsync(privoxyToolSettings).ConfigureAwait(false);
+                }
 
                 if (_settings.TorSettings.ControlPassword != null && _settings.TorSettings.HashedControlPassword == null)
                 {
@@ -112,7 +115,10 @@ namespace Knapcode.TorSharp
                 }
 
                 await ConfigureAsync(_tor, new TorConfigurationDictionary()).ConfigureAwait(false);
-                await ConfigureAsync(_privoxy, new PrivoxyConfigurationDictionary()).ConfigureAwait(false);
+                if (!_settings.PrivoxySettings.Disable)
+                {
+                    await ConfigureAsync(_privoxy, new PrivoxyConfigurationDictionary()).ConfigureAwait(false);
+                }
 
                 _configured = true;
             }
@@ -127,10 +133,16 @@ namespace Knapcode.TorSharp
             if (!_started)
             {
                 await StartAsync(_tor).ConfigureAwait(false);
-                await StartAsync(_privoxy).ConfigureAwait(false);
+                if (!_settings.PrivoxySettings.Disable)
+                {
+                    await StartAsync(_privoxy).ConfigureAwait(false);
+                }
 
                 WaitForConnect(TorHostName, _settings.TorSettings.SocksPort);
-                WaitForConnect(_settings.PrivoxySettings.ListenAddress, _settings.PrivoxySettings.Port);
+                if (!_settings.PrivoxySettings.Disable)
+                {
+                    WaitForConnect(_settings.PrivoxySettings.ListenAddress, _settings.PrivoxySettings.Port);
+                }
 
                 _started = true;
             }

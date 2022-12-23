@@ -1,6 +1,6 @@
 # TorSharp
 
-Use Tor for your C# HTTP clients. Tor + Privoxy = :heart:
+Use Tor for your C# HTTP clients. Use Privoxy or .NET 6+ SOCKS support to proxy HTTP traffic.
 
 All you need is client code that can use a simple HTTP proxy.
 
@@ -27,7 +27,7 @@ This product is produced independently from the Tor® anonymity software and car
     - ⚠️ Debian 9 ([confirmed by a user](https://github.com/joelverhagen/TorSharp/issues/42#issuecomment-539403030) but [may have issues](https://github.com/joelverhagen/TorSharp/issues/64#issuecomment-774825257))
     - ⚠️ CentOS 7 supported via `ExecutablePathOverride` ([see below](#centos-7))
   - ❌ Mac OS X support is not planned. I don't have a Mac 😕
-- Uses Privoxy to redirect HTTP proxy traffic to Tor.
+- Uses Privoxy to redirect HTTP proxy traffic to Tor (can be disabled).
 - Uses virtual desktops to manage Tor and Privoxy processes.
 - Optionally downloads the latest version of Tor and Privoxy.
 
@@ -37,7 +37,52 @@ This product is produced independently from the Tor® anonymity software and car
 dotnet add package Knapcode.TorSharp
 ```
 
-## Example
+## Example using .NET 6+ SOCKS support
+
+Starting on .NET 6, there is built-in support for SOCKS proxies. This means you don't need Privoxy. Thanks, .NET team!
+
+See [`samples/NativeSocksProxy/Program.cs`](https://github.com/joelverhagen/TorSharp/tree/release/samples/NativeSocksProxy/Program.cs) for a working sample.
+
+```csharp
+var settings = new TorSharpSettings
+{
+    PrivoxySettings = { Disable = true }
+};
+
+// download Tor
+using (var httpClient = new HttpClient())
+{
+    var fetcher = new TorSharpToolFetcher(settings, httpClient);
+    await fetcher.FetchAsync();
+}
+
+// execute
+using (var proxy = new TorSharpProxy(settings))
+{
+    await proxy.ConfigureAndStartAsync();
+
+    var handler = new HttpClientHandler
+    {
+        Proxy = new WebProxy(new Uri("socks5://localhost:" + settings.TorSettings.SocksPort))
+    };
+
+    using (handler)
+    using (var httpClient = new HttpClient(handler))
+    {
+        var result = await httpClient.GetStringAsync("https://check.torproject.org/api/ip");
+
+        Console.WriteLine();
+        Console.WriteLine("Are we using Tor?");
+        Console.WriteLine(result);
+    }
+
+    proxy.Stop();
+}
+```
+
+## Example using Privoxy
+
+See [`samples/TorSharp.Sandbox/Program.cs`](https://github.com/joelverhagen/TorSharp/tree/release/samples/TorSharp.Sandbox/Program.cs) for a working sample.
 
 ```csharp
 // configure
