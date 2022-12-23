@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -6,6 +7,8 @@ using System.Net.Http;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using Knapcode.TorSharp.Tests.TestSupport;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Proxy;
 using Proxy.Configurations;
 using xRetry;
@@ -41,6 +44,54 @@ namespace Knapcode.TorSharp.Tests
                 await ExecuteEndToEndTestAsync(settings);
             }
         }
+
+#if NET6_0_OR_GREATER
+        [RetryFact]
+        [DisplayTestMethodName]
+        public async Task PrivoxyCanBeDisabled()
+        {
+            using (var te = TestEnvironment.Initialize(_output))
+            {
+                // Arrange
+                var settings = te.BuildSettings();
+                settings.PrivoxySettings.Disable = true;
+
+                // Act
+                using (var httpClient = new HttpClient())
+                using (var proxy = new TorSharpProxy(settings))
+                {
+                    _output.WriteLine(settings);
+
+                    var fetcher = _httpFixture.GetTorSharpToolFetcher(settings, httpClient);
+                    await fetcher.FetchAsync();
+                    _output.WriteLine("The tools have been fetched");
+                    await proxy.ConfigureAndStartAsync();
+                    _output.WriteLine("The proxy has been started");
+
+                    var isTor = await SendProxiedRequestAsync(
+                        proxy,
+                        "Checking if we're using Tor",
+                        async proxiedHttpClient =>
+                        {
+                            var torCheck = await proxiedHttpClient.GetStringAsync("https://check.torproject.org/api/ip");
+                            _output.WriteLine("Tor Check: " + torCheck);
+                            var json = JsonConvert.DeserializeObject<JObject>(torCheck);
+                            return json.Value<bool>("IsTor");
+                        },
+                        () => new SocketsHttpHandler
+                        {
+                            Proxy = new WebProxy("socks5://localhost:" + settings.TorSettings.SocksPort)
+                        });
+
+                    // Assert
+                    Assert.True(isTor);
+                    Assert.All(Directory.EnumerateFileSystemEntries(settings.ZippedToolsDirectory), e => Assert.DoesNotContain("privoxy", e, StringComparison.OrdinalIgnoreCase));
+                    Assert.All(Directory.EnumerateFileSystemEntries(settings.ExtractedToolsDirectory), e => Assert.DoesNotContain("privoxy", e, StringComparison.OrdinalIgnoreCase));
+                    Assert.All(Process.GetProcesses(), p => Assert.DoesNotContain("privoxy", p.ProcessName, StringComparison.OrdinalIgnoreCase));
+                }
+            }
+        }
+#endif
 
         [RetryFact]
         [DisplayTestMethodName]
@@ -232,18 +283,28 @@ namespace Knapcode.TorSharp.Tests
             string operation,
             Func<HttpClient, Task<T>> executeAsync)
         {
+            return await SendProxiedRequestAsync(
+                proxy,
+                operation,
+                executeAsync,
+                () => new HttpClientHandler
+                {
+                    Proxy = new WebProxy(new Uri("http://localhost:" + settings.PrivoxySettings.Port))
+                });
+        }
+
+        private async Task<T> SendProxiedRequestAsync<T>(
+            TorSharpProxy proxy,
+            string operation,
+            Func<HttpClient, Task<T>> executeAsync,
+            Func<HttpMessageHandler> getHttpMessageHandler)
+        {
             const int maxAttempts = 3;
             for (var attempt = 1; attempt <= maxAttempts; attempt++)
             {
                 try
                 {
-
-                    var handler = new HttpClientHandler
-                    {
-                        Proxy = new WebProxy(new Uri("http://localhost:" + settings.PrivoxySettings.Port))
-                    };
-
-                    using (handler)
+                    using (var handler = getHttpMessageHandler())
                     using (var httpClient = new HttpClient(handler))
                     {
                         httpClient.Timeout = TimeSpan.FromSeconds(60);
