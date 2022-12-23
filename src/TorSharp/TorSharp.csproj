@@ -19,6 +19,7 @@
     <PackageProjectUrl>https://github.com/joelverhagen/TorSharp</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>
+* 2.10.0 Allow Privoxy to be disabled (.NET 6 supports SOCKS natively), fix some parallel bugs.
 * 2.9.0 Update to new Tor URLs, fixing tool fetcher, drop .NET 4.5 and add .NET 4.6.2.
 * 2.8.1 Fix potential deadlock in UI apps due to unnecessary Task.Yield.
 * 2.8.0 Add HttpTunnelPort Tor setting, use tor-win64, add .NET Framework 4.7.2 target.
