@@ -61,8 +61,11 @@ namespace Knapcode.TorSharp.Tools
                         {
                             foreach (var value in pair.Value)
                             {
-                                string newLine = _format.CreateLine(new KeyValuePair<string, string>(pair.Key, value));
-                                await writer.WriteLineAsync(newLine).ConfigureAwait(false);
+                                if (value != null)
+                                {
+                                    string newLine = _format.CreateLine(new KeyValuePair<string, string>(pair.Key, value));
+                                    await writer.WriteLineAsync(newLine).ConfigureAwait(false);
+                                }
                             }
                         }
                     }
