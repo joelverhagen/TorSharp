@@ -57,7 +57,7 @@
 * 1.0.0 Initial release.
     </PackageReleaseNotes>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Copyright>Copyright © 2021 Joel Verhagen</Copyright>
+    <Copyright>Copyright © 2022 Joel Verhagen</Copyright>
     <PackageTags>tor proxy privoxy http socks socks5 onion router https anonymize anonymous</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>

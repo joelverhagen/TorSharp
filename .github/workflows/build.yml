@@ -7,6 +7,11 @@ on:
     branches: [ release ]
   workflow_dispatch:
     inputs:
+      build_stable_version:
+        type: boolean
+        description: 'Build the stable version of the package for release'
+        required: false
+        default: false
       run_sample:
         type: boolean
         description: 'Run the sample app'
@@ -58,6 +63,8 @@ jobs:
     - name: Build (Windows)
       if: runner.os == 'Windows'
       run: .\build.ps1
+      env:
+        BUILD_STABLE_VERSION: ${{ inputs.build_stable_version }}
 
     - name: Install Privoxy dependencies (Linux)
       if: runner.os == 'Linux'

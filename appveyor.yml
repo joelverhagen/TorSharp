@@ -1,8 +1,0 @@
-image: Visual Studio 2019
-install:
-- ps: .\build\set-version.ps1
-- ps: Update-AppveyorBuild -Version $env:TorSharpVersion
-build_script:
-- ps: .\build.ps1
-test_script:
-- ps: .\test.ps1
