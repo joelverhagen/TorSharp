@@ -1,8 +1,8 @@
-﻿using Xunit;
+﻿using xRetry;
 
 namespace Knapcode.TorSharp.Tests.TestSupport
 {
-    public class PlatformFact : FactAttribute
+    public class PlatformFact : RetryFactAttribute
     {
         public PlatformFact(string osPlatform = null, string architecture = null)
         {
