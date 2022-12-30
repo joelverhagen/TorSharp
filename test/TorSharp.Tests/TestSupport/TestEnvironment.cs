@@ -51,7 +51,7 @@ namespace Knapcode.TorSharp.Tests.TestSupport
             {
                 return;
             }
-            
+
             _output.WriteLine("Disposing the test environment");
             _ports.Dispose();
             TestDirectory.Dispose();

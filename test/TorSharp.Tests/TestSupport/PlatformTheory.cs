@@ -2,7 +2,7 @@
 
 namespace Knapcode.TorSharp.Tests.TestSupport
 {
-    public class PlatformTheory: RetryTheoryAttribute
+    public class PlatformTheory : RetryTheoryAttribute
     {
         public PlatformTheory(string osPlatform = null, string architecture = null)
         {

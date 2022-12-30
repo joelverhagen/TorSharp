@@ -149,13 +149,13 @@ namespace Knapcode.TorSharp.Tools.Tor
 
             const int startOfKeyword = 4;
             var endOfKeyword = firstLine.IndexOf('=');
-            if (endOfKeyword <= startOfKeyword) 
+            if (endOfKeyword <= startOfKeyword)
             {
                 throw new TorControlException($"Invalid 250 line recieved from the GETINFO: {firstLine}");
             }
 
             var keyword = firstLine.Substring(startOfKeyword, endOfKeyword - startOfKeyword);
-            
+
             switch (firstLine[3])
             {
                 case '-':

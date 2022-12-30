@@ -28,7 +28,7 @@ namespace Knapcode.TorSharp.Tools
         public VirtualDesktopToolRunner(TorSharpSettings settings)
         {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
-            
+
             if (_settings.VirtualDesktopName == null)
             {
                 using (var hash = SHA256.Create())
@@ -48,7 +48,8 @@ namespace Knapcode.TorSharp.Tools
             // embrace the madness -- it seems Windows always wants exactly one instance of "ctfmon.exe" in the new desktop
             var ctfmonStartInfo = new ProcessStartInfo
             {
-                FileName = "ctfmon.exe", WorkingDirectory = "."
+                FileName = "ctfmon.exe",
+                WorkingDirectory = "."
             };
             var ctfmonProcess = WindowsUtility.CreateProcess(ctfmonStartInfo, _settings.VirtualDesktopName, throwOnError: false);
             if (ctfmonProcess != null)
@@ -90,10 +91,10 @@ namespace Knapcode.TorSharp.Tools
 
                         var jobHandle = new SafeJobHandle(handle);
 
-                        var basic = new WindowsApi.JOBOBJECT_BASIC_LIMIT_INFORMATION {LimitFlags = WindowsApi.JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE};
-                        var extended = new WindowsApi.JOBOBJECT_EXTENDED_LIMIT_INFORMATION {BasicLimitInformation = basic};
+                        var basic = new WindowsApi.JOBOBJECT_BASIC_LIMIT_INFORMATION { LimitFlags = WindowsApi.JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE };
+                        var extended = new WindowsApi.JOBOBJECT_EXTENDED_LIMIT_INFORMATION { BasicLimitInformation = basic };
 
-                        int length = Marshal.SizeOf(typeof (WindowsApi.JOBOBJECT_EXTENDED_LIMIT_INFORMATION));
+                        int length = Marshal.SizeOf(typeof(WindowsApi.JOBOBJECT_EXTENDED_LIMIT_INFORMATION));
                         IntPtr extendedPointer = Marshal.AllocHGlobal(length);
                         Marshal.StructureToPtr(extended, extendedPointer, false);
 

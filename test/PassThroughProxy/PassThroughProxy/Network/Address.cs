@@ -21,14 +21,14 @@
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != GetType()) return false;
-            return Equals((Address) obj);
+            return Equals((Address)obj);
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                return ((Hostname?.GetHashCode() ?? 0)*397) ^ Port;
+                return ((Hostname?.GetHashCode() ?? 0) * 397) ^ Port;
             }
         }
     }

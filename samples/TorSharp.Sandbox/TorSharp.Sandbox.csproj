@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFrameworks Condition="'$(CoreOnly)' != 'true'">net462;net472;net6.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(CoreOnly)' == 'true'">net6.0</TargetFrameworks>
+    <IsPackable>false</IsPackable>
     <AssemblyName>Knapcode.TorSharp.Sandbox</AssemblyName>
     <RootNamespace>Knapcode.TorSharp.Sandbox</RootNamespace>
     <SignAssembly>true</SignAssembly>

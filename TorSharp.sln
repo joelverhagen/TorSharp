@@ -24,23 +24,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PassThroughProxy", "test\Pa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TorSharp.Tests", "test\TorSharp.Tests\TorSharp.Tests.csproj", "{D92586EE-E235-4597-A386-FC8A62A0006E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{87FF3FC0-F1BE-4EAE-B2AE-E7F0BE56F049}"
-	ProjectSection(SolutionItems) = preProject
-		build\common.ps1 = build\common.ps1
-		build\set-version.ps1 = build\set-version.ps1
-		build\version.txt = build\version.txt
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6705490B-3ABC-406B-BD3D-73B5A26E08B9}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		.gitignore = .gitignore
-		build.ps1 = build.ps1
 		Directory.Build.props = Directory.Build.props
 		global.json = global.json
 		LICENSE = LICENSE
-		packages.config = packages.config
 		README.md = README.md
-		test.ps1 = test.ps1
 		TorSharp.snk = TorSharp.snk
 	EndProjectSection
 EndProject
@@ -57,7 +48,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MultipleInstances", "sample
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomLogging", "samples\CustomLogging\CustomLogging.csproj", "{4B26C075-3E0A-4DA3-9238-C0CD51248D47}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp", "test\TestApp\TestApp.csproj", "{14AFBABA-166A-4405-B28C-7DEA0FA55718}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestApp", "test\TestApp\TestApp.csproj", "{14AFBABA-166A-4405-B28C-7DEA0FA55718}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

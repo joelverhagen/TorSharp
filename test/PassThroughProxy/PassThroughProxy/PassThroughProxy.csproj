@@ -1,8 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks Condition="'$(CoreOnly)' != 'true'">netstandard1.3;net462;net472</TargetFrameworks>
-    <TargetFrameworks Condition="'$(CoreOnly)' == 'true'">netstandard1.3</TargetFrameworks>
+    <TargetFrameworks Condition="'$(CoreOnly)' != 'true'">net6.0;net462;net472</TargetFrameworks>
+    <TargetFrameworks Condition="'$(CoreOnly)' == 'true'">net6.0</TargetFrameworks>
+    <IsPackable>false</IsPackable>
     <RootNamespace>Proxy</RootNamespace>
     <PackageId>PassThroughProxy</PackageId>
     <Authors>Ahmed Agabani, Joel Verhagen</Authors>

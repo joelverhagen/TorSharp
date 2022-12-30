@@ -35,7 +35,7 @@ namespace Knapcode.TorSharp.Tools
             }
 
             Process process = Process.Start(startInfo);
-            
+
             process.OutputDataReceived += (object sender, DataReceivedEventArgs e) =>
             {
                 Stdout?.Invoke(this, new DataEventArgs(tool.ExecutablePath, e.Data));

@@ -34,35 +34,37 @@ jobs:
           - ubuntu-22.04
           - ubuntu-20.04
           - ubuntu-18.04
+        include:
+          - platform_target: x64
+          - os: windows-2022
+            platform_target: x86
+          - os: windows-2019
+            platform_target: x86
+           
     env:
       TORSHARP_TEST_CACHE: ${{ github.workspace }}/tests/cache
+      PlatformTarget: ${{ matrix.platform_target }}
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Cache test downloads
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: tests/cache
-        key: ${{ matrix.os }}-torsharp-test
+        key: ${{ matrix.os }}-${{ matrix.platform_target }}-torsharp-test
 
-    - name: Setup .NET 6.0
-      uses: actions/setup-dotnet@v1
+    - name: Setup .NET 7.0
+      uses: actions/setup-dotnet@v3
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 7.0.x
 
-    - name: Restore (Linux)
-      if: runner.os == 'Linux'
+    - name: Restore
       run: dotnet restore
 
-    - name: Build (Linux)
-      if: runner.os == 'Linux'
+    - name: Build
       run: dotnet build --configuration Release --no-restore
-
-    - name: Build (Windows)
-      if: runner.os == 'Windows'
-      run: .\build.ps1
       env:
         BUILD_STABLE_VERSION: ${{ inputs.build_stable_version }}
 
@@ -89,23 +91,20 @@ jobs:
       if: ${{ runner.os == 'Linux' && github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
       uses: mxschmitt/action-tmate@v3
 
-    - name: Test (Linux)
-      if: runner.os == 'Linux'
-      run: dotnet test --no-restore --verbosity normal
-
-    - name: Test (Windows)
-      if: runner.os == 'Windows'
-      run: .\test.ps1
+    - name: Test
+      run: dotnet test --no-restore --no-build --logger "console;verbosity=normal"
+    
+    - name: Pack
+      run: dotnet pack --no-restore --no-build
 
     - name: Upload artifacts
       if: matrix.os == 'windows-2022'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: packages
         path: |
-          artifacts/TorSharp/TorSharp/bin/Release/*.nupkg
-          artifacts/TorSharp/TorSharp/bin/Release/*.snupkg
+          src/TorSharp/bin/Release/*.nupkg
 
     - name: Push artifacts
       if: matrix.os == 'windows-2022' && github.event_name == 'push'
-      run: dotnet nuget push artifacts\TorSharp\TorSharp\bin\Release\*.nupkg -s https://nuget.pkg.github.com/joelverhagen/index.json -k ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
+      run: dotnet nuget push src/TorSharp/bin/Release/*.nupkg -s https://nuget.pkg.github.com/joelverhagen/index.json -k ${{ secrets.GITHUB_TOKEN }} --skip-duplicate

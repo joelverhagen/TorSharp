@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
 	<TargetFrameworks Condition="'$(CoreOnly)' != 'true'">net462;net472;net6.0</TargetFrameworks>
 	<TargetFrameworks Condition="'$(CoreOnly)' == 'true'">net6.0</TargetFrameworks>
+	<IsPackable>false</IsPackable>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>10.0</LangVersion>

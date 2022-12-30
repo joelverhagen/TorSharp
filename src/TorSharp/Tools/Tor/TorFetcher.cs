@@ -48,7 +48,7 @@ namespace Knapcode.TorSharp.Tools.Tor
                 {
                     pattern = @"tor-expert-bundle-(?<Version>[\d\.]+)-windows-i686\.tar\.gz$";
                 }
-                else if(_settings.Architecture == TorSharpArchitecture.X64)
+                else if (_settings.Architecture == TorSharpArchitecture.X64)
                 {
                     pattern = @"tor-expert-bundle-(?<Version>[\d\.]+)-windows-x86_64\.tar\.gz$";
                 }

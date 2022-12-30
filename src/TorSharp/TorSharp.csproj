@@ -11,8 +11,7 @@
     <AssemblyOriginatorKeyFile>..\..\TorSharp.snk</AssemblyOriginatorKeyFile>
 
     <PackageId>Knapcode.TorSharp</PackageId>
-    <Version Condition="'$(TorSharpVersion)' != ''">$(TorSharpVersion)</Version>
-    <Version Condition="'$(TorSharpVersion)' == ''">1.0.0-local</Version>
+    <Version>$(TorSharpVersion)</Version>
     <Authors>Joel Verhagen</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>Use Tor for your C# HTTP clients. Use Privoxy or .NET 6+ SOCKS support to proxy HTTP traffic.</Description>
@@ -60,7 +59,6 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <Copyright>Copyright © 2022 Joel Verhagen</Copyright>
     <PackageTags>tor proxy privoxy http socks socks5 onion router https anonymize anonymous</PackageTags>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <DebugType>embedded</DebugType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -94,6 +92,18 @@
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="System.ServiceModel.Syndication" Version="6.0.0" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <BeforePack>OutputVersion</BeforePack>
+  </PropertyGroup>
+
+  <Target Name="OutputVersion">
+    <Message Text="TorSharp version: $(TorSharpVersion)" Importance="high" />
+  </Target>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\z\Git\joelverhagen\TorSharp\src\TorSharp\.editorconfig" />
   </ItemGroup>
 
 </Project>

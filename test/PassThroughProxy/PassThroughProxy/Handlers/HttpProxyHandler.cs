@@ -95,7 +95,7 @@ namespace Proxy.Handlers
 
             do
             {
-                bytesRead = await client.ReadAsync(buffer, 0, contentLength > BufferSize ? BufferSize : (int) contentLength);
+                bytesRead = await client.ReadAsync(buffer, 0, contentLength > BufferSize ? BufferSize : (int)contentLength);
                 await host.WriteAsync(buffer, 0, bytesRead);
                 contentLength -= bytesRead;
             } while (bytesRead > 0 && contentLength > 0);

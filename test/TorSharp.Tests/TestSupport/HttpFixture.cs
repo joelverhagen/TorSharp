@@ -53,7 +53,7 @@ namespace Knapcode.TorSharp.Tests.TestSupport
             }
 
             public void Report(DownloadProgress current)
-            { 
+            {
                 lock (_lock)
                 {
                     int? previousPercent;

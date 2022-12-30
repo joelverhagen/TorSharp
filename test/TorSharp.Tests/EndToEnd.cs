@@ -372,7 +372,7 @@ namespace Knapcode.TorSharp.Tests
 
                 // get the first identity
                 var ipA = await GetCurrentIpAddressAsync(proxy, settings);
-                
+
                 if (barrier != null)
                 {
                     barrier.SignalAndWait();

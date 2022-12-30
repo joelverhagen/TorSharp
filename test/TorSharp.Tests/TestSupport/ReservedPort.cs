@@ -39,7 +39,7 @@ namespace Knapcode.TorSharp.Tests.TestSupport
             while (port < ushort.MaxValue)
             {
                 port++;
-                
+
                 lock (Lock)
                 {
                     if (ReservedPorts.Contains(port))

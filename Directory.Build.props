@@ -1,16 +1,17 @@
 <Project>
-  <Import Project="$([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../'))"
-          Condition="exists($([MSBuild]::GetPathOfFileAbove('Directory.Build.props', '$(MSBuildThisFileDirectory)../')))" />
   <PropertyGroup>
-  	<ArtifactsDirectory Condition="'$(ArtifactsDirectory)' == ''">$(MSBuildThisFileDirectory)artifacts</ArtifactsDirectory>
-  	<SolutionName Condition="'$(SolutionName)' == ''">TorSharp</SolutionName>
-    <_ProjectArtifactsDirectory>$(ArtifactsDirectory)\$(SolutionName)\$(MSBuildProjectName)\</_ProjectArtifactsDirectory>
-    <BaseIntermediateOutputPath>$(_ProjectArtifactsDirectory)obj\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(Configuration)\</IntermediateOutputPath>
-    <BaseOutputPath>$(_ProjectArtifactsDirectory)bin\</BaseOutputPath>
-    <OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup>
+    <TorSharpStableVersion>2.10.0</TorSharpStableVersion>
+
+    <BranchVersionLabel Condition="'$(BranchVersionLabel)' == '' and '$(GITHUB_HEAD_REF)' != ''">$(GITHUB_HEAD_REF)</BranchVersionLabel>
+    <BranchVersionLabel Condition="'$(BranchVersionLabel)' == '' and '$(GITHUB_REF)' != ''">$(GITHUB_REF)</BranchVersionLabel>
+    <BranchVersionLabel Condition="'$(BranchVersionLabel)' != ''">$([System.Text.RegularExpressions.Regex]::Replace("$(BranchVersionLabel)", "^(.+/)?([^/]+)$", "ci.$2"))</BranchVersionLabel>
+    <BranchVersionLabel Condition="'$(BranchVersionLabel)' == ''">local</BranchVersionLabel>
+
+    <BuildVersionLabel Condition="'$(BuildVersionLabel)' == '' and '$(GITHUB_RUN_NUMBER)' != ''">.$(GITHUB_RUN_NUMBER)</BuildVersionLabel>
+
+    <TorSharpVersion Condition="$(BUILD_STABLE_VERSION) == 'true'">$(TorSharpStableVersion)</TorSharpVersion>
+    <TorSharpVersion Condition="'$(TorSharpVersion)' == ''">$(TorSharpStableVersion)-$(BranchVersionLabel)$(BuildVersionLabel)</TorSharpVersion>
+
     <CoreOnly Condition="'$(CoreOnly)' == '' and !$([MSBuild]::IsOSPlatform('Windows'))">true</CoreOnly>
   </PropertyGroup>
 </Project>

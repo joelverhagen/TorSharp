@@ -20,7 +20,7 @@ namespace Knapcode.TorSharp.Tools
         {
             // convert the settings to a dictionary
             var dictionary = _configurationDictionary.GetDictionary(tool, settings);
-            
+
             // write the new settings
             string temporaryPath = null;
             try
@@ -85,7 +85,7 @@ namespace Knapcode.TorSharp.Tools
                     // Backup the last config.
                     File.Move(tool.ConfigurationPath, backupPath);
                 }
-                
+
                 // create configuration directory if it's missing
                 string configurationDirectory = Path.GetDirectoryName(tool.ConfigurationPath);
                 if (configurationDirectory != null && !Directory.Exists(configurationDirectory))
