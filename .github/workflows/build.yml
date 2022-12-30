@@ -29,7 +29,12 @@ jobs:
       matrix:
         os:
           [windows-2022, windows-2019, ubuntu-22.04, ubuntu-20.04, ubuntu-18.04]
-        platform_target: [x64, x86]
+        platform_target: [x64]
+        include:
+          - os: windows-2022
+            platform_target: x86
+          - os: windows-2019
+            platform_target: x86
 
     runs-on: ${{ matrix.os }}
 
@@ -47,7 +52,7 @@ jobs:
           path: tests/cache
           key: ${{ matrix.os }}-${{ matrix.platform_target }}-torsharp-test
 
-      - name: Setup .NET 7.0
+      - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 7.0.x
@@ -79,7 +84,7 @@ jobs:
           date
           dotnet run --project samples/TorSharp.Sandbox --framework net6.0
 
-      - name: Setup tmate session
+      - name: Setup tmate session (Linux)
         if: ${{ runner.os == 'Linux' && github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
         uses: mxschmitt/action-tmate@v3
 
