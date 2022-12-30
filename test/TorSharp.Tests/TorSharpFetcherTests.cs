@@ -42,7 +42,7 @@ namespace Knapcode.TorSharp.Tests
                 using (var proxy = new TorSharpProxy(settings))
                 {
                     _output.WriteLine(settings);
-                    var fetcher = _httpFixture.GetTorSharpToolFetcher(settings, httpClient);
+                    var fetcher = _httpFixture.GetTorSharpToolFetcher(_output, settings, httpClient);
 
                     // Act
                     var updates = await fetcher.CheckForUpdatesAsync();
@@ -73,7 +73,7 @@ namespace Knapcode.TorSharp.Tests
                 using (var proxy = new TorSharpProxy(settings))
                 {
                     _output.WriteLine(settings);
-                    var fetcher = _httpFixture.GetTorSharpToolFetcher(settings, httpClient);
+                    var fetcher = _httpFixture.GetTorSharpToolFetcher(_output, settings, httpClient);
                     var initial = await fetcher.CheckForUpdatesAsync();
                     await fetcher.FetchAsync(initial);
 
@@ -121,12 +121,12 @@ namespace Knapcode.TorSharp.Tests
                 using (var proxy = new TorSharpProxy(settings))
                 {
                     _output.WriteLine(settings);
-                    var fetcherA = _httpFixture.GetTorSharpToolFetcher(settings, httpClient);
+                    var fetcherA = _httpFixture.GetTorSharpToolFetcher(_output, settings, httpClient);
                     await fetcherA.FetchAsync();
                     var requestCount = requestCountHandler.RequestCount;
 
                     // Act
-                    var fetcherB = _httpFixture.GetTorSharpToolFetcher(settings, httpClient);
+                    var fetcherB = _httpFixture.GetTorSharpToolFetcher(_output, settings, httpClient);
                     await fetcherB.FetchAsync();
 
                     // Assert

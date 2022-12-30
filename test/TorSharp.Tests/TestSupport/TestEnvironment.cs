@@ -10,63 +10,38 @@ namespace Knapcode.TorSharp.Tests.TestSupport
         private readonly ReservedPorts _ports;
         private bool _disposed;
         private readonly ITestOutputHelper _output;
-        private string _baseDirectory;
-        private bool _deleteOnDispose;
 
-        private TestEnvironment(ITestOutputHelper output, string torControlPassword, string baseDirectory, ReservedPorts ports)
+        private TestEnvironment(ITestOutputHelper output, TestDirectory testDirectory, ReservedPorts ports)
         {
             _output = output;
-            _baseDirectory = baseDirectory;
-            _torControlPassword = torControlPassword;
+            TestDirectory = testDirectory;
+            _torControlPassword = Guid.NewGuid().ToString();
             _ports = ports;
             _disposed = false;
-            _deleteOnDispose = true;
         }
 
-        public bool DeleteOnDispose
-        {
-            get { return _deleteOnDispose; }
-            set
-            {
-                ThrowIfDisposed();
-                _deleteOnDispose = value;
-            }
-        }
-
-        public string BaseDirectory
-        {
-            get
-            {
-                ThrowIfDisposed();
-                return _baseDirectory;
-            }
-
-            set
-            {
-                ThrowIfDisposed();
-                _baseDirectory = value;
-            }
-        }
+        public TestDirectory TestDirectory { get; }
 
         public TorSharpSettings BuildSettings()
         {
             ThrowIfDisposed();
             return new TorSharpSettings
             {
-                ZippedToolsDirectory = Path.Combine(BaseDirectory, "Zipped"),
-                ExtractedToolsDirectory = Path.Combine(BaseDirectory, "Extracted"),
+                ZippedToolsDirectory = Path.Combine(TestDirectory.Path, "Zipped"),
+                ExtractedToolsDirectory = Path.Combine(TestDirectory.Path, "Extracted"),
                 PrivoxySettings =
                 {
                     Port = _ports.Ports[0],
                 },
                 TorSettings =
                 {
-                    DataDirectory = Path.Combine(BaseDirectory, "TorData"),
+                    DataDirectory = Path.Combine(TestDirectory.Path, "TorData"),
                     SocksPort = _ports.Ports[1],
                     ControlPort = _ports.Ports[2],
                     ControlPassword = _torControlPassword,
                 },
-                ReloadTools = true
+                ReloadTools = true,
+                WriteToConsole = false,
             };
         }
 
@@ -78,22 +53,9 @@ namespace Knapcode.TorSharp.Tests.TestSupport
             }
             
             _output.WriteLine("Disposing the test environment");
-
-            _disposed = true;
             _ports.Dispose();
-
-            if (_deleteOnDispose)
-            {
-                try
-                {
-                    Directory.Delete(_baseDirectory, true);
-                }
-                catch(Exception e)
-                {
-                    // not much we can do
-                    _output.WriteLine($"Error when deleting when the test environment:{Environment.NewLine}{e}");
-                }
-            }
+            TestDirectory.Dispose();
+            _disposed = true;
         }
 
         private void ThrowIfDisposed()
@@ -106,16 +68,15 @@ namespace Knapcode.TorSharp.Tests.TestSupport
 
         public static TestEnvironment Initialize(ITestOutputHelper output)
         {
-            var guid = Guid.NewGuid().ToString("N");
-            var baseDirectory = Path.Combine(Path.GetTempPath(), "Knapcode.TorSharp.Tests", guid);
-            output.WriteLine($"Initializing test environment in base directory: {baseDirectory}");
+            var testDirectory = new TestDirectory(output);
+            output.WriteLine($"Initializing test environment in base directory: {testDirectory}");
 
             var ports = ReservedPorts.Reserve(3);
             output.WriteLine($"Reserved ports: {string.Join(", ", ports.Ports)}");
 
-            Directory.CreateDirectory(baseDirectory);
+            Directory.CreateDirectory(testDirectory);
 
-            return new TestEnvironment(output, guid, baseDirectory, ports);
+            return new TestEnvironment(output, testDirectory, ports);
         }
     }
 }

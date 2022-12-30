@@ -57,6 +57,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MultipleInstances", "sample
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CustomLogging", "samples\CustomLogging\CustomLogging.csproj", "{4B26C075-3E0A-4DA3-9238-C0CD51248D47}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestApp", "test\TestApp\TestApp.csproj", "{14AFBABA-166A-4405-B28C-7DEA0FA55718}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +93,10 @@ Global
 		{4B26C075-3E0A-4DA3-9238-C0CD51248D47}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4B26C075-3E0A-4DA3-9238-C0CD51248D47}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4B26C075-3E0A-4DA3-9238-C0CD51248D47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14AFBABA-166A-4405-B28C-7DEA0FA55718}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14AFBABA-166A-4405-B28C-7DEA0FA55718}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14AFBABA-166A-4405-B28C-7DEA0FA55718}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14AFBABA-166A-4405-B28C-7DEA0FA55718}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -106,6 +112,7 @@ Global
 		{B83B3E72-C9BA-4802-B6B0-44F341FE4FEB} = {503A5E9E-0307-4126-A2B9-5884115FAE47}
 		{A3C8736B-FAF7-48B6-9749-32AE274713CA} = {503A5E9E-0307-4126-A2B9-5884115FAE47}
 		{4B26C075-3E0A-4DA3-9238-C0CD51248D47} = {503A5E9E-0307-4126-A2B9-5884115FAE47}
+		{14AFBABA-166A-4405-B28C-7DEA0FA55718} = {ED4E2334-05F6-4CF4-BAE7-0C11BBD397DB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C9D31863-62E3-48E8-AF13-1E5EE3A20A37}
