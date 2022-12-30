@@ -5,6 +5,8 @@ namespace Knapcode.TorSharp.PInvoke
 {
     internal static partial class WindowsApi
     {
+        public static uint JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x2000;
+
         [DllImport("kernel32.dll")]
         public static extern IntPtr CreateJobObject(IntPtr lpJobAttributes, string lpName);
 
@@ -14,11 +16,8 @@ namespace Knapcode.TorSharp.PInvoke
         [DllImport("kernel32.dll")]
         public static extern bool AssignProcessToJobObject(IntPtr hJob, IntPtr hProcess);
 
-
         [DllImport("kernel32.dll")]
         public static extern bool TerminateJobObject(IntPtr hJob, uint uExitCode);
-
-        public static uint JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x2000;
 
         public enum JOBOBJECTINFOCLASS
         {
@@ -72,7 +71,7 @@ namespace Knapcode.TorSharp.PInvoke
         {
             public uint nLength;
             public IntPtr lpSecurityDescriptor;
-            public int bInheritHandle;
+            public bool bInheritHandle;
         }
     }
 }

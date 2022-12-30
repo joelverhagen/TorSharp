@@ -7,9 +7,9 @@ namespace Knapcode.TorSharp.PInvoke
 {
     internal static partial class WindowsApi
     {
-        public const uint INFINITE = 0xFFFFFFFF;
-        public const uint WAIT_ABANDONED = 0x00000080;
-        public const uint WAIT_TIMEOUT = 0x00000102;
+        public const int HANDLE_FLAG_INHERIT = 0x00000001;
+        public const int STARTF_USESTDHANDLES = 0x00000100;
+        public const int NORMAL_PRIORITY_CLASS = 0x00000020;
 
         [DllImport("kernel32.dll")]
         public static extern bool CloseHandle(IntPtr hObject);
@@ -29,6 +29,12 @@ namespace Knapcode.TorSharp.PInvoke
             string lpCurrentDirectory,
             ref STARTUPINFO lpStartupInfo,
             ref PROCESS_INFORMATION lpProcessInformation);
+
+        [DllImport("kernel32.dll")]
+        public static extern bool CreatePipe(ref IntPtr hReadPipe, ref IntPtr hWritePipe, ref SECURITY_ATTRIBUTES lpPipeAttributes, int nSize);
+
+        [DllImport("kernel32.dll")]
+        public static extern bool SetHandleInformation(IntPtr hObject, int dwMask, int dwFlags);
 
         [StructLayout(LayoutKind.Sequential)]
         public struct PROCESS_INFORMATION
@@ -65,44 +71,141 @@ namespace Knapcode.TorSharp.PInvoke
 
     internal static partial class WindowsUtility
     {
-        public static WindowsApi.PROCESS_INFORMATION CreateProcess(ProcessStartInfo startInfo, string desktopName = null, int? millisecondsToWait = 100)
+        public static RedirectedProcess CreateProcess(
+            ProcessStartInfo startInfo,
+            string desktopName = null,
+            int? millisecondsToWait = 100,
+            bool throwOnError = true,
+            Action<string> onStdout = null,
+            Action<string> onStderr = null)
         {
             var startupInfo = new WindowsApi.STARTUPINFO();
             startupInfo.cb = Marshal.SizeOf(startupInfo);
             startupInfo.lpDesktop = desktopName;
+            startupInfo.dwFlags = WindowsApi.STARTF_USESTDHANDLES;
 
+            var parentStdout = IntPtr.Zero;
+            var childStdout = IntPtr.Zero;
+            var parentStderr = IntPtr.Zero;
+            var childStderr = IntPtr.Zero;
             var processInformation = new WindowsApi.PROCESS_INFORMATION();
+            FileStreamEventEmitter stdout = null;
+            FileStreamEventEmitter stderr = null;
 
-            string command = startInfo.FileName + " " + startInfo.Arguments;
-
-            bool result = WindowsApi.CreateProcess(null,
-                command,
-                IntPtr.Zero,
-                IntPtr.Zero,
-                true,
-                WindowsApi.NORMAL_PRIORITY_CLASS,
-                IntPtr.Zero,
-                startInfo.WorkingDirectory,
-                ref startupInfo,
-                ref processInformation);
-
-            if (result)
+            try
             {
-                if (millisecondsToWait.HasValue)
+                if (onStdout != null)
                 {
-                    WindowsApi.WaitForInputIdle(processInformation.hProcess, (uint) millisecondsToWait.Value);
+                    CreatePipe(out parentStdout, out childStdout);
+                    startupInfo.hStdOutput = childStdout;
                 }
 
-                WindowsApi.CloseHandle(processInformation.hThread);
-                return processInformation;
+                if (onStderr != null)
+                {
+                    CreatePipe(out parentStderr, out childStderr);
+                    startupInfo.hStdError = childStderr;
+                }
+
+                string command = startInfo.FileName + " " + startInfo.Arguments;
+
+                bool result = WindowsApi.CreateProcess(null,
+                    command,
+                    IntPtr.Zero,
+                    IntPtr.Zero,
+                    true,
+                    WindowsApi.NORMAL_PRIORITY_CLASS,
+                    IntPtr.Zero,
+                    startInfo.WorkingDirectory,
+                    ref startupInfo,
+                    ref processInformation);
+
+                if (result)
+                {
+                    if (millisecondsToWait.HasValue)
+                    {
+                        WindowsApi.WaitForInputIdle(processInformation.hProcess, (uint)millisecondsToWait.Value);
+                    }
+
+                    if (onStdout != null)
+                    {
+                        stdout = new FileStreamEventEmitter(parentStdout, onStdout);
+                    }
+
+                    if (onStderr != null)
+                    {
+                        stderr = new FileStreamEventEmitter(parentStdout, onStderr);
+                    }
+
+                    return new RedirectedProcess(processInformation, stdout, stderr);
+                }
+                else if (throwOnError)
+                {
+                    throw new TorSharpException($"Failed to start a process with command '{command}'. Error: {GetLastErrorMessage()}");
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch
+            {
+                CloseHandle(parentStdout);
+                CloseHandle(parentStderr);
+                CloseHandle(processInformation.hProcess);
+                throw;
+            }
+            finally
+            {
+                CloseHandle(childStdout);
+                CloseHandle(childStderr);
+            }
+        }
+
+        internal static void CreatePipe(out IntPtr readHandle, out IntPtr writeHandle)
+        {
+            readHandle = IntPtr.Zero;
+            writeHandle = IntPtr.Zero;
+            var securityAttributes = new WindowsApi.SECURITY_ATTRIBUTES();
+            securityAttributes.bInheritHandle = true;
+
+            if (!WindowsApi.CreatePipe(ref readHandle, ref writeHandle, ref securityAttributes, nSize: 0))
+            {
+                throw new TorSharpException($"Failed to create a pipe. Error: {GetLastErrorMessage()}");
             }
 
-            return new WindowsApi.PROCESS_INFORMATION();
+            // Source: https://learn.microsoft.com/en-us/windows/win32/api/handleapi/nf-handleapi-sethandleinformation
+            const int dwMask = WindowsApi.HANDLE_FLAG_INHERIT;
+            if (!WindowsApi.SetHandleInformation(readHandle, dwMask, dwFlags: 0))
+            {
+                throw new TorSharpException($"Failed to set handle information on a pipe. Error: {GetLastErrorMessage()}");
+            }
+        }
+
+        internal static void CloseHandle(IntPtr handle)
+        {
+            if (handle != IntPtr.Zero)
+            {
+                WindowsApi.CloseHandle(handle);
+            }
         }
 
         public static string GetLastErrorMessage()
         {
             return new Win32Exception(Marshal.GetLastWin32Error()).Message;
         }
+    }
+
+    internal class RedirectedProcess
+    {
+        public RedirectedProcess(WindowsApi.PROCESS_INFORMATION process, FileStreamEventEmitter stdout, FileStreamEventEmitter stderr)
+        {
+            ProcessInformation = process;
+            Stdout = stdout;
+            Stderr = stderr;
+        }
+
+        public WindowsApi.PROCESS_INFORMATION ProcessInformation { get; }
+        public FileStreamEventEmitter Stdout { get; }
+        public FileStreamEventEmitter Stderr { get; }
     }
 }
