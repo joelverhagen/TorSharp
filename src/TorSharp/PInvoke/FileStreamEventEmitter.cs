@@ -8,36 +8,35 @@ namespace Knapcode.TorSharp.PInvoke
 {
     internal class FileStreamEventEmitter : IDisposable
     {
-        private readonly FileStream _fileStream;
-        private readonly StreamReader _streamReader;
+        private FileStream _fileStream;
+        private StreamReader _streamReader;
         private readonly CancellationTokenSource _cts;
         private readonly Action<string> _onData;
 
         public FileStreamEventEmitter(IntPtr handle, Action<string> onData)
         {
-            _fileStream = new FileStream(new SafeFileHandle(handle, ownsHandle: true), FileAccess.Read);
-            _streamReader = new StreamReader(_fileStream);
             _cts = new CancellationTokenSource();
             _onData = onData;
-            var _ = ReadAsync();
-        }
-
-        private async Task ReadAsync()
-        {
-            string line;
-            do
+            var _ = Task.Run(async () =>
             {
-                try
+                _fileStream = new FileStream(new SafeFileHandle(handle, ownsHandle: true), FileAccess.Read);
+                _streamReader = new StreamReader(_fileStream);
+
+                string line;
+                do
                 {
-                    line = await _streamReader.ReadLineAsync().ConfigureAwait(false);
-                    _onData(line);
+                    try
+                    {
+                        line = await _streamReader.ReadLineAsync().ConfigureAwait(false);
+                        _onData(line);
+                    }
+                    catch (Exception)
+                    {
+                        break;
+                    }
                 }
-                catch (Exception)
-                {
-                    break;
-                }
-            }
-            while (!_cts.IsCancellationRequested && line != null);
+                while (!_cts.IsCancellationRequested && line != null);
+            });
         }
 
         public void Dispose()
