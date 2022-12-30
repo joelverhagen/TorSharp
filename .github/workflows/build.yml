@@ -95,7 +95,7 @@ jobs:
         run: dotnet pack --configuration Release --no-restore --no-build
 
       - name: Upload artifacts
-        if: matrix.os == 'windows-2022' && matrix.platform_target = 'x64'
+        if: matrix.os == 'windows-2022' && matrix.platform_target == 'x64'
         uses: actions/upload-artifact@v3
         with:
           name: packages
@@ -103,5 +103,5 @@ jobs:
             src/TorSharp/bin/Release/*.nupkg
 
       - name: Push artifacts
-        if: matrix.os == 'windows-2022' && matrix.platform_target = 'x64' && github.event_name == 'push'
+        if: matrix.os == 'windows-2022' && matrix.platform_target == 'x64' && github.event_name == 'push'
         run: dotnet nuget push src/TorSharp/bin/Release/*.nupkg -s https://nuget.pkg.github.com/joelverhagen/index.json -k ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
