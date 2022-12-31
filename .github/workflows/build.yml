@@ -30,11 +30,6 @@ jobs:
         os:
           [windows-2022, windows-2019, ubuntu-22.04, ubuntu-20.04, ubuntu-18.04]
         platform_target: [x64]
-        include:
-          - os: windows-2022
-            platform_target: x86
-          - os: windows-2019
-            platform_target: x86
 
     runs-on: ${{ matrix.os }}
 
