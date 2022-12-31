@@ -84,7 +84,7 @@ jobs:
         uses: mxschmitt/action-tmate@v3
 
       - name: Test
-        run: dotnet test --configuration Release --no-restore --no-build --logger "console;verbosity=normal"
+        run: dotnet test --configuration Release --no-restore --no-build --logger "console;verbosity=normal" --blame-hang-timeout 30m
 
       - name: Pack
         run: dotnet pack --configuration Release --no-restore --no-build
