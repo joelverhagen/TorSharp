@@ -346,7 +346,7 @@ namespace Knapcode.TorSharp.Tests
                 {
                     Assert.Contains(output, x => Path.GetFileName(x.ExecutablePath).StartsWith("privoxy", StringComparison.OrdinalIgnoreCase));
                 }
-                Assert.Contains(output, x => x.Data.Contains($"Opening Socks listener on 127.0.0.1:{settings.TorSettings.SocksPort}"));
+                Assert.Contains(output, x => x != null && x.Data.Contains($"Opening Socks listener on 127.0.0.1:{settings.TorSettings.SocksPort}"));
             }
         }
 
