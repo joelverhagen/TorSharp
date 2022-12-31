@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -57,25 +58,32 @@ namespace Knapcode.TorSharp.Tests
         {
 
             // build the test app
-            ExecuteDotnet(new[]
-            {
-                "build", "\"" + ProjectDir + "\"",
-                "/p:ArtifactsDirectory=\"" + ArtifactsDir + "\"",
-                "--configuration",
+            ExecuteDotnet(
+                new[]
+                {
+                    "build", "\"" + ProjectDir + "\"",
+                    "--configuration",
 #if DEBUG
-                "Debug",
+                    "Debug",
 #else
-                "Release",
+                    "Release",
 #endif
-                "--framework", framework
-                }, ProjectDir, out _, out _);
+                    "--framework", framework
+                }, 
+                ProjectDir,
+                env: new Dictionary<string, string>
+                {
+                    { "ArtifactsDirectory", ArtifactsDir },
+                },
+                out _,
+                out _);
 
             // Act
             // run the test app
-            ExecuteDotnet(new[]
-            {
+            ExecuteDotnet(
+                new[]
+                {
                     "run", "--project", "\"" + ProjectDir + "\"",
-                    "--property ArtifactsDirectory=\"" + ArtifactsDir + "\"",
                     "--configuration", "Debug",
                     "--framework", framework,
                     "--no-restore", "--no-build",
@@ -84,7 +92,14 @@ namespace Knapcode.TorSharp.Tests
                     toolRunnerType.ToString(),
                     "\"" + ZippedDir + "\"",
                     "\"" + ExtractedDir + "\"",
-                }, ProjectDir, out var stdout, out var stderr);
+                }, 
+                ProjectDir,
+                new Dictionary<string, string>
+                {
+                    { "ArtifactsDirectory", ArtifactsDir },
+                },
+                out var stdout,
+                out var stderr);
 
             // Assert
             if (writeToConsole)
@@ -117,13 +132,17 @@ namespace Knapcode.TorSharp.Tests
             return Path.Combine(current, "test", "TestApp");
         }
 
-        private void ExecuteDotnet(string[] args, string workingDir, out ConcurrentQueue<string> stdout, out ConcurrentQueue<string> stderr)
+        private void ExecuteDotnet(string[] args, string workingDir, IReadOnlyDictionary<string, string> env, out ConcurrentQueue<string> stdout, out ConcurrentQueue<string> stderr)
         {
             var startInfo = new ProcessStartInfo("dotnet", string.Join(" ", args));
             startInfo.WorkingDirectory = workingDir;
             startInfo.UseShellExecute = false;
             startInfo.RedirectStandardOutput = true;
             startInfo.RedirectStandardError = true;
+            foreach (var pair in env)
+            {
+                startInfo.Environment[pair.Key] = pair.Value;
+            }
 
             _output.WriteLine("Starting: dotnet " + startInfo.Arguments);
             var process = Process.Start(startInfo);
