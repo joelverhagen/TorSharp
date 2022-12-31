@@ -1,11 +1,12 @@
 <Project>
   
   <PropertyGroup>
-    <ArtifactsDirectory Condition="'$(ArtifactsDirectory)' == ''">$(MSBuildThisFileDirectory)\artifacts</ArtifactsDirectory>
-    <_ProjectArtifactsDirectory>$(ArtifactsDirectory)\TorSharp\$(MSBuildProjectName)\</_ProjectArtifactsDirectory>
-    <BaseIntermediateOutputPath>$(ArtifactsDirectory)$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
+    <ArtifactsDirectory Condition="'$(ArtifactsDirectory)' == ''">$(MSBuildThisFileDirectory)artifacts\</ArtifactsDirectory>
+    <ArtifactsDirectory>$([MSBuild]::EnsureTrailingSlash($(ArtifactsDirectory)))</ArtifactsDirectory>
+    <_ProjectArtifactsDirectory>$(ArtifactsDirectory)$(MSBuildProjectName)\</_ProjectArtifactsDirectory>
+    <BaseIntermediateOutputPath>$(_ProjectArtifactsDirectory)obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(Configuration)\</IntermediateOutputPath>
-    <BaseOutputPath>$(ArtifactsDirectory)$(MSBuildProjectName)\bin\</BaseOutputPath>
+    <BaseOutputPath>$(_ProjectArtifactsDirectory)bin\</BaseOutputPath>
     <OutputPath>$(BaseOutputPath)$(Configuration)\</OutputPath>
   </PropertyGroup>
   

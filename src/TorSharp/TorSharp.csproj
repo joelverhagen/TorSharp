@@ -102,8 +102,4 @@
     <Message Text="TorSharp version: $(TorSharpVersion)" Importance="high" />
   </Target>
 
-  <ItemGroup>
-    <EditorConfigFiles Remove="C:\z\Git\joelverhagen\TorSharp\src\TorSharp\.editorconfig" />
-  </ItemGroup>
-
 </Project>
