@@ -2,8 +2,8 @@
   
   <PropertyGroup>
     <ArtifactsDirectory Condition="'$(ArtifactsDirectory)' == ''">$(MSBuildThisFileDirectory)artifacts\</ArtifactsDirectory>
-    <ArtifactsDirectory>$([MSBuild]::EnsureTrailingSlash($(ArtifactsDirectory)))</ArtifactsDirectory>
-    <_ProjectArtifactsDirectory>$(ArtifactsDirectory)$(MSBuildProjectName)\</_ProjectArtifactsDirectory>
+    <_ArtifactsDirectory>$([MSBuild]::EnsureTrailingSlash($(ArtifactsDirectory)))</_ArtifactsDirectory>
+    <_ProjectArtifactsDirectory>$(_ArtifactsDirectory)$(MSBuildProjectName)\</_ProjectArtifactsDirectory>
     <BaseIntermediateOutputPath>$(_ProjectArtifactsDirectory)obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)$(Configuration)\</IntermediateOutputPath>
     <BaseOutputPath>$(_ProjectArtifactsDirectory)bin\</BaseOutputPath>
