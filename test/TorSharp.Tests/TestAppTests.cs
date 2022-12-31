@@ -62,12 +62,7 @@ namespace Knapcode.TorSharp.Tests
                 new[]
                 {
                     "build", "\"" + ProjectDir + "\"",
-                    "--configuration",
-#if DEBUG
-                    "Debug",
-#else
-                    "Release",
-#endif
+                    "--configuration", "Debug",
                     "--framework", framework
                 }, 
                 ProjectDir,
