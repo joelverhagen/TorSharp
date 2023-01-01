@@ -70,7 +70,6 @@ namespace Knapcode.TorSharp.Tests
                 {
                     { "ArtifactsDirectory", ArtifactsDir },
                 },
-                out _,
                 out _);
 
             // Act
@@ -93,21 +92,21 @@ namespace Knapcode.TorSharp.Tests
                 {
                     { "ArtifactsDirectory", ArtifactsDir },
                 },
-                out var stdout,
-                out var stderr);
+                out var output);
 
             // Assert
             if (writeToConsole)
             {
                 // This is a line that Tor will write
-                Assert.Contains(stdout.Where(x => x != null), x => x.Contains("Opening Socks listener on 127.0.0.1"));
-                Assert.Contains(stdout.Where(x => x != null), x => x.Contains("TestApp says it's done!"));
+                Assert.Contains(output, x => x.Contains("Opening Socks listener on 127.0.0.1"));
+
+                // This is a line the test app will write
+                Assert.Contains(output, x => x.Contains("TestApp says it's done!"));
             }
             else
             {
-                // There is a single null entry per stream which signifies the EOF.
-                Assert.Equal(new[] { "TestApp says it's done!", null }, stdout.ToArray());
-                Assert.Null(Assert.Single(stderr));
+                // This is a line the test app will write
+                Assert.Equal(new[] { "TestApp says it's done!" }, output.ToArray());
             }
         }
 
@@ -127,7 +126,7 @@ namespace Knapcode.TorSharp.Tests
             return Path.Combine(current, "test", "TestApp");
         }
 
-        private void ExecuteDotnet(string[] args, string workingDir, IReadOnlyDictionary<string, string> env, out ConcurrentQueue<string> stdout, out ConcurrentQueue<string> stderr)
+        private void ExecuteDotnet(string[] args, string workingDir, IReadOnlyDictionary<string, string> env, out ConcurrentQueue<string> output)
         {
             var startInfo = new ProcessStartInfo("dotnet", string.Join(" ", args));
             startInfo.WorkingDirectory = workingDir;
@@ -142,21 +141,25 @@ namespace Knapcode.TorSharp.Tests
             _output.WriteLine("Starting: dotnet " + startInfo.Arguments);
             var process = Process.Start(startInfo);
 
-            stdout = new ConcurrentQueue<string>();
-            stderr = new ConcurrentQueue<string>();
+            output = new ConcurrentQueue<string>();
 
-            var stdoutReference = stdout;
-            var stderrReference = stderr;
+            var outputReference = output;
 
             process.OutputDataReceived += (_, e) =>
             {
                 _output.WriteLine("[stdout] " + (e.Data ?? "(null)"));
-                stdoutReference.Enqueue(e.Data);
+                if (e.Data != null)
+                {
+                    outputReference.Enqueue(e.Data);
+                }
             };
             process.ErrorDataReceived += (_, e) =>
             {
                 _output.WriteLine("[stderr] " + (e.Data ?? "(null)"));
-                stderrReference.Enqueue(e.Data);
+                if (e.Data != null)
+                {
+                    outputReference.Enqueue(e.Data);
+                }
             };
 
             process.BeginOutputReadLine();
