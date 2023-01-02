@@ -84,7 +84,7 @@ namespace Knapcode.TorSharp.Tools.Privoxy
 
             cts.Cancel();
 
-            if (results.Count == 0)
+            if (results.Count == 0 || !takeFirst)
             {
                 if (faults.Any())
                 {
