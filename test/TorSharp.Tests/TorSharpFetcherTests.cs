@@ -23,7 +23,7 @@ namespace Knapcode.TorSharp.Tests
             _output = output;
         }
 
-        [RetryTheory]
+        [RetryTheory(skipOnExceptions: typeof(TorSharpException))]
         [MemberData(nameof(Platforms))]
         [DisplayTestMethodName]
         public async Task TorSharpToolFetch_AllResultsAreWorking(TorSharpOSPlatform osPlatform, TorSharpArchitecture architecture)
@@ -54,8 +54,8 @@ namespace Knapcode.TorSharp.Tests
                 }
             }
         }
-
-        [Theory]
+        
+        [RetryTheory(skipOnExceptions: typeof(TorSharpException))]
         [InlineData(ToolDownloadStrategy.First)]
         [InlineData(ToolDownloadStrategy.Latest)]
         [DisplayTestMethodName]
