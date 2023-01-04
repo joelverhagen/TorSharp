@@ -86,6 +86,9 @@ jobs:
       - name: Test
         run: dotnet test --configuration Release --no-restore --no-build --logger "console;verbosity=normal" --blame-hang-timeout 30m
 
+      - name: Format
+        run: dotnet format --no-restore --verify-no-changes
+
       - name: Pack
         run: dotnet pack --configuration Release --no-restore --no-build
 

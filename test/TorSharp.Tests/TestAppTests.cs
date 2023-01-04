@@ -64,7 +64,7 @@ namespace Knapcode.TorSharp.Tests
                     "build", "\"" + ProjectDir + "\"",
                     "--configuration", "Debug",
                     "--framework", framework
-                }, 
+                },
                 ProjectDir,
                 env: new Dictionary<string, string>
                 {
@@ -86,7 +86,7 @@ namespace Knapcode.TorSharp.Tests
                     toolRunnerType.ToString(),
                     "\"" + ZippedDir + "\"",
                     "\"" + ExtractedDir + "\"",
-                }, 
+                },
                 ProjectDir,
                 new Dictionary<string, string>
                 {

@@ -54,7 +54,7 @@ namespace Knapcode.TorSharp.Tests
                 }
             }
         }
-        
+
         [RetryTheory(skipOnExceptions: typeof(TorSharpException))]
         [InlineData(ToolDownloadStrategy.First)]
         [InlineData(ToolDownloadStrategy.Latest)]
