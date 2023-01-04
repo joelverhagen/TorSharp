@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Knapcode.TorSharp.Tools;
+using Xunit.Abstractions;
 
 namespace Knapcode.TorSharp.Tests.TestSupport
 {
@@ -16,11 +17,13 @@ namespace Knapcode.TorSharp.Tests.TestSupport
         private static readonly Dictionary<string, SemaphoreSlim> _pathToSemaphore
             = new Dictionary<string, SemaphoreSlim>(StringComparer.OrdinalIgnoreCase);
 
+        private readonly ITestOutputHelper _output;
         private readonly ISimpleHttpClient _httpClient;
         private readonly string _cacheDirectory;
 
-        public CachingSimpleHttpClient(HttpClient httpClient, string cacheDirectory)
+        public CachingSimpleHttpClient(ITestOutputHelper output, HttpClient httpClient, string cacheDirectory)
         {
+            _output = output;
             _httpClient = new SimpleHttpClient(httpClient);
             _cacheDirectory = cacheDirectory;
         }
@@ -54,7 +57,7 @@ namespace Knapcode.TorSharp.Tests.TestSupport
                     await _httpClient.DownloadToFileAsync(requestUri, cachePath, progress);
                 }
 
-                Console.WriteLine($"Copying {cachePath} to {path}");
+                _output.WriteLine($"Copying {cachePath} to {path}");
                 File.Copy(cachePath, path, overwrite: true);
             }
             finally

@@ -159,6 +159,13 @@ namespace Knapcode.TorSharp
         public string VirtualDesktopName { get; set; }
 
         /// <summary>
+        /// Write the output of the underlying tools (Tor, Privoxy) to this process's stdout and stderr. Defaults to true.
+        /// Use the <see cref="ITorSharpProxy.OutputDataReceived"/> and <see cref="ITorSharpProxy.ErrorDataReceived"/> to
+        /// listen the output yourself.
+        /// </summary>
+        public bool WriteToConsole { get; set; } = true;
+
+        /// <summary>
         /// Settings specific to Privoxy.
         /// </summary>
         public TorSharpPrivoxySettings PrivoxySettings { get; set; }

@@ -22,6 +22,9 @@ namespace Knapcode.TorSharp
 
     public interface ITorSharpProxy : IDisposable
     {
+        event EventHandler<DataEventArgs> OutputDataReceived;
+        event EventHandler<DataEventArgs> ErrorDataReceived;
+
         Task ConfigureAsync();
         Task StartAsync();
         Task GetNewIdentityAsync();
@@ -43,6 +46,9 @@ namespace Knapcode.TorSharp
         private readonly TorPasswordHasher _torPasswordHasher;
         private Tool _tor;
         private Tool _privoxy;
+
+        public event EventHandler<DataEventArgs> OutputDataReceived;
+        public event EventHandler<DataEventArgs> ErrorDataReceived;
 
         /// <summary>
         /// Initializes an instance of the proxy controller.
@@ -67,6 +73,15 @@ namespace Knapcode.TorSharp
                     break;
                 default:
                     throw new NotImplementedException($"The '{settings.ToolRunnerType}' tool runner is not supported.");
+            }
+
+            _toolRunner.Stdout += (o, e) => OutputDataReceived?.Invoke(this, e);
+            _toolRunner.Stderr += (o, e) => ErrorDataReceived?.Invoke(this, e);
+
+            if (settings.WriteToConsole)
+            {
+                OutputDataReceived += (_, x) => Console.Out.WriteLine(x.Data);
+                ErrorDataReceived += (_, x) => Console.Error.WriteLine(x.Data);
             }
         }
 

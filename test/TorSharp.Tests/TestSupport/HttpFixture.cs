@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using Knapcode.TorSharp.Tools;
+using Xunit.Abstractions;
 
 namespace Knapcode.TorSharp.Tests.TestSupport
 {
@@ -26,27 +27,33 @@ namespace Knapcode.TorSharp.Tests.TestSupport
             Directory.CreateDirectory(_cacheDirectory);
         }
 
-        internal ISimpleHttpClient GetSimpleHttpClient(HttpClient httpClient)
+        internal ISimpleHttpClient GetSimpleHttpClient(ITestOutputHelper output, HttpClient httpClient)
         {
-            return new CachingSimpleHttpClient(httpClient, _cacheDirectory);
+            return new CachingSimpleHttpClient(output, httpClient, _cacheDirectory);
         }
 
-        public TorSharpToolFetcher GetTorSharpToolFetcher(TorSharpSettings settings, HttpClient httpClient)
+        public TorSharpToolFetcher GetTorSharpToolFetcher(ITestOutputHelper output, TorSharpSettings settings, HttpClient httpClient)
         {
             return new TorSharpToolFetcher(
                 settings,
                 httpClient,
-                GetSimpleHttpClient(httpClient),
-                new ConsoleProgress());
+                GetSimpleHttpClient(output, httpClient),
+                new ConsoleProgress(output));
         }
 
         private class ConsoleProgress : IProgress<DownloadProgress>
         {
             private readonly object _lock = new object();
             private readonly Dictionary<Guid, DownloadProgress> _previousProgress = new Dictionary<Guid, DownloadProgress>();
+            private readonly ITestOutputHelper _output;
+
+            public ConsoleProgress(ITestOutputHelper output)
+            {
+                _output = output;
+            }
 
             public void Report(DownloadProgress current)
-            { 
+            {
                 lock (_lock)
                 {
                     int? previousPercent;
@@ -74,7 +81,7 @@ namespace Knapcode.TorSharp.Tests.TestSupport
                             sb.AppendFormat(" ({0}%)", currentPercent);
                         }
 
-                        Console.WriteLine(sb.ToString());
+                        _output.WriteLine(sb.ToString());
                     }
 
                     if (current.State != DownloadProgressState.Complete)

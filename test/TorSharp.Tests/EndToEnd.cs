@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Knapcode.TorSharp.Tests.TestSupport;
+using Knapcode.TorSharp.Tools;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Proxy;
@@ -37,7 +39,7 @@ namespace Knapcode.TorSharp.Tests
             using (var te = TestEnvironment.Initialize(_output))
             {
                 // Arrange
-                te.BaseDirectory = Path.Combine(te.BaseDirectory, "Path With Spaces");
+                te.TestDirectory.Path = Path.Combine(te.TestDirectory, "Path With Spaces");
                 var settings = te.BuildSettings();
                 settings.ToolRunnerType = ToolRunnerType.VirtualDesktop;
 
@@ -63,7 +65,7 @@ namespace Knapcode.TorSharp.Tests
                 {
                     _output.WriteLine(settings);
 
-                    var fetcher = _httpFixture.GetTorSharpToolFetcher(settings, httpClient);
+                    var fetcher = _httpFixture.GetTorSharpToolFetcher(_output, settings, httpClient);
                     await fetcher.FetchAsync();
                     _output.WriteLine("The tools have been fetched");
                     await proxy.ConfigureAndStartAsync();
@@ -101,12 +103,44 @@ namespace Knapcode.TorSharp.Tests
             using (var te = TestEnvironment.Initialize(_output))
             {
                 // Arrange
-                te.BaseDirectory = Path.Combine(te.BaseDirectory, "Path With Spaces");
+                te.TestDirectory.Path = Path.Combine(te.TestDirectory, "Path With Spaces");
                 var settings = te.BuildSettings();
                 settings.ToolRunnerType = ToolRunnerType.Simple;
 
                 // Act & Assert
                 await ExecuteEndToEndTestAsync(settings);
+            }
+        }
+
+        [PlatformFact(osPlatform: nameof(TorSharpOSPlatform.Windows))]
+        [DisplayTestMethodName]
+        public async Task VirtualDesktopToolRunner_CaptureOutput()
+        {
+            using (var te = TestEnvironment.Initialize(_output))
+            {
+                // Arrange
+                var settings = te.BuildSettings();
+                settings.ToolRunnerType = ToolRunnerType.VirtualDesktop;
+                settings.WriteToConsole = false;
+
+                // Arrange
+                await ExecuteCapturedOutputTestAsync(settings);
+            }
+        }
+
+        [RetryFact]
+        [DisplayTestMethodName]
+        public async Task SimpleToolRunner_CaptureOutput()
+        {
+            using (var te = TestEnvironment.Initialize(_output))
+            {
+                // Arrange
+                var settings = te.BuildSettings();
+                settings.ToolRunnerType = ToolRunnerType.Simple;
+                settings.WriteToConsole = false;
+
+                // Act & Assert
+                await ExecuteCapturedOutputTestAsync(settings);
             }
         }
 
@@ -213,7 +247,7 @@ namespace Knapcode.TorSharp.Tests
                 {
                     _output.WriteLine(settings);
 
-                    var fetcher = _httpFixture.GetTorSharpToolFetcher(settings, httpClient);
+                    var fetcher = _httpFixture.GetTorSharpToolFetcher(_output, settings, httpClient);
                     await fetcher.FetchAsync();
                     _output.WriteLine("The tools have been fetched");
                     await proxy.ConfigureAndStartAsync();
@@ -285,6 +319,37 @@ namespace Knapcode.TorSharp.Tests
             }
         }
 
+        private async Task ExecuteCapturedOutputTestAsync(TorSharpSettings settings)
+        {
+            using (var httpClient = new HttpClient())
+            using (var proxy = new TorSharpProxy(settings))
+            {
+                var output = new ConcurrentQueue<DataEventArgs>();
+                proxy.OutputDataReceived += (_, e) => output.Enqueue(e);
+                proxy.ErrorDataReceived += (_, e) => output.Enqueue(e);
+
+                _output.WriteLine(settings);
+
+                // Act
+                var fetcher = _httpFixture.GetTorSharpToolFetcher(_output, settings, httpClient);
+                await fetcher.FetchAsync();
+                _output.WriteLine("The tools have been fetched");
+                await proxy.ConfigureAndStartAsync();
+                _output.WriteLine("The proxy has been started");
+
+                await GetCurrentIpAddressAsync(proxy, settings);
+
+                // Assert
+                Assert.NotEmpty(output);
+                Assert.Contains(output, x => Path.GetFileName(x.ExecutablePath).StartsWith("tor", StringComparison.OrdinalIgnoreCase));
+                if (settings.OSPlatform != TorSharpOSPlatform.Windows)
+                {
+                    Assert.Contains(output, x => Path.GetFileName(x.ExecutablePath).StartsWith("privoxy", StringComparison.OrdinalIgnoreCase));
+                }
+                Assert.Contains(output, x => x != null && x.Data.Contains($"Opening Socks listener on 127.0.0.1:{settings.TorSettings.SocksPort}"));
+            }
+        }
+
         private async Task ExecuteEndToEndTestAsync(TorSharpSettings settings)
         {
             await ExecuteEndToEndTestAsync(settings, barrier: null);
@@ -299,7 +364,7 @@ namespace Knapcode.TorSharp.Tests
                 _output.WriteLine(settings);
 
                 // Act
-                var fetcher = _httpFixture.GetTorSharpToolFetcher(settings, httpClient);
+                var fetcher = _httpFixture.GetTorSharpToolFetcher(_output, settings, httpClient);
                 await fetcher.FetchAsync();
                 _output.WriteLine("The tools have been fetched");
                 await proxy.ConfigureAndStartAsync();
@@ -307,7 +372,7 @@ namespace Knapcode.TorSharp.Tests
 
                 // get the first identity
                 var ipA = await GetCurrentIpAddressAsync(proxy, settings);
-                
+
                 if (barrier != null)
                 {
                     barrier.SignalAndWait();

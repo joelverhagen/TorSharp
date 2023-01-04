@@ -16,8 +16,8 @@ namespace Knapcode.TorSharp.Tests.Tools.Tor
             Environment = TestEnvironment.Initialize(output);
             Tool = new Tool
             {
-                DirectoryPath = Environment.BaseDirectory,
-                ConfigurationPath = Path.Combine(Environment.BaseDirectory, "torrc"),
+                DirectoryPath = Environment.TestDirectory,
+                ConfigurationPath = Path.Combine(Environment.TestDirectory, "torrc"),
             };
             Target = new TorConfigurationDictionary();
         }

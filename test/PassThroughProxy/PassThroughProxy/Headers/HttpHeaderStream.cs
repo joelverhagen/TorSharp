@@ -6,7 +6,7 @@ namespace Proxy.Headers
 {
     public class HttpHeaderStream
     {
-        private static readonly string[] Delimiter = {"\r", "\n", "\r", "\n"};
+        private static readonly string[] Delimiter = { "\r", "\n", "\r", "\n" };
 
         private static readonly HttpHeaderStream Self = new HttpHeaderStream();
 

@@ -27,7 +27,7 @@ namespace Knapcode.TorSharp.Tools.Tor
             }
 
             var c = 96;
-            var s2KSpecifier = salt.Concat(new[] {(byte) c}).ToArray();
+            var s2KSpecifier = salt.Concat(new[] { (byte)c }).ToArray();
 
             var EXPBIAS = 6;
             var count = (16 + (c & 15)) << ((c >> 4) + EXPBIAS);

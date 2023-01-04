@@ -21,7 +21,7 @@ namespace Proxy.Headers
 
         private static void Parse(HttpHeader self, byte[] array)
         {
-            var strings = Encoding.ASCII.GetString(array).Split(new[] {"\r\n"}, StringSplitOptions.RemoveEmptyEntries);
+            var strings = Encoding.ASCII.GetString(array).Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
 
             self.Host = GetAddress(strings);
             self.ContentLength = GetContentLength(strings);

@@ -5,16 +5,12 @@ using System.Threading.Tasks;
 
 namespace Knapcode.TorSharp.Tools
 {
-    internal class SimpleToolRunner : IToolRunner, IDisposable
+    internal class SimpleToolRunner : IToolRunner
     {
-        private static readonly Task CompletedTask = Task.FromResult(0);
-        private bool _disposed;
         private readonly ConcurrentBag<Process> _processes = new ConcurrentBag<Process>();
 
-        ~SimpleToolRunner()
-        {
-            Dispose(false);
-        }
+        public event EventHandler<DataEventArgs> Stdout;
+        public event EventHandler<DataEventArgs> Stderr;
 
         public Task StartAsync(Tool tool)
         {
@@ -39,15 +35,15 @@ namespace Knapcode.TorSharp.Tools
             }
 
             Process process = Process.Start(startInfo);
-            
+
             process.OutputDataReceived += (object sender, DataReceivedEventArgs e) =>
             {
-                Console.WriteLine(e.Data);
+                Stdout?.Invoke(this, new DataEventArgs(tool.ExecutablePath, e.Data));
             };
 
             process.ErrorDataReceived += (object sender, DataReceivedEventArgs e) =>
             {
-                Console.Error.WriteLine(e.Data);
+                Stderr?.Invoke(this, new DataEventArgs(tool.ExecutablePath, e.Data));
             };
 
             process.BeginOutputReadLine();
@@ -60,7 +56,7 @@ namespace Knapcode.TorSharp.Tools
 
             _processes.Add(process);
 
-            return CompletedTask;
+            return Task.CompletedTask;
         }
 
         public void Stop()
@@ -91,34 +87,9 @@ namespace Knapcode.TorSharp.Tools
             }
         }
 
-        void IDisposable.Dispose()
+        public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_disposed)
-            {
-                return;
-            }
-
-            if (disposing)
-            {
-                try
-                {
-                    Stop();
-                }
-                catch
-                {
-                    // Not much can be done, but must stop this bubbling.
-                }
-            }
-
-            // release any unmanaged objects
-            // set the object references to null
-            _disposed = true;
+            Stop();
         }
     }
 }
