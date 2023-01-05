@@ -174,7 +174,7 @@ In general, directory configuration values must be different from all of the oth
 
 By default, TorSharp lets the tools (Tor, Privoxy) log to the main process stdout and stderr. If you want to disable this behavior, set `TorSharpSettings.WriteToConsole` to `false`. If you want to intercept the output from the tools, attach to the `TorSharpProxy.OutputDataReceived` (for stdout) and `TorSharpProxy.ErrorDataReceived` (for stderr) events. In your event handler, you can log to some external sink or enqueue the line for processing. The event handlers are fired from a task using the default task scheduler so this blocks one of the shared worker threads. Don't do too much heavy lifting there, I guess! If you want to know which tool sent the log message, look at the `DataEventArgs.ExecutablePath` property.
 
-For a full sample, see this: [`samples/MultipleInstances/Program.cs`](https://github.com/joelverhagen/TorSharp/blob/release/samples/CustomLogging/Program.cs).
+For a full sample, see this: [`samples/CustomLogging/Program.cs`](https://github.com/joelverhagen/TorSharp/blob/release/samples/CustomLogging/Program.cs).
 
 ### Privoxy fetched by TorSharp fails to start? Try installing missing dependencies.
 
