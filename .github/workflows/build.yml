@@ -102,4 +102,4 @@ jobs:
 
       - name: Push artifacts
         if: matrix.os == 'windows-2022' && matrix.platform_target == 'x64' && github.event_name == 'push'
-        run: dotnet nuget push artifacts/TorSharp/bin/Release/*.nupkg -s https://nuget.pkg.github.com/joelverhagen/index.json -k ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
+        run: dotnet nuget push artifacts\TorSharp\bin\Release\*.nupkg -s https://nuget.pkg.github.com/joelverhagen/index.json -k ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
