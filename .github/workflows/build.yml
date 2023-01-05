@@ -28,7 +28,7 @@ jobs:
     strategy:
       matrix:
         os:
-          [windows-2022, windows-2019, ubuntu-22.04, ubuntu-20.04, ubuntu-18.04]
+          [windows-2022, windows-2019, ubuntu-22.04, ubuntu-20.04]
         platform_target: [x64]
 
     runs-on: ${{ matrix.os }}
