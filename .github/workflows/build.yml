@@ -57,8 +57,6 @@ jobs:
 
       - name: Build
         run: dotnet build --configuration Release --no-restore
-        env:
-          BUILD_STABLE_VERSION: ${{ inputs.build_stable_version }}
 
       - name: Install Privoxy dependencies (Linux)
         if: runner.os == 'Linux'
@@ -91,6 +89,8 @@ jobs:
 
       - name: Pack
         run: dotnet pack --configuration Release --no-restore --no-build
+        env:
+          BUILD_STABLE_VERSION: ${{ inputs.build_stable_version }}
 
       - name: Upload artifacts
         if: matrix.os == 'windows-2022' && matrix.platform_target == 'x64'
