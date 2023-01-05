@@ -28,8 +28,8 @@ This product is produced independently from the Tor® anonymity software and car
     - ⚠️ CentOS 7 supported via `ExecutablePathOverride` ([see below](#centos-7))
   - ❌ Mac OS X support is not planned. I don't have a Mac 😕
 - Uses Privoxy to redirect HTTP proxy traffic to Tor (can be disabled).
-- Uses virtual desktops to manage Tor and Privoxy processes.
-- Optionally downloads the latest version of Tor and Privoxy.
+- On Windows, uses virtual desktops to manage Tor and Privoxy processes and hide the windows so it's cleaner.
+- Optionally downloads the latest version of Tor and Privoxy for you.
 
 ## Install
 
@@ -172,9 +172,9 @@ In general, directory configuration values must be different from all of the oth
 
 ### How do I change what TorSharp logs?
 
-By default, TorSharp lets the tools (Tor, Privoxy) logs to the main process stdout and stderr. If you want to disable this behavior, set `TorSharpSettings.WriteToConsole` to `false`. If you want to intercept the output from the tools, attach to the `TorSharpProxy.OutputDataReceived` (for stdout) and `TorSharpProxy.ErrorDataReceived` (for stderr) events. In your event handler, you can log to some external source or enqueue the line for processing. The event handlers are fired from a task using the default task scheduler so this blocks one of the shared worker threads. Don't do too much heavy lifting there, I guess! If you want to know which tool sent the log message, look at the `DataEventArgs.ExecutablePath` property.
+By default, TorSharp lets the tools (Tor, Privoxy) log to the main process stdout and stderr. If you want to disable this behavior, set `TorSharpSettings.WriteToConsole` to `false`. If you want to intercept the output from the tools, attach to the `TorSharpProxy.OutputDataReceived` (for stdout) and `TorSharpProxy.ErrorDataReceived` (for stderr) events. In your event handler, you can log to some external sink or enqueue the line for processing. The event handlers are fired from a task using the default task scheduler so this blocks one of the shared worker threads. Don't do too much heavy lifting there, I guess! If you want to know which tool sent the log message, look at the `DataEventArgs.ExecutablePath` property.
 
-For a full sample, see See this sample: [`samples/MultipleInstances/Program.cs`](https://github.com/joelverhagen/TorSharp/blob/release/samples/CustomLogging/Program.cs).
+For a full sample, see this: [`samples/MultipleInstances/Program.cs`](https://github.com/joelverhagen/TorSharp/blob/release/samples/CustomLogging/Program.cs).
 
 ### Privoxy fetched by TorSharp fails to start? Try installing missing dependencies.
 
