@@ -18,6 +18,7 @@
     <PackageProjectUrl>https://github.com/joelverhagen/TorSharp</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>
+* 2.12.0 Fix bug with ExitNodes Tor setting having wrong GeoIP file path, add default Tor control password.
 * 2.11.0 Add ability to intercept and silence tool logging to stdout and stderr.
 * 2.10.0 Allow Privoxy to be disabled (.NET 6 supports SOCKS natively), fix some parallel bugs.
 * 2.9.0 Update to new Tor URLs, fixing tool fetcher, drop .NET 4.5 and add .NET 4.6.2.
