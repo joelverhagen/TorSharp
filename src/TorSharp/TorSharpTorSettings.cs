@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Cryptography;
 
 namespace Knapcode.TorSharp
 {
@@ -11,6 +13,29 @@ namespace Knapcode.TorSharp
         internal const int DefaultControlPort = 19051;
 
         /// <summary>
+        /// The default control password for the Tor process. A new random value is generated for each hosting .NET
+        /// process.
+        /// </summary>
+        public static readonly string DefaultControlPassword = GenerateControlPassword();
+
+        private static string GenerateControlPassword()
+        {
+            using (var random = RandomNumberGenerator.Create())
+            {
+                var buffer = new byte[256];
+                random.GetBytes(buffer);
+                using (var hashAlgorith = SHA256.Create())
+                {
+                    var hash = hashAlgorith.ComputeHash(buffer);
+                    return Convert.ToBase64String(hash)
+                        .TrimEnd('=')
+                        .Replace('+', '-')
+                        .Replace('/', '_');
+                }
+            }
+        }
+
+        /// <summary>
         /// Initializes an instance of the TorSharp settings with default ports set.
         /// </summary>
         public TorSharpTorSettings()
@@ -18,6 +43,7 @@ namespace Knapcode.TorSharp
             SocksPort = DefaultSocksPort;
             ControlPort = DefaultControlPort;
             AdditionalSockPorts = new List<int>();
+            ControlPassword = DefaultControlPassword;
         }
 
         /// <summary>

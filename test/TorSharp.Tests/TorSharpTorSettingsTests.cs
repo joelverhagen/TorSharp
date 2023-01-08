@@ -18,5 +18,16 @@ namespace Knapcode.TorSharp.Tests
         {
             Assert.Equal(19051, new TorSharpTorSettings().ControlPort);
         }
+
+        [Fact]
+        [DisplayTestMethodName]
+        public void HasDefaultControlPassword()
+        {
+            var settings = new TorSharpTorSettings();
+
+            Assert.NotNull(settings.ControlPassword);
+            Assert.Null(settings.HashedControlPassword);
+            Assert.Equal(TorSharpTorSettings.DefaultControlPassword, settings.ControlPassword);
+        }
     }
 }

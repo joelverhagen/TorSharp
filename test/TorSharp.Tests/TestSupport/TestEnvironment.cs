@@ -11,11 +11,16 @@ namespace Knapcode.TorSharp.Tests.TestSupport
         private bool _disposed;
         private readonly ITestOutputHelper _output;
 
-        private TestEnvironment(ITestOutputHelper output, TestDirectory testDirectory, ReservedPorts ports)
+        private TestEnvironment(ITestOutputHelper output, TestDirectory testDirectory, ReservedPorts ports, bool setControlPassword)
         {
             _output = output;
             TestDirectory = testDirectory;
-            _torControlPassword = Guid.NewGuid().ToString();
+
+            if (setControlPassword)
+            {
+                _torControlPassword = Guid.NewGuid().ToString();
+            }
+
             _ports = ports;
             _disposed = false;
         }
@@ -25,7 +30,7 @@ namespace Knapcode.TorSharp.Tests.TestSupport
         public TorSharpSettings BuildSettings()
         {
             ThrowIfDisposed();
-            return new TorSharpSettings
+            var settings = new TorSharpSettings
             {
                 ZippedToolsDirectory = Path.Combine(TestDirectory.Path, "Zipped"),
                 ExtractedToolsDirectory = Path.Combine(TestDirectory.Path, "Extracted"),
@@ -38,11 +43,17 @@ namespace Knapcode.TorSharp.Tests.TestSupport
                     DataDirectory = Path.Combine(TestDirectory.Path, "TorData"),
                     SocksPort = _ports.Ports[1],
                     ControlPort = _ports.Ports[2],
-                    ControlPassword = _torControlPassword,
                 },
                 ReloadTools = true,
                 WriteToConsole = false,
             };
+
+            if (_torControlPassword != null)
+            {
+                settings.TorSettings.ControlPassword = _torControlPassword;
+            }
+
+            return settings;
         }
 
         public void Dispose()
@@ -66,7 +77,7 @@ namespace Knapcode.TorSharp.Tests.TestSupport
             }
         }
 
-        public static TestEnvironment Initialize(ITestOutputHelper output)
+        public static TestEnvironment Initialize(ITestOutputHelper output, bool setControlPassword = true)
         {
             var testDirectory = new TestDirectory(output);
             output.WriteLine($"Initializing test environment in base directory: {testDirectory}");
@@ -76,7 +87,7 @@ namespace Knapcode.TorSharp.Tests.TestSupport
 
             Directory.CreateDirectory(testDirectory);
 
-            return new TestEnvironment(output, testDirectory, ports);
+            return new TestEnvironment(output, testDirectory, ports, setControlPassword);
         }
     }
 }

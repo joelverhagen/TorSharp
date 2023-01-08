@@ -10,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Knapcode.TorSharp.Tests.TestSupport;
 using Knapcode.TorSharp.Tools;
+using Knapcode.TorSharp.Tools.Tor;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Proxy;
@@ -304,6 +305,41 @@ namespace Knapcode.TorSharp.Tests
                         // Assert
                         Assert.True(readBefore + bytes <= readAfter, $"At least {bytes} more bytes should have been read.");
                         Assert.True(writtenBefore + bytes <= writtenAfter, $"At least {bytes} more bytes should have been written.");
+                    }
+                }
+            }
+        }
+
+        [RetryFact]
+        [DisplayTestMethodName]
+        public async Task DefaultControlPasswordWorks()
+        {
+            using (var te = TestEnvironment.Initialize(_output, setControlPassword: false))
+            {
+                // Arrange
+                var settings = te.BuildSettings();
+                settings.PrivoxySettings.Disable = true;
+
+                using (var httpClient = new HttpClient())
+                using (var proxy = new TorSharpProxy(settings))
+                {
+                    _output.WriteLine(settings);
+
+                    var fetcher = _httpFixture.GetTorSharpToolFetcher(_output, settings, httpClient);
+                    await fetcher.FetchAsync();
+                    _output.WriteLine("The tools have been fetched");
+                    await proxy.ConfigureAndStartAsync();
+                    _output.WriteLine("The proxy has been started");
+
+                    // Act & Assert
+                    using (var controlClient = new TorControlClient())
+                    {
+                        await controlClient.ConnectAsync("localhost", settings.TorSettings.ControlPort);
+                        await controlClient.AuthenticateAsync(TorSharpTorSettings.DefaultControlPassword);
+                        await controlClient.CleanCircuitsAsync();
+                        await controlClient.QuitAsync();
+
+                        // No exception is thrown
                     }
                 }
             }
