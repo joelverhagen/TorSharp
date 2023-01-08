@@ -161,6 +161,22 @@ namespace Knapcode.TorSharp.Tests
 
         [RetryFact]
         [DisplayTestMethodName]
+        public async Task StrictNodesWithGeoWorks()
+        {
+            using (var te = TestEnvironment.Initialize(_output))
+            {
+                // Arrange
+                var settings = te.BuildSettings();
+                settings.TorSettings.ExitNodes = "{de}";
+                settings.TorSettings.StrictNodes = true;
+
+                // Act & Assert
+                await ExecuteEndToEndTestAsync(settings);
+            }
+        }
+
+        [RetryFact]
+        [DisplayTestMethodName]
         public async Task SimpleToolRunner_EndToEnd()
         {
             using (var te = TestEnvironment.Initialize(_output))

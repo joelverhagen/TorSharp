@@ -108,12 +108,12 @@ namespace Knapcode.TorSharp.Tools.Tor
             }
 
             dictionary["DataDirectory"] = dataDictionary;
+            dictionary["GeoIPFile"] = Path.Combine(tool.DirectoryPath, "data", "geoip");
+            dictionary["GeoIPv6File"] = Path.Combine(tool.DirectoryPath, "data", "geoip6");
 
             if (!string.IsNullOrWhiteSpace(settings.TorSettings.ExitNodes))
             {
                 dictionary["ExitNodes"] = settings.TorSettings.ExitNodes;
-                dictionary["GeoIPFile"] = Path.Combine(tool.DirectoryPath, "data", "tor", "geoip");
-                dictionary["GeoIPv6File"] = Path.Combine(tool.DirectoryPath, "data", "tor", "geoip6");
             }
 
             if (settings.TorSettings.StrictNodes.HasValue)
