@@ -29,13 +29,11 @@ jobs:
       matrix:
         os:
           [windows-2022, windows-2019, ubuntu-22.04, ubuntu-20.04]
-        platform_target: [x64]
 
     runs-on: ${{ matrix.os }}
 
     env:
       TORSHARP_TEST_CACHE: ${{ github.workspace }}/tests/cache
-      PlatformTarget: ${{ matrix.platform_target }}
 
     steps:
       - name: Checkout
@@ -45,7 +43,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: tests/cache
-          key: ${{ matrix.os }}-${{ matrix.platform_target }}-torsharp-test
+          key: ${{ matrix.os }}-torsharp-test
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
@@ -93,7 +91,7 @@ jobs:
           BUILD_STABLE_VERSION: ${{ inputs.build_stable_version }}
 
       - name: Upload artifacts
-        if: matrix.os == 'windows-2022' && matrix.platform_target == 'x64'
+        if: matrix.os == 'windows-2022'
         uses: actions/upload-artifact@v3
         with:
           name: packages
@@ -101,5 +99,5 @@ jobs:
             artifacts/TorSharp/bin/Release/*.nupkg
 
       - name: Push artifacts
-        if: matrix.os == 'windows-2022' && matrix.platform_target == 'x64' && github.event_name == 'push'
+        if: matrix.os == 'windows-2022' && github.event_name == 'push'
         run: dotnet nuget push artifacts\TorSharp\bin\Release\*.nupkg -s https://nuget.pkg.github.com/joelverhagen/index.json -k ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
