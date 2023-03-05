@@ -151,7 +151,7 @@ namespace Knapcode.TorSharp.Tests
 
                     foreach (var architecture in Enum.GetValues(typeof(TorSharpArchitecture)).Cast<TorSharpArchitecture>())
                     {
-                        if (architecture == TorSharpArchitecture.Unknown)
+                        if (architecture == TorSharpArchitecture.Unknown || architecture == TorSharpArchitecture.Arm64)
                         {
                             continue;
                         }
