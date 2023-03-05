@@ -131,6 +131,10 @@ namespace Knapcode.TorSharp
                 {
                     prefix = "tor-linux64-";
                 }
+                else if (settings.Architecture == TorSharpArchitecture.Arm64)
+                {
+                    prefix = "tor-linux-aarch64-";
+                }
                 else
                 {
                     settings.RejectRuntime("determine Linux Tor prefix");

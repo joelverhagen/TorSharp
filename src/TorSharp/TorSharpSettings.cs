@@ -48,6 +48,9 @@ namespace Knapcode.TorSharp
                 case SystemArchitecture.X64:
                     Architecture = TorSharpArchitecture.X64;
                     break;
+                case SystemArchitecture.Arm64:
+                    Architecture = TorSharpArchitecture.Arm64;
+                    break;
                 default:
                     Architecture = TorSharpArchitecture.Unknown;
                     break;
