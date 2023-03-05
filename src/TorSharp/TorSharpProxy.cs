@@ -231,9 +231,9 @@ namespace Knapcode.TorSharp
 
         private string GetAbsoluteCreate(string directory)
         {
-            string currentDirectory = Path.GetFullPath(Directory.GetCurrentDirectory());
-            if (!Path.IsPathRooted(currentDirectory))
+            if (!Path.IsPathRooted(directory))
             {
+                string currentDirectory = Path.GetFullPath(Directory.GetCurrentDirectory());
                 directory = Path.Combine(currentDirectory, directory);
             }
 

@@ -11,7 +11,7 @@
   </PropertyGroup>
   
   <PropertyGroup>
-    <TorSharpStableVersion>2.13.0</TorSharpStableVersion>
+    <TorSharpStableVersion>2.14.0</TorSharpStableVersion>
 
     <BranchVersionLabel Condition="'$(BranchVersionLabel)' == '' and '$(GITHUB_HEAD_REF)' != ''">$(GITHUB_HEAD_REF)</BranchVersionLabel>
     <BranchVersionLabel Condition="'$(BranchVersionLabel)' == '' and '$(GITHUB_REF)' != ''">$(GITHUB_REF)</BranchVersionLabel>
