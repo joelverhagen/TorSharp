@@ -178,5 +178,10 @@ namespace Knapcode.TorSharp
         /// See https://2019.www.torproject.org/docs/tor-manual-dev.html.en#ORPort for more details.
         /// </summary>
         public string ORPort { get; set; }
+
+        /// <summary>
+        /// Automate find tor in system. Must be helpful for linux users when you can install tor from system repository.
+        /// </summary>
+        public bool AutomateFindInSystem { get; set; }
     }
 }

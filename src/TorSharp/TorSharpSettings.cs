@@ -62,6 +62,19 @@ namespace Knapcode.TorSharp
 
             PrivoxySettings = new TorSharpPrivoxySettings();
             TorSettings = new TorSharpTorSettings();
+
+#if NETSTANDARD
+            if (OSPlatform == TorSharpOSPlatform.Linux)
+            {
+                // It's simply better for any linux distro to try find and use system binaries.
+                PrivoxySettings.AutomateFindInSystem = true;
+                TorSettings.AutomateFindInSystem = true;
+            }
+            if (Architecture == TorSharpArchitecture.Arm64)
+            {
+                PrivoxySettings.Disable = true;
+            }
+#endif
         }
 
         /// <summary>

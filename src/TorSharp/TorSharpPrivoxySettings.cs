@@ -42,5 +42,10 @@
         /// See https://www.privoxy.org/user-manual/config.html#MAX-CLIENT-CONNECTIONS for more details.
         /// </summary>
         public int? MaxClientConnections { get; set; }
+
+        /// <summary>
+        /// Automate find privoxy in system. Must be helpful for linux users when you can install privoxy from system repositorys.
+        /// </summary>
+        public bool AutomateFindInSystem { get; set; }
     }
 }

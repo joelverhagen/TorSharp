@@ -50,7 +50,7 @@ namespace Knapcode.TorSharp
         /// <summary>
         /// Checks for updates of the tools and returns what is found. Inspect the
         /// <see cref="ToolUpdates.HasUpdate"/> property to determine whether updates are available. This is
-        /// determined by checking the the latest versions are already downloads to the
+        /// determined by checking the latest versions are already downloads to the
         /// <see cref="TorSharpSettings.ZippedToolsDirectory"/>.
         /// </summary>
         /// <returns>Information about whether there are tool updates.</returns>
@@ -89,7 +89,7 @@ namespace Knapcode.TorSharp
             bool useExistingTools)
         {
             var latestLocal = ToolUtility.GetLatestToolOrNull(_settings, toolSettings);
-            if (useExistingTools && latestLocal != null)
+            if (useExistingTools || latestLocal?.AutomateDetected == true)
             {
                 return null;
             }

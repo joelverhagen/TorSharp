@@ -41,5 +41,10 @@ namespace Knapcode.TorSharp.Tools
         /// The full path to the tool's configuration file.
         /// </summary>
         public string ConfigurationPath { get; set; }
+
+        /// <summary>
+        /// Automate detected in system.
+        /// </summary>
+        public bool AutomateDetected { get; set; }
     }
 }
