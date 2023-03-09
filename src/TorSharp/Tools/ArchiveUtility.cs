@@ -9,7 +9,7 @@ using SharpCompress.Readers.Tar;
 
 namespace Knapcode.TorSharp.Tools
 {
-    internal class ArchiveUtility
+    internal static class ArchiveUtility
     {
         public static async Task TestAsync(ZippedToolFormat format, string path)
         {

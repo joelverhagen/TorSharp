@@ -151,7 +151,7 @@ namespace Knapcode.TorSharp.Tools.Tor
                 return null;
             }
 
-            var downloadUrl = item.Links.First().Uri;
+            var downloadUrl = item.Links[0].Uri;
             return new DownloadableFile(parsedVersion, downloadUrl, format);
         }
     }

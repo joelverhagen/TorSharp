@@ -131,6 +131,8 @@ namespace Knapcode.TorSharp
             else if (settings.OSPlatform == TorSharpOSPlatform.Linux)
             {
                 var prefix = default(string);
+                var archiveFormat = ZippedToolFormat.TarGz;
+                var getEntryPath = (string a) => a;
                 if (settings.Architecture == TorSharpArchitecture.X86)
                 {
                     prefix = "tor-linux32-";
@@ -139,9 +141,40 @@ namespace Knapcode.TorSharp
                 {
                     prefix = "tor-linux64-";
                 }
-                else if (settings.Architecture == TorSharpArchitecture.Arm64)
+                else if (settings.Architecture.HasFlag(TorSharpArchitecture.Arm))
                 {
-                    prefix = "tor-linux-aarch64-";
+                    if (settings.Architecture == TorSharpArchitecture.Arm32)
+                    {
+                        prefix = "tor-browser-linux-armhf-";
+                    }
+                    else if (settings.Architecture == TorSharpArchitecture.Arm64)
+                    {
+                        prefix = "tor-browser-linux-arm64-";
+                    }
+                    archiveFormat = ZippedToolFormat.TarXz;
+                    getEntryPath = e =>
+                    {
+                        const string entryPrefix = "tor-browser/Browser/TorBrowser/";
+                        if (e.StartsWith(entryPrefix + "Data/Tor/"))
+                        {
+                            return e.Substring(entryPrefix.Length).ToLower();
+                        }
+                        else if (e.StartsWith(entryPrefix + "Tor/"))
+                        {
+                            if (e.StartsWith(entryPrefix + "Tor/PluggableTransports/"))
+                            {
+                                return null;
+                            }
+                            else
+                            {
+                                return e.Substring(entryPrefix.Length).ToLower();
+                            }
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    };
                 }
                 else
                 {
@@ -181,8 +214,8 @@ namespace Knapcode.TorSharp
 
                         return output;
                     },
-                    ZippedToolFormat = ZippedToolFormat.TarGz,
-                    GetEntryPath = e => e,
+                    ZippedToolFormat = archiveFormat,
+                    GetEntryPath = getEntryPath,
                     TryFindInSystem = settings.TorSettings.AutomateFindInSystem,
                     TryFindExecutableName = "tor"
                 };
