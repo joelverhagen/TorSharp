@@ -26,7 +26,7 @@ namespace Knapcode.TorSharp.Tools
             try
             {
                 // write first to a temporary file
-                temporaryPath = Path.GetTempFileName();
+                temporaryPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
                 TextReader reader;
 
                 // read the existing configuration, if there is some
