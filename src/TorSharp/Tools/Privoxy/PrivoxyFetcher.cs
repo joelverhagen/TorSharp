@@ -121,8 +121,7 @@ namespace Knapcode.TorSharp.Tools.Privoxy
             var downloadableFile = await FetcherHelpers.GetLatestDownloadableFileAsync(
                 _httpClient,
                 osBaseUrl,
-                fileNamePatternAndFormat.Pattern,
-                fileNamePatternAndFormat.Format,
+                fileNamePatternAndFormat,
                 token).ConfigureAwait(false);
 
             if (downloadableFile == null)
@@ -163,7 +162,7 @@ namespace Knapcode.TorSharp.Tools.Privoxy
                 .Items
                 .Where(i => i.Links.Any())
                 .Where(i => TitleStartWithDirectory(directory, i))
-                .Select(i => GetDownloadableFile(fileNamePatternAndFormat.Pattern, fileNamePatternAndFormat.Format, i))
+                .Select(i => FetcherHelpers.GetDownloadableFile(fileNamePatternAndFormat, i))
                 .Where(i => i != null)
                 .OrderByDescending(x => x.Version)
                 .FirstOrDefault();
@@ -184,30 +183,6 @@ namespace Knapcode.TorSharp.Tools.Privoxy
                 item.Title.Text,
                 $"^/?{directory}/",
                 RegexOptions.IgnoreCase);
-        }
-
-        private DownloadableFile GetDownloadableFile(
-            string fileNamePattern,
-            ZippedToolFormat format,
-            SyndicationItem item)
-        {
-            var match = Regex.Match(
-                item.Title.Text,
-                fileNamePattern,
-                RegexOptions.IgnoreCase);
-
-            if (!match.Success)
-            {
-                return null;
-            }
-
-            if (!Version.TryParse(match.Groups["Version"].Value, out var parsedVersion))
-            {
-                return null;
-            }
-
-            var downloadUrl = item.Links.First().Uri;
-            return new DownloadableFile(parsedVersion, downloadUrl, format);
         }
 
         private string GetFileListingDirectory(Uri baseUrl)

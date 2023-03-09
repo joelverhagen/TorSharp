@@ -48,6 +48,9 @@ namespace Knapcode.TorSharp
                 case SystemArchitecture.X64:
                     Architecture = TorSharpArchitecture.X64;
                     break;
+                case SystemArchitecture.Arm:
+                    Architecture = TorSharpArchitecture.Arm32;
+                    break;
                 case SystemArchitecture.Arm64:
                     Architecture = TorSharpArchitecture.Arm64;
                     break;
@@ -70,7 +73,7 @@ namespace Knapcode.TorSharp
                 PrivoxySettings.AutomateFindInSystem = true;
                 TorSettings.AutomateFindInSystem = true;
             }
-            if (Architecture == TorSharpArchitecture.Arm64)
+            if (Architecture.HasFlag(TorSharpArchitecture.Arm))
             {
                 PrivoxySettings.Disable = true;
             }
@@ -190,6 +193,11 @@ namespace Knapcode.TorSharp
         /// Settings specific to Tor.
         /// </summary>
         public TorSharpTorSettings TorSettings { get; set; }
+
+        /// <summary>
+        /// Allow non official download repository.
+        /// </summary>
+        public bool AllowUnofficialSources { get; set; }
 
         [Obsolete("Use the " + nameof(TorSharpPrivoxySettings) + "." + nameof(TorSharpPrivoxySettings.Port) + " property instead.")]
         public int PrivoxyPort
