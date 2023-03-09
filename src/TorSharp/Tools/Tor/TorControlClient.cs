@@ -51,7 +51,7 @@ namespace Knapcode.TorSharp.Tools.Tor
             {
                 commandBuilder.AppendFormat(" {0}", keyword);
                 keywordCount++;
-            };
+            }
 
             if (keywordCount == 0)
             {

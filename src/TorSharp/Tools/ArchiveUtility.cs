@@ -61,19 +61,14 @@ namespace Knapcode.TorSharp.Tools
 
         public static string GetFileExtension(ZippedToolFormat format)
         {
-            switch (format)
+            return format switch
             {
-                case ZippedToolFormat.Zip:
-                    return ".zip";
-                case ZippedToolFormat.Deb:
-                    return ".deb";
-                case ZippedToolFormat.TarXz:
-                    return ".tar.xz";
-                case ZippedToolFormat.TarGz:
-                    return ".tar.gz";
-                default:
-                    throw new NotImplementedException($"The zipped tool format {format} does not have a known extension.");
-            }
+                ZippedToolFormat.Zip => ".zip",
+                ZippedToolFormat.Deb => ".deb",
+                ZippedToolFormat.TarXz => ".tar.xz",
+                ZippedToolFormat.TarGz => ".tar.gz",
+                _ => throw new NotImplementedException($"The zipped tool format {format} does not have a known extension."),
+            };
         }
 
         public static async Task TestZipAsync(string zipPath)
@@ -245,7 +240,7 @@ namespace Knapcode.TorSharp.Tools
             }
         }
 
-        private class ArFileHeader
+        private sealed class ArFileHeader
         {
             public ArFileHeader(string fileIdentifier, uint fileSize)
             {

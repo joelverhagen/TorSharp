@@ -290,7 +290,7 @@ namespace Knapcode.TorSharp
                 return false;
 
             // In linux most binaries exists in any bin directory, e.g /bin/ /sbin/ /usr/bin/
-            var toolPath = WhereisUtility.Whereis(toolSettings.TryFindExecutableName);
+            var toolPath = WhereIsUtility.WhereIs(toolSettings.TryFindExecutableName);
             var toolVariants = toolPath.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
             var binToolVariant = Array.Find(toolVariants,
                 a => Regex.IsMatch(a, $@"\/bin\/.*{toolSettings.TryFindExecutableName}"));

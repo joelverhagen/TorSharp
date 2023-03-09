@@ -91,7 +91,7 @@ namespace Knapcode.TorSharp.Tools.Privoxy
                     await Task.WhenAll(faults).ConfigureAwait(false);
                 }
 
-                throw new TorSharpException($"No version of Privoxy could be found.");
+                throw new TorSharpException("No version of Privoxy could be found.");
             }
 
             return results;
@@ -160,8 +160,7 @@ namespace Knapcode.TorSharp.Tools.Privoxy
 
             var downloadableFile = syndicationFeed
                 .Items
-                .Where(i => i.Links.Any())
-                .Where(i => TitleStartWithDirectory(directory, i))
+                .Where(i => i.Links.Any() && TitleStartWithDirectory(directory, i))
                 .Select(i => FetcherHelpers.GetDownloadableFile(fileNamePatternAndFormat, i))
                 .Where(i => i != null)
                 .OrderByDescending(x => x.Version)

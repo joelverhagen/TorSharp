@@ -10,7 +10,6 @@ namespace Proxy.Configurations
             Pattern = new Regex(pattern, RegexOptions.Compiled);
         }
 
-
         public Regex Pattern { get; private set; }
 
         public ActionEnum Action { get; private set; }

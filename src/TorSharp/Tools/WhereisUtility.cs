@@ -3,9 +3,9 @@ using System.Text;
 
 namespace Knapcode.TorSharp.Tools
 {
-    internal class WhereisUtility
+    internal static class WhereIsUtility
     {
-        public static string Whereis(string searchPattern)
+        public static string WhereIs(string searchPattern)
         {
             using (var process = new Process())
             {

@@ -40,24 +40,14 @@ namespace Knapcode.TorSharp
                 OSPlatform = TorSharpOSPlatform.Unknown;
             }
 
-            switch (RuntimeInformation.ProcessArchitecture)
+            Architecture = RuntimeInformation.ProcessArchitecture switch
             {
-                case SystemArchitecture.X86:
-                    Architecture = TorSharpArchitecture.X86;
-                    break;
-                case SystemArchitecture.X64:
-                    Architecture = TorSharpArchitecture.X64;
-                    break;
-                case SystemArchitecture.Arm:
-                    Architecture = TorSharpArchitecture.Arm32;
-                    break;
-                case SystemArchitecture.Arm64:
-                    Architecture = TorSharpArchitecture.Arm64;
-                    break;
-                default:
-                    Architecture = TorSharpArchitecture.Unknown;
-                    break;
-            }
+                SystemArchitecture.X86 => TorSharpArchitecture.X86,
+                SystemArchitecture.X64 => TorSharpArchitecture.X64,
+                SystemArchitecture.Arm => TorSharpArchitecture.Arm32,
+                SystemArchitecture.Arm64 => TorSharpArchitecture.Arm64,
+                _ => TorSharpArchitecture.Unknown,
+            };
 #else
             OSPlatform = TorSharpOSPlatform.Windows;
             Architecture = Environment.Is64BitProcess ? TorSharpArchitecture.X64 : TorSharpArchitecture.X86;
@@ -257,20 +247,14 @@ namespace Knapcode.TorSharp
 
         private TorSharpTorSettings EnsureTorSettings()
         {
-            if (TorSettings == null)
-            {
-                TorSettings = new TorSharpTorSettings();
-            }
+            TorSettings ??= new TorSharpTorSettings();
 
             return TorSettings;
         }
 
         private TorSharpPrivoxySettings EnsurePrivoxySettings()
         {
-            if (PrivoxySettings == null)
-            {
-                PrivoxySettings = new TorSharpPrivoxySettings();
-            }
+            PrivoxySettings ??= new TorSharpPrivoxySettings();
 
             return PrivoxySettings;
         }

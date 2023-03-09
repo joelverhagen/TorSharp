@@ -88,14 +88,7 @@ namespace Knapcode.TorSharp.Tools.Tor
                 dictionary["Bridge"] = settings.TorSettings.Bridge;
             }
 
-            if (settings.TorSettings.HashedControlPassword != null)
-            {
-                dictionary["HashedControlPassword"] = settings.TorSettings.HashedControlPassword;
-            }
-            else
-            {
-                dictionary["HashedControlPassword"] = null;
-            }
+            dictionary["HashedControlPassword"] = settings.TorSettings.HashedControlPassword;
 
             string dataDictionary;
             if (!string.IsNullOrWhiteSpace(settings.TorSettings.DataDirectory))
