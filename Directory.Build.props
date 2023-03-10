@@ -16,6 +16,8 @@
     <BranchVersionLabel Condition="'$(BranchVersionLabel)' == '' and '$(GITHUB_HEAD_REF)' != ''">$(GITHUB_HEAD_REF)</BranchVersionLabel>
     <BranchVersionLabel Condition="'$(BranchVersionLabel)' == '' and '$(GITHUB_REF)' != ''">$(GITHUB_REF)</BranchVersionLabel>
     <BranchVersionLabel Condition="'$(BranchVersionLabel)' != ''">$([System.Text.RegularExpressions.Regex]::Replace("$(BranchVersionLabel)", "^(.+/)?([^/]+)$", "ci.$2"))</BranchVersionLabel>
+    <BranchVersionLabel Condition="'$(BranchVersionLabel)' != ''">$([System.Text.RegularExpressions.Regex]::Replace($(BranchVersionLabel), '[^0-9A-Za-z\-\.]+', '-'))</BranchVersionLabel>
+    <BranchVersionLabel Condition="'$(BranchVersionLabel)' != ''">$([System.Text.RegularExpressions.Regex]::Replace($(BranchVersionLabel), '\.0+(\d+(\.|$))', '.$1'))</BranchVersionLabel>
     <BranchVersionLabel Condition="'$(BranchVersionLabel)' == ''">local</BranchVersionLabel>
 
     <BuildVersionLabel Condition="'$(BuildVersionLabel)' == '' and '$(GITHUB_RUN_NUMBER)' != ''">.$(GITHUB_RUN_NUMBER)</BuildVersionLabel>
