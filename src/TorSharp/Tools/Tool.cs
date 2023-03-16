@@ -45,6 +45,6 @@ namespace Knapcode.TorSharp.Tools
         /// <summary>
         /// Automate detected in system.
         /// </summary>
-        public bool AutomateDetected { get; set; }
+        public bool AutomaticallyDetected { get; set; }
     }
 }

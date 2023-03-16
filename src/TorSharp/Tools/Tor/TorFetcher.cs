@@ -31,7 +31,7 @@ namespace Knapcode.TorSharp.Tools.Tor
             if (_settings.Architecture.HasFlag(TorSharpArchitecture.Arm))
             {
                 if (!_settings.AllowUnofficialSources)
-                    throw new TorSharpException($"AllowUnofficialDistribution == false, there is no official tor distribution for {_settings.Architecture} platform.");
+                    throw new TorSharpException($"{nameof(AllowUnofficialDistribution)} == false, there is no official tor distribution for {_settings.Architecture} platform.");
 
                 downloadableFile = await GetLatestDownloadableArmFileAsync(_httpClient,
                     BaseArmUrl,

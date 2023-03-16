@@ -180,8 +180,8 @@ namespace Knapcode.TorSharp
         public string ORPort { get; set; }
 
         /// <summary>
-        /// Automate find tor in system. Must be helpful for linux users when you can install tor from system repository.
+        /// Automatically find tor in the system. May be helpful for linux users when you can install tor from a system repository.
         /// </summary>
-        public bool AutomateFindInSystem { get; set; }
+        public bool AutomaticallyFindInSystem { get; set; }
     }
 }

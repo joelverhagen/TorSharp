@@ -62,7 +62,7 @@ namespace Knapcode.TorSharp.Tools
         public string ExecutablePathOverride { get; set; }
 
         /// <summary>
-        /// Try to find tool without download.
+        /// Try to find the tool without downloading it.
         /// </summary>
         public bool TryFindInSystem { get; set; }
 
