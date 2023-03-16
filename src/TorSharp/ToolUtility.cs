@@ -41,7 +41,7 @@ namespace Knapcode.TorSharp
 
                         return e;
                     },
-                    TryFindInSystem = settings.TorSettings.AutomateFindInSystem,
+                    TryFindInSystem = settings.TorSettings.AutomaticallyFindInSystem,
                     TryFindExecutableName = "privoxy.exe"
                 };
             }
@@ -96,7 +96,7 @@ namespace Knapcode.TorSharp
                             return null;
                         }
                     },
-                    TryFindInSystem = settings.TorSettings.AutomateFindInSystem,
+                    TryFindInSystem = settings.TorSettings.AutomaticallyFindInSystem,
                     TryFindExecutableName = "privoxy"
                 };
             }
@@ -124,7 +124,7 @@ namespace Knapcode.TorSharp
                     GetEnvironmentVariables = t => new Dictionary<string, string>(),
                     ZippedToolFormat = ZippedToolFormat.TarGz,
                     GetEntryPath = e => e,
-                    TryFindInSystem = settings.TorSettings.AutomateFindInSystem,
+                    TryFindInSystem = settings.TorSettings.AutomaticallyFindInSystem,
                     TryFindExecutableName = "tor.exe"
                 };
             }
@@ -216,7 +216,7 @@ namespace Knapcode.TorSharp
                     },
                     ZippedToolFormat = archiveFormat,
                     GetEntryPath = getEntryPath,
-                    TryFindInSystem = settings.TorSettings.AutomateFindInSystem,
+                    TryFindInSystem = settings.TorSettings.AutomaticallyFindInSystem,
                     TryFindExecutableName = "tor"
                 };
             }
@@ -310,7 +310,7 @@ namespace Knapcode.TorSharp
                     ExecutablePath = binToolVariant,
                     WorkingDirectory = workingDirectory,
                     ConfigurationPath = configurationPath,
-                    AutomateDetected = true
+                    AutomaticallyDetected = true
                 };
             }
             return true;

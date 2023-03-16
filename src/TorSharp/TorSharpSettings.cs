@@ -60,8 +60,8 @@ namespace Knapcode.TorSharp
             if (OSPlatform == TorSharpOSPlatform.Linux)
             {
                 // It's simply better for any linux distro to try find and use system binaries.
-                PrivoxySettings.AutomateFindInSystem = true;
-                TorSettings.AutomateFindInSystem = true;
+                PrivoxySettings.AutomaticallyFindInSystem = true;
+                TorSettings.AutomaticallyFindInSystem = true;
             }
             if (Architecture.HasFlag(TorSharpArchitecture.Arm))
             {

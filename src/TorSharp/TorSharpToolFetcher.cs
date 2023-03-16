@@ -89,7 +89,7 @@ namespace Knapcode.TorSharp
             bool useExistingTools)
         {
             var latestLocal = ToolUtility.GetLatestToolOrNull(_settings, toolSettings);
-            if (useExistingTools || latestLocal?.AutomateDetected == true)
+            if (useExistingTools || latestLocal?.AutomaticallyDetected == true)
             {
                 return null;
             }
