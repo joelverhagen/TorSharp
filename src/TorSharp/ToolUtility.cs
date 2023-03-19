@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 using Knapcode.TorSharp.Tools;
 
@@ -141,7 +140,7 @@ namespace Knapcode.TorSharp
                 {
                     prefix = "tor-linux64-";
                 }
-                else if (settings.Architecture.Contains("Arm"))
+                else if (settings.Architecture.IsArm())
                 {
                     if (settings.Architecture == TorSharpArchitecture.Arm32)
                     {

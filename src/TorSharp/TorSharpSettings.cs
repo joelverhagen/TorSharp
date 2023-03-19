@@ -64,7 +64,7 @@ namespace Knapcode.TorSharp
                 PrivoxySettings.AutomaticallyFindInSystem = true;
                 TorSettings.AutomaticallyFindInSystem = true;
             }
-            if (Architecture.Contains("Arm"))
+            if (Architecture.IsArm())
             {
                 PrivoxySettings.Disable = true;
             }

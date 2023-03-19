@@ -28,7 +28,7 @@ namespace Knapcode.TorSharp.Tools.Tor
             var fileNamePatternAndFormat = GetFileNamePatternAndFormat();
             DownloadableFile downloadableFile;
 
-            if (_settings.Architecture.Contains("Arm"))
+            if (_settings.Architecture.IsArm())
             {
                 if (!_settings.AllowUnofficialSources)
                     throw new TorSharpException($"{nameof(_settings.AllowUnofficialSources)} == false, there is no official tor distribution for {_settings.Architecture} platform.");
@@ -84,7 +84,7 @@ namespace Knapcode.TorSharp.Tools.Tor
                 {
                     pattern = @"tor-expert-bundle-(?<Version>[\d\.]+)-linux-x86_64\.tar\.gz$";
                 }
-                else if (_settings.Architecture.Contains("Arm"))
+                else if (_settings.Architecture.IsArm())
                 {
                     // Version twice to skip ALSA versions - https://github.com/alsa-project
                     var arch = _settings.Architecture == TorSharpArchitecture.Arm64 ? "arm64" : "armhf";

@@ -4,9 +4,9 @@ namespace Knapcode.TorSharp.Tools
 {
     internal static class EnumHelper
     {
-        public static bool Contains<T>(this T value, string enumValue) where T : Enum
+        public static bool IsArm(this TorSharpArchitecture arch)
         {
-            return value.ToString().Contains(enumValue);
+            return arch == TorSharpArchitecture.Arm32 || arch == TorSharpArchitecture.Arm64;
         }
     }
 }
