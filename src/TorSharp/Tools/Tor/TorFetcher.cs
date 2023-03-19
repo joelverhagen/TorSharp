@@ -28,7 +28,7 @@ namespace Knapcode.TorSharp.Tools.Tor
             var fileNamePatternAndFormat = GetFileNamePatternAndFormat();
             DownloadableFile downloadableFile;
 
-            if (_settings.Architecture.HasFlag(TorSharpArchitecture.Arm))
+            if (_settings.Architecture.Contains("Arm"))
             {
                 if (!_settings.AllowUnofficialSources)
                     throw new TorSharpException($"{nameof(_settings.AllowUnofficialSources)} == false, there is no official tor distribution for {_settings.Architecture} platform.");
@@ -84,7 +84,7 @@ namespace Knapcode.TorSharp.Tools.Tor
                 {
                     pattern = @"tor-expert-bundle-(?<Version>[\d\.]+)-linux-x86_64\.tar\.gz$";
                 }
-                else if (_settings.Architecture.HasFlag(TorSharpArchitecture.Arm))
+                else if (_settings.Architecture.Contains("Arm"))
                 {
                     // Version twice to skip ALSA versions - https://github.com/alsa-project
                     var arch = _settings.Architecture == TorSharpArchitecture.Arm64 ? "arm64" : "armhf";
@@ -106,29 +106,22 @@ namespace Knapcode.TorSharp.Tools.Tor
             FileNamePatternAndFormat patternAndFormat,
             CancellationToken token)
         {
-            SyndicationFeed syndicationFeed;
-            using (var response = await httpClient.GetAsync(baseUrl, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false))
-            {
-                response.EnsureSuccessStatusCode();
+            using var response = await httpClient.GetAsync(baseUrl, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false);
+            response.EnsureSuccessStatusCode();
 
-                using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
-                {
-                    var streamReader = new StreamReader(stream);
-                    var xmlReader = XmlReader.Create(streamReader);
-                    syndicationFeed = SyndicationFeed.Load(xmlReader);
-                    if (syndicationFeed == null)
-                    {
-                        return null;
-                    }
-                }
+            using var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            using var streamReader = new StreamReader(stream);
+            using var xmlReader = XmlReader.Create(streamReader);
+            var syndicationFeed = SyndicationFeed.Load(xmlReader);
+            if (syndicationFeed == null)
+                return null;
 
-                return syndicationFeed.Items
-                    .Where(i => i.Links.Any())
-                    .Select(i => GetDownloadableFile(patternAndFormat.Pattern, patternAndFormat.Format, i))
-                    .Where(i => i != null)
-                    .OrderByDescending(x => x.Version)
-                    .FirstOrDefault();
-            }
+            return syndicationFeed.Items
+                .Where(i => i.Links.Any())
+                .Select(i => GetDownloadableFile(patternAndFormat.Pattern, patternAndFormat.Format, i))
+                .Where(i => i != null)
+                .OrderByDescending(x => x.Version)
+                .FirstOrDefault();
         }
 
         private DownloadableFile GetDownloadableFile(

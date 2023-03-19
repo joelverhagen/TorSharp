@@ -1,15 +1,21 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace Knapcode.TorSharp.Tools
 {
-    internal static class WhereIsUtility
+    internal static class WhichUtility
     {
-        public static string WhereIs(string searchPattern)
+        public static string Which(TorSharpSettings settings, string searchPattern)
         {
+            if (settings.OSPlatform == TorSharpOSPlatform.Windows)
+                return SearchInPathVariable(searchPattern);
+
             using (var process = new Process())
             {
-                process.StartInfo.FileName = "whereis";
+                process.StartInfo.FileName = "which";
                 process.StartInfo.Arguments = searchPattern;
                 process.StartInfo.RedirectStandardOutput = true;
                 process.StartInfo.RedirectStandardError = true;
@@ -28,6 +34,19 @@ namespace Knapcode.TorSharp.Tools
 
                 return output.ToString();
             }
+        }
+
+        private static string SearchInPathVariable(string pattern)
+        {
+            var variables = Environment.GetEnvironmentVariables();
+            if (!variables.Contains("Path"))
+                return null;
+
+            var what = variables["Path"].ToString()
+                .Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
+                .SelectMany(a => Directory.GetFiles(a, pattern, SearchOption.TopDirectoryOnly));
+
+            return what.FirstOrDefault();
         }
 
         private static DataReceivedEventHandler GetOutputHandler(StringBuilder output, object outputLock)

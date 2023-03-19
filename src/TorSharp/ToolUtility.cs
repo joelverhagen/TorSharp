@@ -141,7 +141,7 @@ namespace Knapcode.TorSharp
                 {
                     prefix = "tor-linux64-";
                 }
-                else if (settings.Architecture.HasFlag(TorSharpArchitecture.Arm))
+                else if (settings.Architecture.Contains("Arm"))
                 {
                     if (settings.Architecture == TorSharpArchitecture.Arm32)
                     {
@@ -286,14 +286,10 @@ namespace Knapcode.TorSharp
         public static bool TryFindToolInSystem(TorSharpSettings settings, ToolSettings toolSettings, out Tool tool)
         {
             tool = null;
-            if (settings.OSPlatform != TorSharpOSPlatform.Linux) // For windows search exe name in PATH variable?
-                return false;
 
-            // In linux most binaries exists in any bin directory, e.g /bin/ /sbin/ /usr/bin/
-            var toolPath = WhereIsUtility.WhereIs(toolSettings.TryFindExecutableName);
+            var toolPath = WhichUtility.Which(settings, toolSettings.TryFindExecutableName);
             var toolVariants = toolPath.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
-            var binToolVariant = Array.Find(toolVariants,
-                a => Regex.IsMatch(a, $@"\/bin\/.*{toolSettings.TryFindExecutableName}"));
+            var binToolVariant = toolVariants.FirstOrDefault();
             if (!string.IsNullOrEmpty(binToolVariant))
             {
                 var directoryPath = Path.Combine(settings.ExtractedToolsDirectory, "local");

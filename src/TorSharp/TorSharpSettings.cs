@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using Knapcode.TorSharp.Tools;
 #if NETSTANDARD
 using System.Runtime.InteropServices;
 using SystemOSPlatform = System.Runtime.InteropServices.OSPlatform;
@@ -63,7 +64,7 @@ namespace Knapcode.TorSharp
                 PrivoxySettings.AutomaticallyFindInSystem = true;
                 TorSettings.AutomaticallyFindInSystem = true;
             }
-            if (Architecture.HasFlag(TorSharpArchitecture.Arm))
+            if (Architecture.Contains("Arm"))
             {
                 PrivoxySettings.Disable = true;
             }
