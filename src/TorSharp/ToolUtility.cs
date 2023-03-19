@@ -286,7 +286,9 @@ namespace Knapcode.TorSharp
         {
             tool = null;
 
-            var toolPath = WhichUtility.Which(settings, toolSettings.TryFindExecutableName);
+            var toolPath = settings.OSPlatform == TorSharpOSPlatform.Linux ?
+                WhichUtility.Which(toolSettings.TryFindExecutableName) : // Linux
+                SearchInPathHelper.SearchInPathVariable(toolSettings.TryFindExecutableName); // Windows
             var toolVariants = toolPath.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
             var binToolVariant = toolVariants.FirstOrDefault();
             if (!string.IsNullOrEmpty(binToolVariant))
