@@ -26,7 +26,7 @@ namespace Knapcode.TorSharp.Tools
             try
             {
                 // write first to a temporary file
-                temporaryPath = Path.GetTempFileName();
+                temporaryPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
                 TextReader reader;
 
                 // read the existing configuration, if there is some
@@ -57,15 +57,12 @@ namespace Knapcode.TorSharp.Tools
                     // write the remaining lines
                     foreach (var pair in dictionary.OrderBy(p => p.Key))
                     {
-                        if (pair.Value != null && pair.Value.Any())
+                        if (pair.Value?.Any() == true)
                         {
-                            foreach (var value in pair.Value)
+                            foreach (var value in pair.Value.Where(a => a != null))
                             {
-                                if (value != null)
-                                {
-                                    string newLine = _format.CreateLine(new KeyValuePair<string, string>(pair.Key, value));
-                                    await writer.WriteLineAsync(newLine).ConfigureAwait(false);
-                                }
+                                string newLine = _format.CreateLine(new KeyValuePair<string, string>(pair.Key, value));
+                                await writer.WriteLineAsync(newLine).ConfigureAwait(false);
                             }
                         }
                     }
@@ -109,7 +106,6 @@ namespace Knapcode.TorSharp.Tools
                     }
                 }
             }
-
         }
     }
 }

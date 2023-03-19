@@ -56,7 +56,6 @@ namespace Knapcode.TorSharp.Tests
 
         private void Execute(bool writeToConsole, ToolRunnerType toolRunnerType, string framework)
         {
-
             // build the test app
             ExecuteDotnet(
                 new[]

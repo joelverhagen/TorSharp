@@ -5,6 +5,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Knapcode.TorSharp.Tests.TestSupport;
+using Knapcode.TorSharp.Tools;
+
 using xRetry;
 using Xunit;
 using Xunit.Abstractions;
@@ -151,7 +153,7 @@ namespace Knapcode.TorSharp.Tests
 
                     foreach (var architecture in Enum.GetValues(typeof(TorSharpArchitecture)).Cast<TorSharpArchitecture>())
                     {
-                        if (architecture == TorSharpArchitecture.Unknown)
+                        if (architecture == TorSharpArchitecture.Unknown || architecture.IsArm())
                         {
                             continue;
                         }

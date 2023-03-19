@@ -57,15 +57,12 @@ namespace Proxy.Headers
                 .TrimStart()
                 .Split(':');
 
-            switch (split.Length)
+            return split.Length switch
             {
-                case 1:
-                    return new Address(split[0], 80);
-                case 2:
-                    return new Address(split[0], int.Parse(split[1]));
-                default:
-                    throw new FormatException(string.Join(":", split));
-            }
+                1 => new Address(split[0], 80),
+                2 => new Address(split[0], int.Parse(split[1])),
+                _ => throw new FormatException(string.Join(":", split)),
+            };
         }
 
         private static long GetContentLength(IEnumerable<string> strings)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using Knapcode.TorSharp.Tools;
 
 namespace Knapcode.TorSharp
@@ -39,6 +40,8 @@ namespace Knapcode.TorSharp
 
                         return e;
                     },
+                    TryFindInSystem = settings.TorSettings.AutomaticallyFindInSystem,
+                    TryFindExecutableName = "privoxy.exe"
                 };
             }
             else if (settings.OSPlatform == TorSharpOSPlatform.Linux)
@@ -92,6 +95,8 @@ namespace Knapcode.TorSharp
                             return null;
                         }
                     },
+                    TryFindInSystem = settings.TorSettings.AutomaticallyFindInSystem,
+                    TryFindExecutableName = "privoxy"
                 };
             }
             else
@@ -118,11 +123,15 @@ namespace Knapcode.TorSharp
                     GetEnvironmentVariables = t => new Dictionary<string, string>(),
                     ZippedToolFormat = ZippedToolFormat.TarGz,
                     GetEntryPath = e => e,
+                    TryFindInSystem = settings.TorSettings.AutomaticallyFindInSystem,
+                    TryFindExecutableName = "tor.exe"
                 };
             }
             else if (settings.OSPlatform == TorSharpOSPlatform.Linux)
             {
                 var prefix = default(string);
+                var archiveFormat = ZippedToolFormat.TarGz;
+                var getEntryPath = (string a) => a;
                 if (settings.Architecture == TorSharpArchitecture.X86)
                 {
                     prefix = "tor-linux32-";
@@ -130,6 +139,41 @@ namespace Knapcode.TorSharp
                 else if (settings.Architecture == TorSharpArchitecture.X64)
                 {
                     prefix = "tor-linux64-";
+                }
+                else if (settings.Architecture.IsArm())
+                {
+                    if (settings.Architecture == TorSharpArchitecture.Arm32)
+                    {
+                        prefix = "tor-browser-linux-armhf-";
+                    }
+                    else if (settings.Architecture == TorSharpArchitecture.Arm64)
+                    {
+                        prefix = "tor-browser-linux-arm64-";
+                    }
+                    archiveFormat = ZippedToolFormat.TarXz;
+                    getEntryPath = e =>
+                    {
+                        const string entryPrefix = "tor-browser/Browser/TorBrowser/";
+                        if (e.StartsWith(entryPrefix + "Data/Tor/"))
+                        {
+                            return e.Substring(entryPrefix.Length).ToLower();
+                        }
+                        else if (e.StartsWith(entryPrefix + "Tor/"))
+                        {
+                            if (e.StartsWith(entryPrefix + "Tor/PluggableTransports/"))
+                            {
+                                return null;
+                            }
+                            else
+                            {
+                                return e.Substring(entryPrefix.Length).ToLower();
+                            }
+                        }
+                        else
+                        {
+                            return null;
+                        }
+                    };
                 }
                 else
                 {
@@ -169,8 +213,10 @@ namespace Knapcode.TorSharp
 
                         return output;
                     },
-                    ZippedToolFormat = ZippedToolFormat.TarGz,
-                    GetEntryPath = e => e,
+                    ZippedToolFormat = archiveFormat,
+                    GetEntryPath = getEntryPath,
+                    TryFindInSystem = settings.TorSettings.AutomaticallyFindInSystem,
+                    TryFindExecutableName = "tor"
                 };
             }
             else
@@ -192,6 +238,9 @@ namespace Knapcode.TorSharp
             TorSharpSettings settings,
             ToolSettings toolSettings)
         {
+            if (toolSettings.TryFindInSystem && TryFindToolInSystem(settings, toolSettings, out var tool))
+                return tool;
+
             if (!Directory.Exists(settings.ZippedToolsDirectory))
             {
                 return null;
@@ -231,6 +280,37 @@ namespace Knapcode.TorSharp
             return versions
                 .OrderByDescending(t => t.Version)
                 .FirstOrDefault();
+        }
+
+        public static bool TryFindToolInSystem(TorSharpSettings settings, ToolSettings toolSettings, out Tool tool)
+        {
+            tool = null;
+
+            var toolPath = settings.OSPlatform == TorSharpOSPlatform.Linux ?
+                WhichUtility.Which(toolSettings.TryFindExecutableName) : // Linux
+                SearchInPathHelper.SearchInPathVariable(toolSettings.TryFindExecutableName); // Windows
+            var toolVariants = toolPath.Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            var binToolVariant = toolVariants.FirstOrDefault();
+            if (!string.IsNullOrEmpty(binToolVariant))
+            {
+                var directoryPath = Path.Combine(settings.ExtractedToolsDirectory, "local");
+                var workingDirectory = Path.Combine(directoryPath, toolSettings.WorkingDirectory);
+                var configurationPath = Path.Combine(directoryPath, toolSettings.ConfigurationPath);
+                DirectoryUtility.CreateDirectoryIfNotExists(directoryPath, workingDirectory,
+                    Path.GetDirectoryName(configurationPath));
+                tool =  new Tool()
+                {
+                    Settings = toolSettings,
+                    ZipPath = null,
+                    DirectoryPath = directoryPath,
+                    Version = null,
+                    ExecutablePath = binToolVariant,
+                    WorkingDirectory = workingDirectory,
+                    ConfigurationPath = configurationPath,
+                    AutomaticallyDetected = true
+                };
+            }
+            return true;
         }
     }
 }

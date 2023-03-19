@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using Knapcode.TorSharp.Tools;
 #if NETSTANDARD
 using System.Runtime.InteropServices;
 using SystemOSPlatform = System.Runtime.InteropServices.OSPlatform;
@@ -40,18 +41,14 @@ namespace Knapcode.TorSharp
                 OSPlatform = TorSharpOSPlatform.Unknown;
             }
 
-            switch (RuntimeInformation.ProcessArchitecture)
+            Architecture = RuntimeInformation.ProcessArchitecture switch
             {
-                case SystemArchitecture.X86:
-                    Architecture = TorSharpArchitecture.X86;
-                    break;
-                case SystemArchitecture.X64:
-                    Architecture = TorSharpArchitecture.X64;
-                    break;
-                default:
-                    Architecture = TorSharpArchitecture.Unknown;
-                    break;
-            }
+                SystemArchitecture.X86 => TorSharpArchitecture.X86,
+                SystemArchitecture.X64 => TorSharpArchitecture.X64,
+                SystemArchitecture.Arm => TorSharpArchitecture.Arm32,
+                SystemArchitecture.Arm64 => TorSharpArchitecture.Arm64,
+                _ => TorSharpArchitecture.Unknown,
+            };
 #else
             OSPlatform = TorSharpOSPlatform.Windows;
             Architecture = Environment.Is64BitProcess ? TorSharpArchitecture.X64 : TorSharpArchitecture.X86;
@@ -59,6 +56,19 @@ namespace Knapcode.TorSharp
 
             PrivoxySettings = new TorSharpPrivoxySettings();
             TorSettings = new TorSharpTorSettings();
+
+#if NETSTANDARD
+            if (OSPlatform == TorSharpOSPlatform.Linux)
+            {
+                // It's simply better for any linux distro to try find and use system binaries.
+                PrivoxySettings.AutomaticallyFindInSystem = true;
+                TorSettings.AutomaticallyFindInSystem = true;
+            }
+            if (Architecture.IsArm())
+            {
+                PrivoxySettings.Disable = true;
+            }
+#endif
         }
 
         /// <summary>
@@ -175,6 +185,11 @@ namespace Knapcode.TorSharp
         /// </summary>
         public TorSharpTorSettings TorSettings { get; set; }
 
+        /// <summary>
+        /// Allow non official download repository.
+        /// </summary>
+        public bool AllowUnofficialSources { get; set; }
+
         [Obsolete("Use the " + nameof(TorSharpPrivoxySettings) + "." + nameof(TorSharpPrivoxySettings.Port) + " property instead.")]
         public int PrivoxyPort
         {
@@ -233,20 +248,14 @@ namespace Knapcode.TorSharp
 
         private TorSharpTorSettings EnsureTorSettings()
         {
-            if (TorSettings == null)
-            {
-                TorSettings = new TorSharpTorSettings();
-            }
+            TorSettings ??= new TorSharpTorSettings();
 
             return TorSettings;
         }
 
         private TorSharpPrivoxySettings EnsurePrivoxySettings()
         {
-            if (PrivoxySettings == null)
-            {
-                PrivoxySettings = new TorSharpPrivoxySettings();
-            }
+            PrivoxySettings ??= new TorSharpPrivoxySettings();
 
             return PrivoxySettings;
         }

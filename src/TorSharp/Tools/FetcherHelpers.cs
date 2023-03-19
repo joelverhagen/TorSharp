@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.ServiceModel.Syndication;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,8 +27,7 @@ namespace Knapcode.TorSharp.Tools
         public static async Task<DownloadableFile> GetLatestDownloadableFileAsync(
             HttpClient httpClient,
             Uri baseUrl,
-            string fileNamePattern,
-            ZippedToolFormat format,
+            FileNamePatternAndFormat patternAndFormat,
             CancellationToken token)
         {
             var versionsContent = await httpClient.GetStringAsync(baseUrl, token).ConfigureAwait(false);
@@ -44,7 +44,7 @@ namespace Knapcode.TorSharp.Tools
 
                 foreach (var link in GetLinks(listContent))
                 {
-                    var match = Regex.Match(link, fileNamePattern, RegexOptions.IgnoreCase);
+                    var match = Regex.Match(link, patternAndFormat.Pattern, RegexOptions.IgnoreCase);
                     if (!match.Success)
                     {
                         continue;
@@ -61,7 +61,7 @@ namespace Knapcode.TorSharp.Tools
                     return new DownloadableFile(
                         parsedVersion,
                         downloadUrl,
-                        format);
+                        patternAndFormat.Format);
                 }
             }
 
@@ -94,6 +94,29 @@ namespace Knapcode.TorSharp.Tools
                 .Matches(content, @"<a[^>]+?href=""(?<Link>[^""]+)"">")
                 .OfType<Match>()
                 .Select(x => x.Groups["Link"].Value);
+        }
+
+        internal static DownloadableFile GetDownloadableFile(
+            FileNamePatternAndFormat fileNamePatternAndFormat,
+            SyndicationItem item)
+        {
+            var match = Regex.Match(
+                item.Title.Text,
+                fileNamePatternAndFormat.Pattern,
+                RegexOptions.IgnoreCase);
+
+            if (!match.Success)
+            {
+                return null;
+            }
+
+            if (!Version.TryParse(match.Groups["Version"].Value, out var parsedVersion))
+            {
+                return null;
+            }
+
+            var downloadUrl = item.Links[0].Uri;
+            return new DownloadableFile(parsedVersion, downloadUrl, fileNamePatternAndFormat.Format);
         }
     }
 }

@@ -34,25 +34,17 @@ namespace Knapcode.TorSharp.Tools
                 startInfo.EnvironmentVariables[pair.Key] = pair.Value;
             }
 
-            Process process = Process.Start(startInfo);
+            Process process = Process.Start(startInfo) ?? 
+                throw new TorSharpException($"Unable to start the process '{tool.ExecutablePath}'.");
 
-            process.OutputDataReceived += (object sender, DataReceivedEventArgs e) =>
-            {
+            process.OutputDataReceived += (object sender, DataReceivedEventArgs e) => 
                 Stdout?.Invoke(this, new DataEventArgs(tool.ExecutablePath, e.Data));
-            };
 
-            process.ErrorDataReceived += (object sender, DataReceivedEventArgs e) =>
-            {
+            process.ErrorDataReceived += (object sender, DataReceivedEventArgs e) => 
                 Stderr?.Invoke(this, new DataEventArgs(tool.ExecutablePath, e.Data));
-            };
 
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
-
-            if (process == null)
-            {
-                throw new TorSharpException($"Unable to start the process '{tool.ExecutablePath}'.");
-            }
 
             _processes.Add(process);
 

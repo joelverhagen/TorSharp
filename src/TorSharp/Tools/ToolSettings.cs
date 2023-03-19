@@ -60,5 +60,15 @@ namespace Knapcode.TorSharp.Tools
         /// executable name present in the PATH variable (e.g. installed to the local machine).
         /// </summary>
         public string ExecutablePathOverride { get; set; }
+
+        /// <summary>
+        /// Try to find the tool without downloading it.
+        /// </summary>
+        public bool TryFindInSystem { get; set; }
+
+        /// <summary>
+        /// In linux most binaries exists in any bin directory, e.g /bin/ /sbin/ /usr/bin/
+        /// </summary>
+        public string TryFindExecutableName { get; set; }
     }
 }
