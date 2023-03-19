@@ -7,7 +7,7 @@
     <AssemblyName>Knapcode.TorSharp</AssemblyName>
     <RootNamespace>Knapcode.TorSharp</RootNamespace>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>1591;S2346</NoWarn>
+    <NoWarn>1591</NoWarn>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\TorSharp.snk</AssemblyOriginatorKeyFile>
 
