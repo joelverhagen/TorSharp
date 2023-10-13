@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using Knapcode.TorSharp.Tools;
 #if NETSTANDARD
 using System.Runtime.InteropServices;
 using SystemOSPlatform = System.Runtime.InteropServices.OSPlatform;
@@ -73,6 +74,8 @@ namespace Knapcode.TorSharp
         /// requests to fetch the tools don't fail due to protocol mismatches. This is enabled by default.
         /// </summary>
         public bool EnableSecurityProtocolsForFetcher { get; set; }
+        public Func<FileNamePatternAndFormat> PrivoxyFilePatternResolver { get; set; }
+        public Func<FileNamePatternAndFormat> TorFilePatternResolver { get; set; }
 
         /// <summary>
         /// The way in which tools should be run. The default is <see cref="ToolRunnerType.VirtualDesktop"/> on Windows

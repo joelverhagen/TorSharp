@@ -116,7 +116,7 @@ namespace Knapcode.TorSharp.Tools.Privoxy
         {
             var directory = GetFileListingDirectory(baseUrl);
             var osBaseUrl = new Uri(baseUrl, $"{directory}/");
-            var fileNamePatternAndFormat = GetFileNamePatternAndFormat(osBaseUrl);
+            var fileNamePatternAndFormat = _settings?.PrivoxyFilePatternResolver() ?? GetFileNamePatternAndFormat(osBaseUrl);
 
             var downloadableFile = await FetcherHelpers.GetLatestDownloadableFileAsync(
                 _httpClient,
