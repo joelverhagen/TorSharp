@@ -7,7 +7,7 @@ namespace Knapcode.TorSharp.Tools.Tor
 {
     internal class TorFetcher : IFileFetcher
     {
-        private static readonly Uri BaseUrl = new Uri("https://dist.torproject.org/torbrowser/");
+        private static readonly Uri BaseUrl = new Uri("https://dist.torproject.org/torbrowser/13.0/");
         private readonly TorSharpSettings _settings;
         private readonly HttpClient _httpClient;
 
