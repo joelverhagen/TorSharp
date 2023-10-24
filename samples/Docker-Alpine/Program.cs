@@ -2,9 +2,7 @@
 using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using System.Runtime.InteropServices;
 
 namespace Knapcode.TorSharp.Sandbox
 {
@@ -19,12 +17,14 @@ namespace Knapcode.TorSharp.Sandbox
                 PrivoxySettings =
                 {
                     Port = 18118,
+                    ExecutablePathOverride = "privoxy",
                 },
                 TorSettings =
                 {
                     SocksPort = 19050,
                     ControlPort = 19051,
                     ControlPassword = "foobar",
+                    ExecutablePathOverride = "tor",
                 },
             };
 
