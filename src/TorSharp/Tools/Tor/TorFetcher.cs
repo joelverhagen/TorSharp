@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -46,11 +46,11 @@ namespace Knapcode.TorSharp.Tools.Tor
             {
                 if (_settings.Architecture == TorSharpArchitecture.X86)
                 {
-                    pattern = @"tor-expert-bundle-(?<Version>[\d\.]+)-windows-i686\.tar\.gz$";
+                    pattern = @"tor-expert-bundle-windows-i686-(?<Version>[\d\.]+)\.tar\.gz$";
                 }
                 else if (_settings.Architecture == TorSharpArchitecture.X64)
                 {
-                    pattern = @"tor-expert-bundle-(?<Version>[\d\.]+)-windows-x86_64\.tar\.gz$";
+                    pattern = @"tor-expert-bundle-windows-x86_64-(?<Version>[\d\.]+)\.tar\.gz$";
                 }
                 format = ZippedToolFormat.TarGz;
             }
@@ -58,11 +58,11 @@ namespace Knapcode.TorSharp.Tools.Tor
             {
                 if (_settings.Architecture == TorSharpArchitecture.X86)
                 {
-                    pattern = @"tor-expert-bundle-(?<Version>[\d\.]+)-linux-i686\.tar\.gz$";
+                    pattern = @"tor-expert-bundle-linux-i686-(?<Version>[\d\.]+)\.tar\.gz$";
                 }
                 else if (_settings.Architecture == TorSharpArchitecture.X64)
                 {
-                    pattern = @"tor-expert-bundle-(?<Version>[\d\.]+)-linux-x86_64\.tar\.gz$";
+                    pattern = @"tor-expert-bundle-linux-x86_64-(?<Version>[\d\.]+)\.tar\.gz$";
                 }
                 format = ZippedToolFormat.TarGz;
             }
