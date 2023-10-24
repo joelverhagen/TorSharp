@@ -116,7 +116,7 @@ namespace Knapcode.TorSharp.Tools.Privoxy
         {
             var directory = GetFileListingDirectory(baseUrl);
             var osBaseUrl = new Uri(baseUrl, $"{directory}/");
-            var fileNamePatternAndFormat = _settings?.PrivoxyFilePatternResolver() ?? GetFileNamePatternAndFormat(osBaseUrl);
+            var fileNamePatternAndFormat = _settings.PrivoxyFilePatternResolver?.Invoke(_settings, osBaseUrl) ?? GetFileNamePatternAndFormat(osBaseUrl);
 
             var downloadableFile = await FetcherHelpers.GetLatestDownloadableFileAsync(
                 _httpClient,
@@ -140,7 +140,7 @@ namespace Knapcode.TorSharp.Tools.Privoxy
             CancellationToken token)
         {
             var directory = GetRssDirectory(baseUrl);
-            var fileNamePatternAndFormat = GetFileNamePatternAndFormat(baseUrl);
+            var fileNamePatternAndFormat = _settings.PrivoxyFilePatternResolver?.Invoke(_settings, baseUrl) ?? GetFileNamePatternAndFormat(baseUrl);
 
             SyndicationFeed syndicationFeed;
             using (var response = await _httpClient.GetAsync(baseUrl, HttpCompletionOption.ResponseContentRead, token).ConfigureAwait(false))

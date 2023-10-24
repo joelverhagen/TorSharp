@@ -19,7 +19,7 @@ namespace Knapcode.TorSharp.Tools.Tor
 
         public async Task<DownloadableFile> GetLatestAsync()
         {
-            var fileNamePatternAndFormat = _settings?.TorFilePatternResolver() ?? GetFileNamePatternAndFormat();
+            var fileNamePatternAndFormat = _settings.TorFilePatternResolver?.Invoke(_settings, BaseUrl) ?? GetFileNamePatternAndFormat();
 
             var downloadableFile = await FetcherHelpers.GetLatestDownloadableFileAsync(
                 _httpClient,
