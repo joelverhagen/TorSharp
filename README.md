@@ -26,6 +26,7 @@ This product is produced independently from the Tor® anonymity software and car
     - ✔️ Debian 10
     - ⚠️ Debian 9 ([confirmed by a user](https://github.com/joelverhagen/TorSharp/issues/42#issuecomment-539403030) but [may have issues](https://github.com/joelverhagen/TorSharp/issues/64#issuecomment-774825257))
     - ⚠️ CentOS 7 supported via `ExecutablePathOverride` ([see below](#centos-7))
+    - ⚠️ Alpine 3.18 supported via `ExecutablePathOverride` (must run `apk add tor privoxy` or `apk add tor` and disable Privoxy)
   - ❌ Mac OS X support is not planned. I don't have a Mac 😕
 - Uses Privoxy to redirect HTTP proxy traffic to Tor (can be disabled).
 - On Windows, uses virtual desktops to manage Tor and Privoxy processes and hide the windows so it's cleaner.
