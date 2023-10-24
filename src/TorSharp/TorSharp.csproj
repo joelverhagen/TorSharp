@@ -18,6 +18,7 @@
     <PackageProjectUrl>https://github.com/joelverhagen/TorSharp</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <PackageReleaseNotes>
+* 2.15.0 Update Tor file pattern due to change in distribution file name format.
 * 2.14.0 Fix bug where relative directory paths didn't work right.
 * 2.13.0 Fix release build problem where it was building for x64 for not MSIL (x64 preferred).
 * 2.12.0 Fix bug with ExitNodes Tor setting having wrong GeoIP file path, add default Tor control password.
