@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using Knapcode.TorSharp.Tools;
 #if NETSTANDARD
 using System.Runtime.InteropServices;
 using SystemOSPlatform = System.Runtime.InteropServices.OSPlatform;
@@ -73,6 +74,22 @@ namespace Knapcode.TorSharp
         /// requests to fetch the tools don't fail due to protocol mismatches. This is enabled by default.
         /// </summary>
         public bool EnableSecurityProtocolsForFetcher { get; set; }
+
+        /// <summary>
+        /// Override the file pattern used for downloading a Privoxy binary from a given URL. The settings instance will
+        /// be this instance itself, for convenience. If this delegate returns null or if the delegate itself is set to
+        /// null, the default pattern is used. This is useful when the remote tool distribution changes the file pattern
+        /// and the TorSharp code hasn't been updated yet.
+        /// </summary>
+        public Func<TorSharpSettings, Uri, FileNamePatternAndFormat> PrivoxyFilePatternResolver { get; set; }
+
+        /// <summary>
+        /// Override the file pattern used for downloading a Tor binary from a given URL. The settings instance will
+        /// be this instance itself, for convenience. If this delegate returns null or if the delegate itself is set to
+        /// null, the default pattern is used. This is useful when the remote tool distribution changes the file pattern
+        /// and the TorSharp code hasn't been updated yet.
+        /// </summary>
+        public Func<TorSharpSettings, Uri, FileNamePatternAndFormat> TorFilePatternResolver { get; set; }
 
         /// <summary>
         /// The way in which tools should be run. The default is <see cref="ToolRunnerType.VirtualDesktop"/> on Windows
